@@ -11,7 +11,8 @@ Server::~Server() {
 
 // start() メソッドが呼び出されると、新しいソケットが作成され、指定されたポートにバインドされ、
 // クライアントからの接続を待ちます。
-bool Server::start() {
+bool Server::start() 
+{
         // Create a socket
         sockfd_ = socket(AF_INET, SOCK_STREAM, 0);
         if (sockfd_ < 0) 
@@ -32,7 +33,8 @@ bool Server::start() {
         // Listen for connections
         listen(sockfd_, 5);
 		// 具体的には、listen(sockfd_, 5);というコードでは、システムが一度に保持できる、まだaccept()
-		// によって受け付けられていない接続要求の最大数が5であることを示しています。この数を超えた接続要求が来た場合、新たな接続要求は拒否されます。
+		// によって受け付けられていない接続要求の最大数が5であることを示しています。
+		// この数を超えた接続要求が来た場合、新たな接続要求は拒否されます。
 
         // Set the socket to non-blocking
         fcntl(sockfd_, F_SETFL, O_NONBLOCK);
@@ -47,13 +49,13 @@ bool Server::start() {
 
 	// 上記の行は、新しいクライアント接続をサーバのクライアントリストに追加しています。
 	// 詳しく説明すると：
-	// newsockfdはaccept()関数から返された新しいソケットファイルディスクリプタを保持しています。これは新しいクライアント接続を表しています。
+	// newsockfdはaccept()関数から返された新しいソケットファイルディスクリプタを保持しています。
+	// これは新しいクライアント接続を表しています。
 	// clients_はサーバクラス内にあるvectorで、サーバが接続を許可したすべての
 	// クライアントのソケットファイルディスクリプタを保持します。
 	// push_back()はC++のvectorに要素を追加するための関数です。
 	// したがって、clients_.push_back(newsockfd);は新しいクライアント接続
 	// （newsockfd）をクライアントリスト（clients_）に追加する操作を実行しています。
-
 
         // Handle client messages...
         // In a real implementation, we would use a non-blocking read and parse
