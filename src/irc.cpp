@@ -8,7 +8,6 @@ Server::~Server() {
     }
 }
 
-
 // start() メソッドが呼び出されると、新しいソケットが作成され、指定されたポートにバインドされ、
 // クライアントからの接続を待ちます。
 bool Server::start() 
@@ -81,10 +80,16 @@ void Server::run()
             bzero(buffer, 256);
 
             int n = recv(clients_[i], buffer, 255, 0);
-			printf("%s", buffer);
-            if (n < 0) {
-                // handle error
-                std::cerr << "ERROR reading from socket" << std::endl;
+            
+		if (n < 0) {
+    			if (errno == EAGAIN || errno == EWOULDBLOCK) {
+        // Resource temporarily unavailable, just continue with the next iteration
+        continue;
+    	} else {
+        // For other errors, print an error message
+        std::cerr << "ERROR reading from socket: " << strerror(errno) << std::endl;
+    	}
+				std::cerr << "ERROR reading from socket: " << strerror(errno) << std::endl;
             }
             else if (n == 0) {
                 // client has disconnected
@@ -93,8 +98,20 @@ void Server::run()
             }
             else {
                 // process message
+				buffer[n] = '\0'; // null terminate the buffer
                 std::string message(buffer);
-                if(message == "exit") {
+
+				// Remove CR and LF from the end of the message
+				if (!message.empty() && message[message.length()-1] == '\n') {
+					message.erase(message.length()-1);
+				}
+				if (!message.empty() && message[message.length()-1] == '\r') {
+					message.erase(message.length()-1);
+				}
+
+				std::cout << "Received message: " << message << std::endl;
+                
+				if(message == "exit") {
                     close(clients_[i]);
                     clients_.erase(clients_.begin() + i);
                 }
