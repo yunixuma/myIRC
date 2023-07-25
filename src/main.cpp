@@ -1,6 +1,7 @@
 #include "server.h"
 
 using namespace std;
+
 int main() {
     Server server(8080); // ポート8080でサーバーを起動します。
 
@@ -13,4 +14,3 @@ int main() {
 
     return 0;
 }
-
