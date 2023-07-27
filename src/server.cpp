@@ -1,9 +1,22 @@
+// 認証: クライアントがサーバーに接続するためのパスワード認証機能がありません。この機能は、仕様書に記載されている通り必須です。
+
+// IRC プロトコル: 現在の実装では、IRC プロトコルに基づいてクライアントからのメッセージをパースする機能がありません。
+// IRC プロトコルは、接続、認証、チャネルの作成、メッセージの送信など、クライアントとサーバー間の通信を規定しています。
+
+// チャネル: クライアントがメッセージを交換するためのチャネルの作成と管理がありません。野口さん担当
+
+// プライベートメッセージ: 現在の実装では、クライアント間でプライベートメッセージを送受信する機能がありません。
+
+// 運用者とユーザーの管理: 現在の実装では、IRC チャネルの運用者と通常のユーザーを区別する機能がありません。
+// また、運用者がチャネルの設定を変更したり、ユーザーをキックしたり、招待したりする機能もありません。
+
 #include "server.h"
 
 Server::Server(int port) : sockfd_(-1), running_(false), port_(port) {}
 
 Server::~Server() {
-    if(sockfd_ >= 0) {
+    if(sockfd_ >= 0) 
+	{
         close(sockfd_);
     }
 }
@@ -46,7 +59,7 @@ bool Server::start()
         running_ = false;
     }
 
-	// 上記の行は、新しいクライアント接続をサーバのクライアントリストに追加しています。
+	// 下記の行は、新しいクライアント接続をサーバのクライアントリストに追加しています。
 	// 詳しく説明すると：
 	// newsockfdはaccept()関数から返された新しいソケットファイルディスクリプタを保持しています。
 	// これは新しいクライアント接続を表しています。
@@ -54,7 +67,7 @@ bool Server::start()
 	// クライアントのソケットファイルディスクリプタを保持します。
 	// push_back()はC++のvectorに要素を追加するための関数です。
 	// したがって、clients_.push_back(newsockfd);は新しいクライアント接続
-	// （newsockfd）をクライアントリスト（clients_）に追加する操作を実行しています。
+	//（newsockfd）をクライアントリスト（clients_）に追加する操作を実行しています。
 
         // Handle client messages...
         // In a real implementation, we would use a non-blocking read and parse
@@ -64,64 +77,75 @@ bool Server::start()
 void Server::run()
 {
     while (running_) {
-        // Accept new client connections
         sockaddr_in cli_addr;
         socklen_t clilen = sizeof(cli_addr);
         int newsockfd = accept(sockfd_, (struct sockaddr *) &cli_addr, &clilen);
-		
-        // If a valid client connection was made, add it to the clients list
+        
         if (newsockfd >= 0) {
             clients_.push_back(newsockfd);
         }
 
-        // Handle client messages
         for(size_t i = 0; i < clients_.size(); i++) {
-            char buffer[256];
-            bzero(buffer, 256);
-
-            int n = recv(clients_[i], buffer, 255, 0);
-            
-		if (n < 0) {
-    			if (errno == EAGAIN || errno == EWOULDBLOCK) {
-        // Resource temporarily unavailable, just continue with the next iteration
-        continue;
-    	} else {
-        // For other errors, print an error message
-        std::cerr << "ERROR reading from socket: " << strerror(errno) << std::endl;
-    	}
-				std::cerr << "ERROR reading from socket: " << strerror(errno) << std::endl;
-            }
-            else if (n == 0) {
-                // client has disconnected
-                close(clients_[i]);
-                clients_.erase(clients_.begin() + i);
-            }
-            else {
-                // process message
-				buffer[n] = '\0'; // null terminate the buffer
-                std::string message(buffer);
-
-				// Remove CR and LF from the end of the message
-				if (!message.empty() && message[message.length()-1] == '\n') {
-					message.erase(message.length()-1);
-				}
-				if (!message.empty() && message[message.length()-1] == '\r') {
-					message.erase(message.length()-1);
-				}
-
-				std::cout << "Received message: " << message << std::endl;
-                
-				if(message == "exit") {
-                    close(clients_[i]);
-                    clients_.erase(clients_.begin() + i);
-                }
-                else {
-                    // process other messages...
-                }
-            }
+            handleClientMessage(clients_[i]);
         }
     }
 }
+
+void Server::handleClientMessage(int client_fd) {
+    char buffer[256];
+    bzero(buffer, 256);
+
+    int bytes = recv(client_fd, buffer, 255, 0);
+            
+    if (bytes < 0) {
+        if (errno == EAGAIN || errno == EWOULDBLOCK) {
+            // Resource temporarily unavailable, just continue with the next iteration
+            return;
+        } else {
+            std::cerr << "ERROR reading from socket: " << strerror(errno) << std::endl;
+        }
+    } else if (bytes == 0) {
+        close(client_fd);
+        clients_.erase(std::remove(clients_.begin(), clients_.end(), client_fd), clients_.end());
+    } else {
+        buffer[bytes] = '\0';
+        std::string message(buffer);
+        
+        if (!message.empty() && message[message.length()-1] == '\n') {
+            message.erase(message.length()-1);
+        }
+        if (!message.empty() && message[message.length()-1] == '\r') {
+            message.erase(message.length()-1);
+        }
+
+        if(message == "exit") {
+            close(client_fd);
+            clients_.erase(std::remove(clients_.begin(), clients_.end(), client_fd), clients_.end());
+        } else {
+            handleIncomingMessage(message);
+        }
+    }
+}
+
+void Server::handleIncomingMessage(const std::string& rawMessage) {
+    Message message(rawMessage);
+    executeCommand(message);
+}
+
+void Server::executeCommand(const Message& message) {
+    string command = message.getCommand();
+    std::map<string, CommandFunction>::iterator it = userCommands.find(command);
+    
+    if (it != userCommands.end()) {
+        // execute the corresponding method with parameters from the message
+        (this->*(it->second))(message.getParameters());
+    } else {
+        // handle unknown command...
+    }
+}
+
+
+
 
 // 下記コードの説明
 
