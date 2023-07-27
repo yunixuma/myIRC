@@ -12,7 +12,9 @@
 
 #include "server.h"
 
-Server::Server(int port) : sockfd_(-1), running_(false), port_(port) {}
+Server::Server(int port) : sockfd_(-1), running_(false), port_(port) {
+	userCommands["JOIN"] = &Server::join;
+}
 
 Server::~Server() {
     if(sockfd_ >= 0) 
@@ -20,6 +22,8 @@ Server::~Server() {
         close(sockfd_);
     }
 }
+
+void Server::join(const std::)
 
 // start() メソッドが呼び出されると、新しいソケットが作成され、指定されたポートにバインドされ、
 // クライアントからの接続を待ちます。
