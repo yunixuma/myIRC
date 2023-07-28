@@ -1,0 +1,8 @@
+チャンネルへの参加: JOIN #channel。このコマンドは、ユーザーが #channel チャンネルに参加することを示します。
+
+チャンネルからの退出: PART #channel。このコマンドは、ユーザーが #channel チャンネルから退出することを示します。
+
+メッセージの送信: PRIVMSG #channel :Your message here。このコマンドは、ユーザーが #channel チャンネルに Your message here というメッセージを送信することを示します
+
+PRIVMSG をコマンド
+#channel :Your message here

@@ -1,4 +1,5 @@
-#include "Message.h"
+#include "message.h"
+
 #include <sstream>
 
 using namespace std;
@@ -8,11 +9,6 @@ using namespace std;
 // #channelはパラメータの一部（メッセージが送信される先）、そして:Hello, everyone!が実際のメッセージ内容です。
 using std::vector;
 
-void Server::join(const vector<string> parameters){
-	cout << "join" << parameters[0] << endl;
-}
-
-
 Message::Message(const string& rawMessage) {
     vector<string> tokens = tokenize(rawMessage);
     command = tokens[0];
@@ -20,11 +16,11 @@ Message::Message(const string& rawMessage) {
     parameters = tokens;
 }
 
-string Message::getCommand() const {
+ string Message::getCommand() const {
     return command;
 }
 
-vector<string> Message::getParameters() const {
+ vector<string> Message::getParameters() const {
     return parameters;
 }
 

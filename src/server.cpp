@@ -9,21 +9,37 @@
 
 // 運用者とユーザーの管理: 現在の実装では、IRC チャネルの運用者と通常のユーザーを区別する機能がありません。
 // また、運用者がチャネルの設定を変更したり、ユーザーをキックしたり、招待したりする機能もありません。
-
 #include "server.h"
+#include "message.h"
+
+#include <iostream>
+
+
+using std::vector;
+using std::string;
+using std::cout;
+using std::endl;
 
 Server::Server(int port) : sockfd_(-1), running_(false), port_(port) {
 	userCommands["JOIN"] = &Server::join;
 }
 
 Server::~Server() {
-    if(sockfd_ >= 0) 
+    if(sockfd_ >= 0)
 	{
         close(sockfd_);
     }
 }
 
-void Server::join(const std::)
+
+
+void Server::join(const std::vector<std::string>& parameters)
+{
+    std::cout << "join has called" << std::endl;
+    for(std::vector<std::string>::const_iterator it = parameters.begin(); it != parameters.end(); ++it) {
+        std::cout << *it << std::endl;
+    }
+}
 
 // start() メソッドが呼び出されると、新しいソケットが作成され、指定されたポートにバインドされ、
 // クライアントからの接続を待ちます。
@@ -62,6 +78,7 @@ bool Server::start()
     void Server::stop() {
         running_ = false;
     }
+
 
 	// 下記の行は、新しいクライアント接続をサーバのクライアントリストに追加しています。
 	// 詳しく説明すると：
@@ -108,9 +125,11 @@ void Server::handleClientMessage(int client_fd) {
         } else {
             std::cerr << "ERROR reading from socket: " << strerror(errno) << std::endl;
         }
+
     } else if (bytes == 0) {
         close(client_fd);
         clients_.erase(std::remove(clients_.begin(), clients_.end(), client_fd), clients_.end());
+
     } else {
         buffer[bytes] = '\0';
         std::string message(buffer);
@@ -125,6 +144,7 @@ void Server::handleClientMessage(int client_fd) {
         if(message == "exit") {
             close(client_fd);
             clients_.erase(std::remove(clients_.begin(), clients_.end(), client_fd), clients_.end());
+
         } else {
             handleIncomingMessage(message);
         }
@@ -137,6 +157,7 @@ void Server::handleIncomingMessage(const std::string& rawMessage) {
 }
 
 void Server::executeCommand(const Message& message) {
+	// "JOIN" や "PING" などのIRCコマンドを取得
     string command = message.getCommand();
     std::map<string, CommandFunction>::iterator it = userCommands.find(command);
     
@@ -147,8 +168,6 @@ void Server::executeCommand(const Message& message) {
         // handle unknown command...
     }
 }
-
-
 
 
 // 下記コードの説明

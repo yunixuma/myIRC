@@ -1,16 +1,22 @@
 #ifndef SERVER_H
 #define SERVER_H
 
+#include "message.h"
+
 #include <netinet/in.h>
+
 #include <vector>
+#include <map>
+
 #include <iostream>
+#include <string>
+
 #include <fcntl.h>
 #include <unistd.h>
+
 class Server {
 public:
-	using std::vector;
-	using std::map;
-
+	
     Server(int port);
     ~Server();
     
@@ -19,9 +25,14 @@ public:
     void stop();
 
 	typedef void (Server::*commandFn)(const std::vector<std::string>& parameters);
-	map<string, commandFn> userCommands;
+	// std:: map<std::string, commandFn> userCommands;
 	
 	void parseIRCMessage(const std::string& message);
+	void handleClientMessage(int client_fd);
+	void handleIncomingMessage(const std::string& rawMessage);
+	void executeCommand(const Message& message);
+
+	void join(const std::vector<std::string>& parameters);
 
 
 private:
@@ -30,7 +41,12 @@ private:
     int port_;
     std::vector<int> clients_;
 	
-	userCommands["JOIN"] = &Server::join;
+	typedef void (Server::*CommandFunction)(const std::vector<std::string>&);
+
+	std::map<std::string, CommandFunction> userCommands;
+	// void join(const std::vector<std::string> & parameters);
+	// userCommands["JOIN"] = &Server::join;
+
 
 };
 

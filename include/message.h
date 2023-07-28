@@ -5,17 +5,18 @@
 #include <vector>
 
 
-using namespace std::string;
-using namespace std::vector;
-
 class Message {
 public:
-    Message(const string& command, const vector<string>& parameters);
-    string getCommand() const;
-    vector<string> getParameters() const;
+    Message(const std::string& command, const std::vector<std::string>& parameters);
+	Message(const std::string& rawMessage);
+	
+	std::string getCommand() const;
+	std::vector<std::string> getParameters() const;
+	std::vector<std::string> tokenize(const std::string& message);
+
 private:
-    string command;
-    vector<string> parameters;
+    std::string command;
+    std::vector<std::string> parameters;
 
 };
 
