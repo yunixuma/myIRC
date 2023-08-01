@@ -1,0 +1,6 @@
+
+ServerConfig {
+	port = 8080;
+	timeout = 5000;
+}
+

@@ -44,10 +44,6 @@ private:
 	typedef void (Server::*CommandFunction)(const std::vector<std::string>&);
 
 	std::map<std::string, CommandFunction> userCommands;
-	// void join(const std::vector<std::string> & parameters);
-	// userCommands["JOIN"] = &Server::join;
-
-
 };
 
 #endif // SERVER_H
