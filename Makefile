@@ -1,48 +1,60 @@
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    Makefile                                           :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: yoo-lee <yoo-lee@student.42.fr>            +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2023/05/16 15:04:04 by ykosaka           #+#    #+#              #
+#    Updated: 2023/08/03 19:16:12 by yoo-lee          ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
+
+
 # ********************** Section for Macros (Variables) ********************** #
 # Product file
-NAME            = ircserv
+NAME			= ircserv
 
 # Enumeration of files
-SRC             = main.cpp server.cpp message.cpp
-COMMAND_SRC     = privmsg.cpp
+SRC				= main.cpp server.cpp message.cpp command/privmsg.cpp
 
 # Check the platform
-OS              = $(shell uname)
+OS				= $(shell uname)
+
+# Defination of macro constants
 
 # Enumeration of directories
-SRCDIR          = ./src
-INCDIR          = ./include
-OBJDIR          = ./obj
-COMMAND_DIR     = $(SRCDIR)/command
+SRCDIR			= ./src
+INCDIR			= ./include
+OBJDIR			= ./obj
 
 # Aliases of commands
-CPP             = c++
-RM              = rm
+CPP				= c++
+RM				= rm
 
 # Command options (flags)
-CPPFLAGS        = -Wall -Wextra -Werror -std=c++98
-INCLUDES        = -I$(INCDIR)
-RMFLAGS         = -r
-DEBUGCFLAGS     = -g -ggdb -fno-omit-frame-pointer
+CPPFLAGS		= -Wall -Wextra -Werror -std=c++98
+INCLUDES		= -I$(INCDIR)
+RMFLAGS			= -r
+DEBUGCFLAGS		= -g -ggdb -fno-omit-frame-pointer
 ifneq ($(OS), Darwin)
-    DEBUGCFLAGS += -fstack-usage
+	DEBUGCFLAGS	+= -fstack-usage
 endif
-DEBUGLDFLAGS    = -fsanitize=address
+DEBUGLDFLAGS	= -fsanitize=address
 
 # Redefination when the specific target
 ifeq ($(MAKECMDGOALS), debug)
-    ifneq ($(OS), Darwin)
-        CPPFLAGS    += $(DEBUGCFLAGS)
-        LDFLAGS += $(DEBUGLDFLAGS)
-    endif
-    DEF         += -D DEBUG_MODE=1
+	ifneq ($(OS), Darwin)
+		CPPFLAGS	+= $(DEBUGCFLAGS)
+		LDFLAGS	+= $(DEBUGLDFLAGS)
+	endif
+	DEF		+= -D DEBUG_MODE=1
 endif
 
 # Macros to replace and/or integrate
-SRCS            = $(addprefix $(SRCDIR)/, $(SRC)) $(addprefix $(COMMAND_DIR)/, $(COMMAND_SRC))
-OBJS            = $(patsubst $(SRCDIR)/%.cpp,$(OBJDIR)/%.o,$(SRC))
-OBJS            += $(patsubst $(COMMAND_DIR)/%.cpp,$(OBJDIR)/command/%.o,$(COMMAND_SRC))
-DEPS            = $(OBJS:.o=.d)
+SRCS			= $(addprefix $(SRCDIR)/, $(SRC))
+OBJS = $(SRC:%.cpp=$(OBJDIR)/%.o)
+DEPS			= $(addprefix $(OBJDIR)/, $(notdir $(SRCS:.cpp=.d)))
 
 # ********************* Section for targets and commands ********************* #
 # Phonies
@@ -63,16 +75,18 @@ debug: fclean all
 $(NAME): $(OBJS)
 	$(CPP) $(LDFLAGS) $(OBJS) -o $(NAME)
 
+$(OBJDIR):
+	@mkdir -p $@
+	
 $(OBJDIR)/%.o: $(SRCDIR)/%.cpp | $(OBJDIR)
 	$(CPP) $(CPPFLAGS) $(DEF) $(INCLUDES) -o $@ -c $<
 
-$(OBJDIR)/%.o: $(SRCDIR)/command/%.cpp | $(OBJDIR)
+$(OBJDIR)/command/%.o: $(SRCDIR)/command/%.cpp | $(OBJDIR)
 	@mkdir -p $(OBJDIR)/command
 	$(CPP) $(CPPFLAGS) $(DEF) $(INCLUDES) -o $@ -c $<
 
 
-$(OBJDIR):
-	@mkdir -p $@
-
 # Including and ignore .dep files when they are not found
 -include $(DEPS)
+
+# ******** ******** ******** ******** **** ******** ******** ******** ******** #
