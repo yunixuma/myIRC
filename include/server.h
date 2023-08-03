@@ -25,7 +25,7 @@ public:
     void stop();
 
 	typedef void (Server::*commandFn)(const std::vector<std::string>& parameters);
-	// std:: map<std::string, commandFn> userCommands;
+	std::map<std::string, commandFn> userCommands;
 	
 	void parseIRCMessage(const std::string& message);
 	void handleClientMessage(int client_fd);
@@ -33,6 +33,7 @@ public:
 	void executeCommand(const Message& message);
 
 	void join(const std::vector<std::string>& parameters);
+	void privmsg(const std::vector<std::string>& parameters);
 
 
 private:
@@ -42,8 +43,11 @@ private:
     std::vector<int> clients_;
 	
 	typedef void (Server::*CommandFunction)(const std::vector<std::string>&);
-
-	std::map<std::string, CommandFunction> userCommands;
+	// 上記関数ポインタに対して、別名を定義している。
+	// Server::*は、Serverクラスのメンバ関数へのポインタを示します
+	// const std::vector<std::string>&: 関数の引数の型です。
+	// この関数は、constなstd::vector<std::string>の参照を引数として取ります。
+	// 	std::map<std::string, CommandFunction> userCommands;
 };
 
 #endif // SERVER_H

@@ -36,6 +36,14 @@ public:
     int getWidth() const { return width; }
     int getHeight() const { return height; }
 
+	if(this != src)
+	{
+		width = src.width;
+		height = src.width;
+	}
+	return *this;
+
+
 private:
     int width;
     int height;
