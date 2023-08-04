@@ -6,7 +6,7 @@
 #    By: yoo-lee <yoo-lee@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/05/16 15:04:04 by ykosaka           #+#    #+#              #
-#    Updated: 2023/08/03 19:16:12 by yoo-lee          ###   ########.fr        #
+#    Updated: 2023/08/04 17:07:26 by yoo-lee          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -81,7 +81,7 @@ $(OBJDIR):
 $(OBJDIR)/%.o: $(SRCDIR)/%.cpp | $(OBJDIR)
 	$(CPP) $(CPPFLAGS) $(DEF) $(INCLUDES) -o $@ -c $<
 
-$(OBJDIR)/command/%.o: $(SRCDIR)/command/%.cpp | $(OBJDIR)
+$(OBJDIR)/command/%.o: $(SRCDIR)/command/%.cpp | $(OBJDIR)/command
 	@mkdir -p $(OBJDIR)/command
 	$(CPP) $(CPPFLAGS) $(DEF) $(INCLUDES) -o $@ -c $<
 

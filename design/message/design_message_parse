@@ -11,7 +11,6 @@ PRIVMSG #channel :Hello, everyone! How are you today?
 
 JOIN #channelname
 
-
 コマンドとパラメータの分離:
 コードはコマンドとパラメータを分離していますが、
 IRCメッセージの一般的な構造に基づいていないため、パラメータの解釈に誤解が生じる可能性があります。
