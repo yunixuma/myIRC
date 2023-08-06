@@ -3,6 +3,7 @@
 Channel::Channel(std::string &name) :
 	name_(name), normal_clients_(NULL), operator_clients_(NULL)
 {
+	
 }
 
 // SETTER

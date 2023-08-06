@@ -1,3 +1,4 @@
+
 #include "message.h"
 
 #include <sstream>
@@ -44,3 +45,5 @@ vector<string> Message::tokenize(const string& message) {
 
     return tokens;
 }
+// 上記rawMessageをスペースが現れるまでの最初のトークンを抽出しているだけ。
+// ss >> token は入力ストリームからスペースで区切られたトークンを一つずつ読み取ります。
