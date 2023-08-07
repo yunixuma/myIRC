@@ -1,32 +1,33 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   User.hpp                                           :+:      :+:    :+:   */
+/*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: Yoshihiro Kosaka <ykosaka@student.42tok    +#+  +:+       +#+        */
+/*   By: ykosaka <ykosaka@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/16 15:04:04 by ykosaka           #+#    #+#             */
-/*   Updated: 2023/08/01 15:35:09 by Yoshihiro K      ###   ########.fr       */
+/*   Updated: 2023/08/06 20:01:47 by ykosaka          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef USER_HPP
-# define USER_HPP
+#ifndef CLIENT_HPP
+# define CLIENT_HPP
 
 # include <iostream>
 
-class User
+class Client
 {
 private:
-	const int	id_;
-	std::string	userName_;
-	std::string	nickname_;
-	int			role_;
+	int							fd_;
+	std::string					userName_;
+	std::string					nickname_;
+	int							role_;
+	std::vector<std::string>	joinedChannel_;
 public:
-	User(const int id, const std::string& userName, const std::string& nickname, const int role);
-	User(const User& src);
-	User&			operator=(const User& rhs);
-	~User();
+	Client(const int fd, const std::string& userName, const std::string& nickname, const int role);
+	Client(const Client& src);
+	Client&			operator=(const Client& rhs);
+	~Client();
 	const int		getId(void) const;
 	std::string&	getUserName(void) const;
 	std::string&	getNickname(void) const;

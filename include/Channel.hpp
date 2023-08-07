@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: Yoshihiro Kosaka <ykosaka@student.42tok    +#+  +:+       +#+        */
+/*   By: ykosaka <ykosaka@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/16 15:04:04 by ykosaka           #+#    #+#             */
-/*   Updated: 2023/08/01 15:39:00 by Yoshihiro K      ###   ########.fr       */
+/*   Updated: 2023/08/01 20:01:45 by ykosaka          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,10 +21,10 @@ private:
 	int					id_;
 	std::string			name_;
 	std::string			topic_;
-	std::vector<int>	messages_;
-	std::vector<int>	usersInvited_;
-	std::vector<int>	usersJoined_;
-	std::vector<int>	usersKicked_;
+	// std::vector<Message>	messages_;
+	std::vector<User>	usersInvited_;
+	std::vector<User>	usersJoined_;
+	std::vector<User>	usersKicked_;
 public:
 	Channel(const int id, const std::string& name, const std::string& topic);
 	Channel(const Channel& src);
