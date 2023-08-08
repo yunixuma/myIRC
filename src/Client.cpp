@@ -14,54 +14,32 @@
 #include "Client.hpp"
 
 Client(int fd, const std::string& userName, const std::string& nickname, int role) \
-	: fd_(fd), userName_(userName), nickname_(nickname), role_(role) {
+	: fd_(fd), userName_(userName), nickname_(nickname), role_(role), joinedChannel_(NULL) {
 	std::clog << "\033[36;2;3m[" << this \
 		<< "]<Client> Constructor called (" << this->name_ << ")\033[m" << std::endl;
-	for (int i = 0; i < 4; i++)
-		this->slot_[i] = NULL;
 }
 
 Client::Client(const Client& src) {
 	std::clog << "\033[36;2;3m[" << this << "<-" << &src \
 		<< "]<Client> Copy constructor called (" << this->name_ << ")\033[m" << std::endl;
-	this->name_ = src.name_;
-	for (int i = 0; i < 4; i++)
-	{
-		if (src.slot_[i])
-			this->slot_[i] = src.slot_[i]->clone();
-		else
-			this->slot_[i] = NULL;
-	}
+	*this = src;
 }
 
 Client&	Client::operator=(const Client& rhs) {
 	std::clog << "\033[35;2;3m[" << this << "<-" << &rhs \
 		<< "]<Client> Copy assignment operator called (" \
 		<< rhs.name_ << " -> " << this->name_ << ")\033[m" << std::endl;
-	this->name_ = rhs.name_;
-	for (int i = 0; i < 4; i++)
-	{
-		if (this->slot_[i])
-			delete this->slot_[i];
-		if (rhs.slot_[i])
-			this->slot_[i] = rhs.slot_[i]->clone();
-		else
-			this->slot_[i] = NULL;
-	}
+	this->fd_ = rhs.fd_;
+	this->userName_ = rhs.userName_;
+	this->nickname_ = rhs.nickname_;
+	this->role_ = rhs.role_;
+	this->joinedChannel_ = rhs.joinedChannel_;
 	return (*this);
 }
 
 Client::~Client(void) {
 	std::clog << "\033[31;2;3m[" << this \
 		<< "]<Client> Destructor called (" << this->name_ << ")\033[m" << std::endl;
-	for (int i = 0; i < 4; i++)
-	{
-		if (this->slot_[i])
-		{
-			delete this->slot_[i];
-			this->slot_[i] = NULL;
-		}
-	}
 }
 
 const std::string&	Client::getName(void) const {
