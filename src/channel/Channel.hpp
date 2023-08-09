@@ -28,8 +28,6 @@ class Channel
 	public:
 		std::vector<int *> normal_clients_;
 		std::vector<int *> operator_clients_;
-
-	public:
 		// CONSTRUCTER
 		Channel(std::string &name);
 
