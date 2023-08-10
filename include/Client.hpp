@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ykosaka <ykosaka@student.42.fr>            +#+  +:+       +#+        */
+/*   By: Yoshihiro Kosaka <ykosaka@student.42tok    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/16 15:04:04 by ykosaka           #+#    #+#             */
-/*   Updated: 2023/08/06 20:01:47 by ykosaka          ###   ########.fr       */
+/*   Updated: 2023/08/10 12:59:51 by Yoshihiro K      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,23 +18,28 @@
 class Client
 {
 private:
-	int							fd_;
-	std::string					userName_;
-	std::string					nickname_;
-	int							role_;
-	std::vector<std::string>	joinedChannel_;
+	int						fd_;
+	std::string				userName_;
+	std::string				nickname_;
+	int						role_;
+	std::vector<Channel>	joinedChannel_;
 public:
-	Client(const int fd, const std::string& userName, const std::string& nickname, const int role);
+	Client(int fd, const std::string& userName, const std::string& nickname, const int role);
 	Client(const Client& src);
 	Client&			operator=(const Client& rhs);
 	~Client();
-	const int		getId(void) const;
+	int				getFd(void) const;
 	std::string&	getUserName(void) const;
 	std::string&	getNickname(void) const;
 	int				getRole(void) const;
+	Channel*		findJoinedChannel(std::string channelName) const;
+	void			setFd(int fd);
 	void			setUserName(const std::string& userName);
 	void			setNickname(const std::string& nickname);
-	void			setRole(const int role);
+	void			setRole(int role);
+	void			joinChannel(Channel& channel);
+	void			leaveChannel(Channel& channel);
+	void			distributeMessage(Server server, const std::string& message);
 };
 
 #endif

@@ -16,102 +16,106 @@
 Client(int fd, const std::string& userName, const std::string& nickname, int role) \
 	: fd_(fd), userName_(userName), nickname_(nickname), role_(role), joinedChannel_(NULL) {
 	std::clog << "\033[36;2;3m[" << this \
-		<< "]<Client> Constructor called (" << this->name_ << ")\033[m" << std::endl;
+		<< "]<Client> Constructor called (" << this->username_ << ")\033[m" << std::endl;
 }
 
 Client::Client(const Client& src) {
 	std::clog << "\033[36;2;3m[" << this << "<-" << &src \
-		<< "]<Client> Copy constructor called (" << this->name_ << ")\033[m" << std::endl;
+		<< "]<Client> Copy constructor called (" << this->username_ << ")\033[m" << std::endl;
 	*this = src;
 }
 
 Client&	Client::operator=(const Client& rhs) {
 	std::clog << "\033[35;2;3m[" << this << "<-" << &rhs \
 		<< "]<Client> Copy assignment operator called (" \
-		<< rhs.name_ << " -> " << this->name_ << ")\033[m" << std::endl;
+		<< rhs.username_ << " -> " << this->username_ << ")\033[m" << std::endl;
 	this->fd_ = rhs.fd_;
 	this->userName_ = rhs.userName_;
 	this->nickname_ = rhs.nickname_;
 	this->role_ = rhs.role_;
-	this->joinedChannel_ = rhs.joinedChannel_;
+	if (this->joinedChannel_)
+		this->joinedChannel_.clear();
+	for (itr = this->joinedChannel_.begin(); itr != this->joinedChannel_.end(); itr++)
+	{
+		this->joinedChannel_.push_back(*itr);
+	}
 	return (*this);
 }
 
 Client::~Client(void) {
 	std::clog << "\033[31;2;3m[" << this \
-		<< "]<Client> Destructor called (" << this->name_ << ")\033[m" << std::endl;
+		<< "]<Client> Destructor called (" << this->username_ << ")\033[m" << std::endl;
+	if (this->joinedChannel_)
+		this->joinedChannel_.clear();
 }
 
-const std::string&	Client::getName(void) const {
-	return (this->name_);
+int	Client::getFd(void) const {
+	return (this->fd_);
 }
 
-void	Client::equip(AMateria* m) {
-	std::clog << "\033[2;3m[" << this \
-		<< "]<Client> equip(" << m \
-		<< ") called (" << this->name_ << ")\033[m" << std::endl;
-	if (!m)
+const std::string&	Client::getUserName(void) const {
+	return (this->userName_);
+}
+
+const std::string&	Client::getNickname(void) const {
+	return (this->nickname_);
+}
+
+int	Client::getRole(void) const {
+	return (this->role_);
+}
+
+Channel*	findJoinedChannel(std::string channelName) const {
+	std::vector<Channel>::iterator	itr;
+	for (itr = this->joinedChannel_.begin(); itr != this->joinedChannel_.end(); itr++)
 	{
-		std::cerr << "\033[35;3mNo new Materia equipped\033[m" << std::endl;
-		return ;
+		if (itr->getName() == channelName)
+			return (itr);
 	}
-	for (int i = 0; i < 4; i++)
+	return (NULL);
+}
+
+void	setFd(int fd) {
+	this->fd_ = fd;
+}
+
+void	setUserName(const std::string& userName) {
+	this->userName_ = userName;
+}
+
+void	setNickname(const std::string& nickname) {
+	this->nickname_ = nickname;
+}
+
+void	setRole(int role) {
+	this->role_ = role;
+}
+
+void	joinChannel(Channel& channel) {
+	std::clog << "\033[2;3m[" << this \
+		<< "]<Client> joinChannel(" << channel.getName \
+		<< ") called (" << this->username_ << ")\033[m" << std::endl;
+	this->joinedChannel_.push_back(channel);
+}
+
+void	leaveChannel(Channel& channel) {
+	std::clog << "\033[2;3m[" << this \
+		<< "]<Client> leaveChannel(" << channel.getName \
+		<< ") called (" << this->username_ << ")\033[m" << std::endl;
+	std::vector<Channel>::iterator	itr;
+	for (itr = this->joinedChannel_.begin(); itr != this->joinedChannel_.end(); itr++)
 	{
-		if (!this->slot_[i])
+		if (itr == channel)
 		{
-			this->slot_[i] = m;
+			this->joinedChannel_.erase(itr);
 			return ;
 		}
 	}
-	std::cerr << "\033[35;3mSlot is full\033[m" << std::endl;
-	delete m;
 }
 
-void	Client::unequip(int idx) {
+void	distributeMessage(Server server, const std::string& message) {
 	std::clog << "\033[2;3m[" << this \
-		<< "]<Client> unequip(" << idx \
-		<< ") called (" << this->name_ << ")\033[m" << std::endl;
-	if (0 > idx || idx > 4)
-	{
-		std::cerr << "\033[35;3mSlot number " << idx << " is out of range\033[m" << std::endl;
-		return ;
-	}
-	if (!this->slot_[idx])
-	{
-		std::cerr << "\033[35;3mSlot " << idx << " is already empty\033[m" << std::endl;
-		return;
-	}
-	delete this->slot_[idx];
-	this->slot_[idx] = NULL;
-}
-
-void	Client::use(int idx, IClient& target) {
-	std::clog << "\033[2;3m[" << this \
-		<< "]<Client> use(" << idx << ", " << &target \
-		<< ") called (" << this->name_ << ")\033[m" << std::endl;
-	if (0 > idx || idx > 4)
-	{
-		std::cerr << "\033[35;3mSlot number " << idx << " is out of range\033[m" << std::endl;
-		return ;
-	}
-	AMateria*	m = this->slot_[idx];
-	if (!m)
-	{
-		std::cerr << "\033[35;3mSlot " << idx << " is empty\033[m" << std::endl;
-		return;
-	}
-	m->use(target);
-}
-
-void	Client::showMateria(void) const {
-	std::clog << "\033[33;2;3m[" << this << "] " << this->name_ << "\033[m" << std::endl;
-	for (int i = 0; i < 4; i++)
-	{
-		if (this->slot_[i])
-			std::clog << "\033[33;2;3m" << i << " [" << this->slot_[i] << "] " \
-				<< this->slot_[i]->getType() << "\033[m" << std::endl;
-		else
-			std::clog << "\033[33;2;3m" << i << " [" << this->slot_[i] << "] " \
-				<< "\033[m" << std::endl;
-	}
+		<< "]<Client> distributeChannel(" << message \
+		<< ") called (" << this->username_ << ")\033[m" << std::endl;
+	server.send(this->fd_, message);
 }
