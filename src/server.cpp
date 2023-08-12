@@ -18,15 +18,29 @@ using std::vector;
 using std::string;
 using std::cout;
 using std::endl;
+using std::cerr;
 
 Server::Server(int port) : sockfd_(-1), running_(false), port_(port) {
 	userCommands["JOIN"] = &Server::join;
 	userCommands["PRIVMSG"] = &Server::privmsg;
+	userCommands["CAP"] = &Server::cap;
+}
+
+void Server::cap(const vector<std::string>& parameters){
+   if (parameters.size() > 1 && parameters[1] == "LS") {
+        // サポートされている拡張機能のリスト
+        string capabilities = "multi-prefix sasl";
+        string response = "CAP * LS :" + capabilities + "\r\n";
+		int client_fd = 3;
+        // このメッセージをクライアントに送信するための適切な方法を使用
+    	send(client_fd, response.c_str(), response.size(), 0);
+    }
 }
 
 Server::~Server() {
     if(sockfd_ >= 0)
 	{
+		cerr << "Error opening socket" << endl;
         close(sockfd_);
     }
 }
@@ -43,10 +57,12 @@ void Server::join(const std::vector<std::string>& parameters)
 // クライアントからの接続を待ちます。
 bool Server::start() 
 {
+
         // Create a socket
         sockfd_ = socket(AF_INET, SOCK_STREAM, 0);
         if (sockfd_ < 0) 
 		{
+			
             return false;
         }
 
@@ -57,6 +73,8 @@ bool Server::start()
         serv_addr.sin_port = htons(port_);
 
         if (bind(sockfd_, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0) {
+		cerr << "Error binding socket" << endl;
+
             return false;
         }
 
@@ -79,11 +97,11 @@ bool Server::start()
 
 
 	// 下記の行は、新しいクライアント接続をサーバのクライアントリストに追加しています。
-	// 詳しく説明すると：
 	// newsockfdはaccept()関数から返された新しいソケットファイルディスクリプタを保持しています。
 	// これは新しいクライアント接続を表しています。
 	// clients_はサーバクラス内にあるvectorで、サーバが接続を許可したすべての
 	// クライアントのソケットファイルディスクリプタを保持します。
+
 	// push_back()はC++のvectorに要素を追加するための関数です。
 	// したがって、clients_.push_back(newsockfd);は新しいクライアント接続
 	//（newsockfd）をクライアントリスト（clients_）に追加する操作を実行しています。
@@ -95,20 +113,51 @@ bool Server::start()
 
 void Server::run()
 {
+    fd_set read_fds;
+    int max_fd;
+
     while (running_) {
-        sockaddr_in cli_addr;
-        socklen_t clilen = sizeof(cli_addr);
-        int newsockfd = accept(sockfd_, (struct sockaddr *) &cli_addr, &clilen);
-        
-        if (newsockfd >= 0) {
-            clients_.push_back(newsockfd);
+        FD_ZERO(&read_fds);
+        FD_SET(sockfd_, &read_fds);
+        max_fd = sockfd_;
+
+		for(vector<int>::iterator it = clients_.begin(); it != clients_.end(); ++it){
+		int client_fd = *it;
+            FD_SET(client_fd, &read_fds);
+            if (client_fd > max_fd) {
+                max_fd = client_fd;
+            }
         }
 
-        for(size_t i = 0; i < clients_.size(); i++) {
-            handleClientMessage(clients_[i]);
+        struct timeval timeout;
+        timeout.tv_sec = 1; // 1秒のタイムアウト
+        timeout.tv_usec = 0;
+
+        int activity = select(max_fd + 1, &read_fds, nullptr, nullptr, &timeout);
+
+        if (activity < 0) {
+            std::cerr << "select error" << std::endl;
+            continue;
+        }
+
+        if (FD_ISSET(sockfd_, &read_fds)) {
+            sockaddr_in cli_addr;
+            socklen_t clilen = sizeof(cli_addr);
+            int newsockfd = accept(sockfd_, (struct sockaddr *) &cli_addr, &clilen);
+            if (newsockfd >= 0) {
+                clients_.push_back(newsockfd);
+            }
+        }
+
+        for (size_t i = 0; i < clients_.size(); i++) {
+            int client_fd = clients_[i];
+            if (FD_ISSET(client_fd, &read_fds)) {
+                handleClientMessage(client_fd);
+            }
         }
     }
 }
+
 
 void Server::handleClientMessage(int client_fd) {
     char buffer[256];

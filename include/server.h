@@ -34,6 +34,8 @@ public:
 
 	void join(const std::vector<std::string>& parameters);
 	void privmsg(const std::vector<std::string>& parameters);
+	void cap(const std::vector<std::string>& parameters);
+	
 
 
 private:
