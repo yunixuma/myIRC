@@ -24,7 +24,9 @@ constexpr int MAX_BUFFER_SIZE = 1024;
 // int flags = fcntl(socket_fd, F_GETFL, 0);
 // fcntl(socket_fd, F_SETFL, flags | O_NONBLOCK);
 // //...
-つまり、socket_fdは一般的なファイルディスクリプタ（fd）であり、その背後にあるリソースがネットワークソケットであるという点で特殊です。
+
+// つまり、socket_fdは一般的なファイルディスクリプタ（fd）であり、
+// その背後にあるリソースがネットワークソケットであるという点で特殊です。
 
 int main() {
     int listen_sock = socket(AF_INET, SOCK_STREAM, 0);
@@ -54,7 +56,7 @@ int main() {
         if (FD_ISSET(listen_sock, &fds)) {
             struct sockaddr_in client_addr;
             socklen_t len = sizeof(client_addr);
-            int client_sock = accept(listen_sock, (struct sockaddr*)&client_addr, &len);
+            int client_sock = accept(listen_sock, (stあruct sockaddr*)&client_addr, &len);
             if (client_sock < 0) {
                 perror("accept failed");
                 continue;
@@ -82,3 +84,19 @@ int main() {
 
     return 0;
 }
+
+// ソケットのノンブロッキング化：
+// コードの冒頭で示されている fcntl の使用により、
+// ソケットのファイルディスクリプタ（socket_fdやclient_sock）
+// がノンブロッキングモードに設定されています。これにより、
+// ソケットへの読み書き操作が非同期的に行われるようになります。
+
+// イベントループ内の非同期処理：
+// メインのイベントループ（while (true) ブロック）内で、ソケットの読み書きや接続の監視が行われています。select 関数を使用して、ソケットとクライアントのファイルディスクリプタの状態変化を監視しています。
+
+// クライアントの接続待ち：FD_SET(listen_sock, &fds) によって、新しいクライアントの接続を待ちます。新しいクライアントの接続が検出されると、ソケットが読み書き可能な状態になり、それに対応して accept 関数でクライアントの接続を受け入れ、クライアントのファイルディスクリプタを client_socks に追加します。
+
+// クライアントからのデータ読み書き：クライアントのファイルディスクリプタが読み書き可能な状態になると、FD_SET(*it, &fds) によってその状態変化を監視します。この部分で、ソケットからデータの読み取りや送信が非同期に行われています。クライアントからのデータが到着した場合は、それに応じてデータの送信やソケットのクローズが行われます。
+
+// クライアントソケットのセット管理：
+// client_socks というセットを使用して、現在接続されているクライアントのファイルディスクリプタを管理しています。新しいクライアントの接続やソケットのクローズ時に適切な管理が行われています。

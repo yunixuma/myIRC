@@ -74,7 +74,6 @@ bool Server::start()
 
         if (bind(sockfd_, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0) {
 		cerr << "Error binding socket" << endl;
-
             return false;
         }
 
@@ -119,6 +118,8 @@ void Server::run()
     while (running_) {
         FD_ZERO(&read_fds);
         FD_SET(sockfd_, &read_fds);
+		// FD_SET(int fd, fd_set* set);
+		// set は監視するファイルディスクリプタのセットを指します
         max_fd = sockfd_;
 
 		for(vector<int>::iterator it = clients_.begin(); it != clients_.end(); ++it){
