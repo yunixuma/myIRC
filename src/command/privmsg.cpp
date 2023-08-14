@@ -1,6 +1,6 @@
 
 #include "server.h"
-#include "client.h"
+#include "Client.hpp"
 
 	// privmsg関数内で、parametersベクトルの中身を調べ、
 	// 	チャンネルへのメッセージ：PRIVMSG #channel :Hello, everyone!
@@ -25,7 +25,7 @@
         // チャンネルへのメッセージの処理
 		// この部分では、チャンネルの全てのメンバーにメッセージを送信するロジックを実装する
         // 例えば、findChannelByName関数でチャンネルを検索し、そのメンバーにメッセージをループで送信するなど
-    } else {else {
+    } else {
         // 個人へのメッセージの処理
         std::string targetUsername = destination; // 送信先のユーザー名
 
