@@ -1,1 +1,1 @@
-bool		check_password( User &usr, Server &srv)
+bool		check_password()

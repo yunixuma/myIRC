@@ -17,7 +17,6 @@ public:
 private:
     std::string command;
     std::vector<std::string> parameters;
-
 };
 
 #endif // MESSAGE_H

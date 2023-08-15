@@ -1,18 +1,7 @@
-// 認証: クライアントがサーバーに接続するためのパスワード認証機能がありません。この機能は、仕様書に記載されている通り必須です。
-
-// IRC プロトコルは、接続、認証、チャネルの作成、メッセージの送信など、クライアントとサーバー間の通信を規定しています。
-
-// チャネル: クライアントがメッセージを交換するためのチャネルの作成と管理がありません。野口さん担当
-
-// プライベートメッセージ: 現在の実装では、クライアント間でプライベートメッセージを送受信する機能がありません。
-
-// 運用者とユーザーの管理: 現在の実装では、IRC チャネルの運用者と通常のユーザーを区別する機能がありません。
-// また、運用者がチャネルの設定を変更したり、ユーザーをキックしたり、招待したりする機能もありません。
 #include "server.h"
 #include "message.h"
 
 #include <iostream>
-
 
 using std::vector;
 using std::string;
@@ -23,19 +12,21 @@ using std::cerr;
 Server::Server(int port) : sockfd_(-1), running_(false), port_(port) {
 	userCommands["JOIN"] = &Server::join;
 	userCommands["PRIVMSG"] = &Server::privmsg;
-	userCommands["CAP"] = &Server::cap;
+	// userCommands["CAP"] = &Server::cap;
+	
+	userCommands["QUIT"] =&Server::quit;
 }
 
-void Server::cap(const vector<std::string>& parameters){
-   if (parameters.size() > 1 && parameters[1] == "LS") {
-        // サポートされている拡張機能のリスト
-        string capabilities = "multi-prefix sasl";
-        string response = "CAP * LS :" + capabilities + "\r\n";
-		int client_fd = 3;
-        // このメッセージをクライアントに送信するための適切な方法を使用
-    	send(client_fd, response.c_str(), response.size(), 0);
-    }
-}
+// void Server::cap(const vector<std::string>& parameters){
+//    if (parameters.size() > 1 && parameters[1] == "LS") {
+//         // サポートされている拡張機能のリスト
+//         string capabilities = "multi-prefix sasl";
+//         string response = "CAP * LS :" + capabilities + "\r\n";
+// 		int client_fd = 3;
+//         // このメッセージをクライアントに送信するための適切な方法を使用
+//     	send(client_fd, response.c_str(), response.size(), 0);
+//     }
+// }
 
 Server::~Server() {
     if(sockfd_ >= 0)
@@ -57,12 +48,10 @@ void Server::join(const std::vector<std::string>& parameters)
 // クライアントからの接続を待ちます。
 bool Server::start() 
 {
-
         // Create a socket
         sockfd_ = socket(AF_INET, SOCK_STREAM, 0);
         if (sockfd_ < 0) 
 		{
-			
             return false;
         }
 
@@ -135,6 +124,13 @@ void Server::run()
         timeout.tv_usec = 0;
 
         int activity = select(max_fd + 1, &read_fds, nullptr, nullptr, &timeout);
+
+// 	select()関数の返り値は以下の通りです：
+// > 0: これは、準備ができているファイル記述子の数を示します。この場合、関連するファイル記述子
+// （fd_setの中のもの）をチェックして、どのものがアクティブであるかを判断する必要があります。アクティブなファイル記述子に対して、読み取り、書き込み、またはエラー処理などの操作を実行できます。
+// 0: 指定されたタイムアウト期間が経過したが、準備ができているファイル記述子はないことを示します。これは、select()呼び出しにタイムアウトが指定され、その期間中に監視されているファイル記述子にアクティビティがなかった場合に発生します。
+// -1: エラーが発生しました。具体的なエラー原因はerrno変数を確認することで知ることができます。
+
 
         if (activity < 0) {
             std::cerr << "select error" << std::endl;

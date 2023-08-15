@@ -33,10 +33,10 @@ public:
 	void executeCommand(const Message& message);
 
 	void join(const std::vector<std::string>& parameters);
-	void privmsg(const std::vector<std::string>& parameters);
-	void cap(const std::vector<std::string>& parameters);
+	// void cap(const std::vector<std::string>& parameters);
 	
-
+	void privmsg(Client &user_, const Message &message_);
+	int quit(Client &user_, Channel &channel_, const Message &message_);
 
 private:
     int sockfd_;

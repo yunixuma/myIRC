@@ -1,0 +1,37 @@
+IRCサーバーにおいて各コマンドを呼び出す実装を見通しよくするためには、
+以下のような設計アプローチを考えることができます：
+
+コマンドのマッピング: 各コマンドを文字列（コマンド名）とそれに対応する関数
+（ハンドラ）との対応関係をマッピングします。これにより、受信したコマンドに対応する
+関数を簡単に呼び出すことができます。
+
+コマンドクラスの作成: 各コマンドをクラスとして実装し、共通のインターフェースを持たせます。
+例えば、Commandという基底クラスを作成し、派生クラスで各コマンドの処理を実装します。
+
+コマンドハンドラの登録: サーバー起動時に、コマンド名と対応するコマンドハンドラ
+（関数やクラスのメソッド）を登録します。これにより、受信したコマンドに対応するハンドラを簡単に呼び出せるようになります。
+
+受信したコマンドの解析: 受信したメッセージからコマンド名とパラメータを抽出し、
+マッピングされたハンドラを呼び出します。この部分はパーサーを実装することで行えます。
+
+// コマンドクラスの基底クラス
+class Command {
+public:
+    virtual void execute(User& user, const IRC::Message& message) = 0;
+};
+
+// コマンドハンドラの登録
+std::map<std::string, std::shared_ptr<Command>> commandHandlers;
+commandHandlers["QUIT"] = std::make_shared<QuitCommand>();
+commandHandlers["JOIN"] = std::make_shared<JoinCommand>();
+
+// 受信したメッセージを解析し、コマンドハンドラを呼び出す
+void handleIncomingMessage(User& user, const IRC::Message& message) {
+    std::string commandName = message.getCommand();
+    auto it = commandHandlers.find(commandName);
+    if (it != commandHandlers.end()) {
+        it->second->execute(user, message);
+    } else {
+        // Unknown command handling
+    }
+}
