@@ -2,6 +2,8 @@
 # define CLIENT_HPP
 
 # include <iostream>
+# include "Channel.hpp"
+# include "server.h"
 
 class Client
 {
@@ -12,13 +14,13 @@ private:
 	int						role_;
 	std::vector<Channel>	joinedChannel_;
 public:
-	Client(int fd, const std::string& userName, const std::string& nickname, const int role);
+	Client(int fd, const std::string& userName, const std::string& nickname, int role);
 	Client(const Client& src);
 	Client&			operator=(const Client& rhs);
 	~Client();
 	int				getFd(void) const;
-	std::string&	getUserName(void) const;
-	std::string&	getNickname(void) const;
+	const std::string&	getUserName(void) const;
+	const std::string&	getNickname(void) const;
 	int				getRole(void) const;
 	Channel*		findJoinedChannel(std::string channelName) const;
 	void			setFd(int fd);
