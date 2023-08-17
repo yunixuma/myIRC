@@ -67,9 +67,7 @@ bool Server::start()
         return true;
     }
 
-    void Server::stop() {
-        running_ = false;
-    }
+   
 
 	// 下記の行は、新しいクライアント接続をサーバのクライアントリストに追加しています。
 	// newsockfdはaccept()関数から返された新しいソケットファイルディスクリプタを保持しています。
@@ -89,7 +87,12 @@ bool Server::start()
 void Server::run()
 {
     fd_set read_fds;
+	// ファイルディスクリプタの集合を保持します。
+	// fd_set型の変数read_fdsは、select()関数で監視したい
     int max_fd;
+	// max_fd;: select()関数を呼び出す際、
+	// ファイルディスクリプタの集合の中で最大のディスクリプタの値を知っておく必要
+	// があります。max_fdはその目的で使用される変数です。
 
     while (running_) {
         FD_ZERO(&read_fds);
@@ -110,27 +113,31 @@ void Server::run()
         timeout.tv_sec = 1; // 1秒のタイムアウト
         timeout.tv_usec = 0;
 
-        int activity = select(max_fd + 1, &read_fds, nullptr, nullptr, &timeout);
+		int activity = select(max_fd + 1, &read_fds, nullptr, nullptr, &timeout);
 
-// 	select()関数の返り値は以下の通りです：
-// > 0: これは、準備ができているファイル記述子の数を示します。
-// この場合、関連するファイル記述子
-// （fd_setの中のもの）をチェックして、どのものがアクティブであるかを判断する必要があります。
-// アクティブなファイル記述子に対して、読み取り、書き込み、またはエラー処理などの操作を実行できます。
-// 0: 指定されたタイムアウト期間が経過したが、準備ができているファイル記述子はないことを示します。
-// これは、select()呼び出しにタイムアウトが指定され、その期間中に監視されている
-// ファイル記述子にアクティビティがなかった場合に発生します。
-// -1: エラーが発生しました。具体的なエラー原因はerrno変数を確認することで知ることができます。
+		// 	select()関数の返り値は以下の通りです：
+
+		// > 0: これは、準備ができているファイル記述子の数を示します。
+		// この場合、関連するファイル記述子
+
+		// （fd_setの中のもの）をチェックして、どのものがアクティブであるかを判断する必要があります。
+		// アクティブなファイル記述子に対して、読み取り、書き込み、またはエラー処理などの操作を実行できます。
+		
+		// 0: 指定されたタイムアウト期間が経過したが、準備ができているファイル記述子はないことを示します。
+		// これは、select()呼び出しにタイムアウトが指定され、その期間中に監視されている
+		// ファイル記述子にアクティビティがなかった場合に発生します。
+		
+		// -1: エラーが発生しました。具体的なエラー原因はerrno変数を確認することで知ることができます。
 
         if (activity < 0) {
             std::cerr << "select error" << std::endl;
             continue;
         }
 
-// この行は、select システムコールの後に特定のファイルディスクリプタ
-// （この場合は sockfd_）が読み取りのためにアクティブすなわち、読み取り可能）かどうかを確認しています。
-// sockfd: 既にbind()およびlisten()で設定された、
-// 新しい接続要求を待機しているソケットのファイルディスクリプタ。
+		// この行は、select システムコールの後に特定のファイルディスクリプタ
+		//（この場合は sockfd_）が読み取りのためにアクティブすなわち、読み取り可能）かどうかを確認しています。
+		// sockfd: 既にbind()およびlisten()で設定された、
+		// 新しい接続要求を待機しているソケットのファイルディスクリプタ。
 
         if (FD_ISSET(sockfd_, &read_fds)) {
             sockaddr_in cli_addr;
@@ -139,6 +146,10 @@ void Server::run()
             int newsockfd = accept(sockfd_, (struct sockaddr *) &cli_addr, &clilen);
             if (newsockfd >= 0) {
                 clients_.push_back(newsockfd);
+				if (newsockfd >= 0):
+		
+			// accept()関数は、成功すると新しく確立された接続のファイルディスクリプタを返します。
+			// エラーが発生した場合は、-1を返します。したがって、このif文はaccept()が成功した場合にのみ内部のコードを実行します。
             }
         }
 
@@ -149,6 +160,10 @@ void Server::run()
             }
         }
     }
+}
+
+ void Server::stop() {
+        running_ = false;
 }
 
 void Server::handleClientMessage(int client_fd) {

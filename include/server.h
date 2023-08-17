@@ -36,7 +36,7 @@ public:
 	void join(const std::vector<std::string>& parameters);
 	// void cap(const std::vector<std::string>& parameters);
 	
-	void privmsg(Client &user_, const Message &message_);
+	void privmsg(Client &user_, Channel &channel_, const Message &message_);
 	int quit(Client &user_, Channel &channel_, const Message &message_);
 
 private:
