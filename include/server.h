@@ -2,6 +2,7 @@
 #define SERVER_H
 
 #include "message.h"
+#include "Client.hpp"
 
 #include <netinet/in.h>
 

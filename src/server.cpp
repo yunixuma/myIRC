@@ -12,20 +12,8 @@ using std::cerr;
 Server::Server(int port) : sockfd_(-1), running_(false), port_(port) {
 	userCommands["JOIN"] = &Server::join;
 	userCommands["PRIVMSG"] = &Server::privmsg;
-	
 	userCommands["QUIT"] =&Server::quit;
 }
-
-// void Server::cap(const vector<std::string>& parameters){
-//    if (parameters.size() > 1 && parameters[1] == "LS") {
-//         // サポートされている拡張機能のリスト
-//         string capabilities = "multi-prefix sasl";
-//         string response = "CAP * LS :" + capabilities + "\r\n";
-// 		int client_fd = 3;
-//         // このメッセージをクライアントに送信するための適切な方法を使用
-//     	send(client_fd, response.c_str(), response.size(), 0);
-//     }
-// }
 
 Server::~Server() {
     if(sockfd_ >= 0)
@@ -125,9 +113,13 @@ void Server::run()
         int activity = select(max_fd + 1, &read_fds, nullptr, nullptr, &timeout);
 
 // 	select()関数の返り値は以下の通りです：
-// > 0: これは、準備ができているファイル記述子の数を示します。この場合、関連するファイル記述子
-// （fd_setの中のもの）をチェックして、どのものがアクティブであるかを判断する必要があります。アクティブなファイル記述子に対して、読み取り、書き込み、またはエラー処理などの操作を実行できます。
-// 0: 指定されたタイムアウト期間が経過したが、準備ができているファイル記述子はないことを示します。これは、select()呼び出しにタイムアウトが指定され、その期間中に監視されているファイル記述子にアクティビティがなかった場合に発生します。
+// > 0: これは、準備ができているファイル記述子の数を示します。
+// この場合、関連するファイル記述子
+// （fd_setの中のもの）をチェックして、どのものがアクティブであるかを判断する必要があります。
+// アクティブなファイル記述子に対して、読み取り、書き込み、またはエラー処理などの操作を実行できます。
+// 0: 指定されたタイムアウト期間が経過したが、準備ができているファイル記述子はないことを示します。
+// これは、select()呼び出しにタイムアウトが指定され、その期間中に監視されている
+// ファイル記述子にアクティビティがなかった場合に発生します。
 // -1: エラーが発生しました。具体的なエラー原因はerrno変数を確認することで知ることができます。
 
         if (activity < 0) {
@@ -135,9 +127,15 @@ void Server::run()
             continue;
         }
 
+// この行は、select システムコールの後に特定のファイルディスクリプタ
+// （この場合は sockfd_）が読み取りのためにアクティブすなわち、読み取り可能）かどうかを確認しています。
+// sockfd: 既にbind()およびlisten()で設定された、
+// 新しい接続要求を待機しているソケットのファイルディスクリプタ。
+
         if (FD_ISSET(sockfd_, &read_fds)) {
             sockaddr_in cli_addr;
             socklen_t clilen = sizeof(cli_addr);
+
             int newsockfd = accept(sockfd_, (struct sockaddr *) &cli_addr, &clilen);
             if (newsockfd >= 0) {
                 clients_.push_back(newsockfd);

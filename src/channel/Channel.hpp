@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <vector>
+// #include "Client.hpp"
 
 enum ChannelMode
 {
@@ -25,10 +26,12 @@ class Channel
 	private:
 		std::string	name_;
 		ChannelMode	mode_;
+		// topic_;
 	public:
-		std::vector<int *> normal_clients_;
-		std::vector<int *> operator_clients_;
-
+		// std::vector<Client *> clientList_;
+		// std::vector<Client *> operatorList_;
+		std::vector<int *> clientList_;
+		std::vector<int *> operatorList_;
 		// CONSTRUCTER
 		Channel(std::string &name);
 

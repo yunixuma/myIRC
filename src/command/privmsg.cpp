@@ -1,4 +1,3 @@
-
 #include "server.h"
 #include "Client.hpp"
 
@@ -29,16 +28,8 @@
         // 例えば、findChannelByName関数でチャンネルを検索し、そのメンバーにメッセージをループで送信するなど
     } else {
         // 個人へのメッセージの処理
-        std::string targetUsername = destination; // 送信先のユーザー名
-
-        // ログインしたユーザーを管理する vector から該当するユーザーを検索
-        for (std::vector<Client>::const_iterator it = loggedInUsers.begin(); it != loggedInUsers.end(); ++it) {
-    const Client& user = *it; {
-            if (user.getUserName() == targetUsername) {
-                // ユーザーにメッセージを送信するロジックを実装
-                user.distributeMessage(*this, message); // Serverインスタンスを渡す例
-                break; // ユーザーを見つけたらループを終了
-            }
-        }
-    }
+        
+		// この部分では、指定されたユーザー名でユーザーを検索し、そのユーザーにメッセージを送信するロジックを実装する
+    
+	}
 }
