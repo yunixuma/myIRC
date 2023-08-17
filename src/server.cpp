@@ -12,7 +12,6 @@ using std::cerr;
 Server::Server(int port) : sockfd_(-1), running_(false), port_(port) {
 	userCommands["JOIN"] = &Server::join;
 	userCommands["PRIVMSG"] = &Server::privmsg;
-	// userCommands["CAP"] = &Server::cap;
 	
 	userCommands["QUIT"] =&Server::quit;
 }
@@ -68,7 +67,8 @@ bool Server::start()
 
         // Listen for connections
         listen(sockfd_, 5);
-		// 具体的には、listen(sockfd_, 5);というコードでは、システムが一度に保持できる、まだaccept()
+		// 具体的には、listen(sockfd_, 5);というコードでは、システムが一度に保持できる、
+		// まだaccept()
 		// によって受け付けられていない接続要求の最大数が5であることを示しています。
 		// この数を超えた接続要求が来た場合、新たな接続要求は拒否されます。
 
@@ -83,7 +83,6 @@ bool Server::start()
         running_ = false;
     }
 
-
 	// 下記の行は、新しいクライアント接続をサーバのクライアントリストに追加しています。
 	// newsockfdはaccept()関数から返された新しいソケットファイルディスクリプタを保持しています。
 	// これは新しいクライアント接続を表しています。
@@ -94,10 +93,10 @@ bool Server::start()
 	// したがって、clients_.push_back(newsockfd);は新しいクライアント接続
 	//（newsockfd）をクライアントリスト（clients_）に追加する操作を実行しています。
 
-        // Handle client messages...
-        // In a real implementation, we would use a non-blocking read and parse
-        // the incoming messages according to the IRC protocol, but we'll skip that
-        // for this simplified example.
+    // Handle client messages...
+	// In a real implementation, we would use a non-blocking read and parse
+    // the incoming messages according to the IRC protocol, but we'll skip that
+    // for this simplified example.
 
 void Server::run()
 {
@@ -131,7 +130,6 @@ void Server::run()
 // 0: 指定されたタイムアウト期間が経過したが、準備ができているファイル記述子はないことを示します。これは、select()呼び出しにタイムアウトが指定され、その期間中に監視されているファイル記述子にアクティビティがなかった場合に発生します。
 // -1: エラーが発生しました。具体的なエラー原因はerrno変数を確認することで知ることができます。
 
-
         if (activity < 0) {
             std::cerr << "select error" << std::endl;
             continue;
@@ -154,7 +152,6 @@ void Server::run()
         }
     }
 }
-
 
 void Server::handleClientMessage(int client_fd) {
     char buffer[256];
