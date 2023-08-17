@@ -1,0 +1,55 @@
+# ********************** Section for Macros (Variables) ********************** #
+NAME            = ircserv
+SRC             = main.cpp server.cpp message.cpp command/privmsg.cpp
+OS              = $(shell uname)
+SRCDIR          = ./src
+INCDIR          = ./include
+OBJDIR          = ./obj
+CPP             = c++
+RM              = rm
+CPPFLAGS        = -Wall -Wextra -Werror -std=c++98
+INCLUDES        = -I$(INCDIR)
+RMFLAGS         = -r
+DEBUGCFLAGS     = -g -ggdb -fno-omit-frame-pointer
+
+ifneq ($(OS), Darwin)
+    DEBUGCFLAGS += -fstack-usage
+endif
+
+DEBUGLDFLAGS    = -fsanitize=address
+
+ifeq ($(MAKECMDGOALS), debug)
+    ifneq ($(OS), Darwin)
+        CPPFLAGS    += $(DEBUGCFLAGS)
+        LDFLAGS += $(DEBUGLDFLAGS)
+    endif
+    DEF     += -D DEBUG_MODE=1
+endif
+
+SRCS            = $(addprefix $(SRCDIR)/, $(SRC))
+OBJS            = $(SRCS:.cpp=.o)
+DEPS            = $(OBJS:.o=.d)
+
+# ********************* Section for targets and commands ********************* #
+.PHONY: all clean fclean re debug
+
+all: $(NAME)
+clean:
+    -$(RM) $(RMFLAGS) $(OBJDIR)
+fclean: clean
+    -$(RM) $(RMFLAGS) $(NAME)
+re: fclean all
+
+debug: fclean all
+
+$(NAME): $(OBJS)
+    $(CPP) $(LDFLAGS) $(OBJS) -o $(NAME)
+
+$(OBJDIR)/%.o: $(SRCDIR)/%.cpp | $(OBJDIR)
+    @mkdir -p $(@D)
+    $(CPP) $(CPPFLAGS) $(DEF) $(INCLUDES) -o $@ -c $<
+
+$(OBJDIR):
+    @mkdir -p $@
+
+-include $(DEPS)

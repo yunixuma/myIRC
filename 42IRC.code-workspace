@@ -1,0 +1,17 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "../irc_ref"
+		},
+		{
+			"path": "../irc_ref2"
+		},
+		{
+			"path": "../../Downloads/ref_intra"
+		}
+	],
+	"settings": {}
+}

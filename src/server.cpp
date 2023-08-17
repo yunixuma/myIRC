@@ -21,6 +21,7 @@ using std::endl;
 
 Server::Server(int port) : sockfd_(-1), running_(false), port_(port) {
 	userCommands["JOIN"] = &Server::join;
+	userCommands["PRIVMSG"] = &Server::privmsg;
 }
 
 Server::~Server() {
@@ -29,8 +30,6 @@ Server::~Server() {
         close(sockfd_);
     }
 }
-
-
 
 void Server::join(const std::vector<std::string>& parameters)
 {
