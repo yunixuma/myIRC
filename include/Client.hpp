@@ -5,6 +5,8 @@
 # include "Channel.hpp"
 # include "server.h"
 
+class Server;
+
 class Client
 {
 private:
