@@ -2,8 +2,11 @@
 # define CLIENT_HPP
 
 # include <iostream>
+# include <vector>
 # include "Channel.hpp"
 # include "server.h"
+
+class Server;
 
 class Client
 {
@@ -22,14 +25,14 @@ public:
 	const std::string&	getUserName(void) const;
 	const std::string&	getNickname(void) const;
 	int				getRole(void) const;
-	Channel*		findJoinedChannel(std::string channelName) const;
+	const Channel*	findJoinedChannel(std::string channelName) const;
 	void			setFd(int fd);
 	void			setUserName(const std::string& userName);
 	void			setNickname(const std::string& nickname);
 	void			setRole(int role);
 	void			joinChannel(Channel& channel);
 	void			leaveChannel(Channel& channel);
-	void			distributeMessage(Server server, const std::string& message);
+	// void			distributeMessage(Server server, const std::string& message);
 };
 
 #endif
