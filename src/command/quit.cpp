@@ -1,12 +1,19 @@
 #include "server.h"
 #include "Client.hpp"
 
-int IrcServer::quit(Client &user_, const Message &message_)
-{
-		
-	
-}
 
+int quit(Client &user_, Channel &channel_, const Message &message_) {
+    // 1. チャネルからユーザーを削除
+    channel_.removeUser(user_);
+
+    // 2. 必要に応じて他のクライアントに通知（オプション）
+    // 例： "user_ has left the channel"
+
+    // 3. ユーザーの接続を終了
+    close(user_.sockfd);  // ソケットをクローズ
+
+    return 0;  // 正常に終了
+}
 
 /*
 	Syntax:
@@ -26,8 +33,6 @@ int IrcServer::quit(Client &user_, const Message &message_)
 		/QUIT
 		/QUIT <@cartman> Screw you guys, I'm going home!
 */
-
-
 
 /*
 	Command: QUIT

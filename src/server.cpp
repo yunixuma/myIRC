@@ -67,8 +67,6 @@ bool Server::start()
         return true;
     }
 
-   
-
 	// 下記の行は、新しいクライアント接続をサーバのクライアントリストに追加しています。
 	// newsockfdはaccept()関数から返された新しいソケットファイルディスクリプタを保持しています。
 	// これは新しいクライアント接続を表しています。
@@ -110,8 +108,7 @@ void Server::run()
         }
 
         struct timeval timeout;
-        timeout.tv_sec = 1; // 1秒のタイムアウト
-        timeout.tv_usec = 0;
+        timeout.tv_sec = 10; 
 
 		int activity = select(max_fd + 1, &read_fds, nullptr, nullptr, &timeout);
 
@@ -223,7 +220,6 @@ void Server::executeCommand(const Message& message) {
     }
 }
 
-
 // 下記コードの説明
 
 // run() メソッドが呼び出されると、サーバーはクライアントからの新しい接続を非同期に受け入れ、
@@ -234,5 +230,6 @@ void Server::executeCommand(const Message& message) {
 // クライアントリストから削除されます。
 // クライアントがソケットを閉じて接続が切断されると、そのクライアントもリストから削除されます。
 // このプロセスは running_ 変数が false に設定されるまで、
-// つまり stop() メソッドが呼び出されるまで続きます。その時点で、サーバーは新しい接続の受け入れを停止し、
+// つまり stop() メソッドが呼び出されるまで続きます。
+// その時点で、サーバーは新しい接続の受け入れを停止し、
 // 既存のすべての接続を閉じます。

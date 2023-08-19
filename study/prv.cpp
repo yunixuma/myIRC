@@ -8,6 +8,9 @@ public:
     int sockfd; // このユーザーに関連するソケットのファイルディスクリプタ
 };
 
+
+string user;
+
 class Server {
 private:
     std::map<std::string, User> users; // key: username, value: User object
@@ -20,6 +23,12 @@ public:
         }
         return nullptr;
     }
+
+    User* user_find(const std::string& username) {
+	for(it.begin(); it.end();it++)
+	{
+		it++;
+	}
 
     void send_message(User* user, const std::string& message) {
         if (user && user->sockfd > 0) {

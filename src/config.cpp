@@ -29,8 +29,6 @@ Config()
 	string portNumber = this -> map_["port"];
 }
 
-
-
 ~Config()
 {}
 
@@ -43,9 +41,9 @@ Config()
 		return (*this);
 	}
 	
-std::ostream& operator<<(std::ostream& o, const Config& src) {
-    std::map<std::string, std::string>::const_iterator i;
-    for(i = src.get_map().begin(); i != src.get_map().end(); ++i) {
+	std::ostream& operator<<(std::ostream& o, const Config& src) {
+	std::map<std::string, std::string>::const_iterator i;
+	for(i = src.get_map().begin(); i != src.get_map().end(); ++i) {
         o << "\t\t\t" << i->first << "=" << i->second << std::endl;
     }
     return o;
