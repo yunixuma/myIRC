@@ -23,7 +23,8 @@ JOINコマンドは、クライアントが特定のチャネルのリスニン�
 クライアントがチャネルに参加できるかどうかは、クライアントが接続しているローカルサーバのみがチェックします。
 他のすべてのサーバは、他のサーバからコマンドを受け取ると、そのユーザを自動的にチャネルに追加します。
 
-オプションとして、コントロールG(^GまたはASCII 7)をセパレータとして、チャネルのユーザーステータス(チャネルモード「O」、「o」、「v」)をチャネル名に付加することができる。
+オプションとして、コントロールG(^GまたはASCII 7)をセパレータとして、
+チャネルのユーザーステータス(チャネルモード「O」、「o」、「v」)をチャネル名に付加することができる。
 
 [MUST]
 そのようなデータは、メッセージがサーバーから受信されたものでない場合、無視されなければならない。
@@ -32,15 +33,11 @@ JOINコマンドはすべてのサーバーにブロードキャストされな�
 これにより、PRIVMSGとNOTICEメッセージをチャンネルに最適に配送することができる。
 
 [MUST NOT]
-オプションとして、コントロールG(^GまたはASCII 7)をセパレータとして、チャネルのユーザーステータス(チャネルモード「O」、「o」、「v」)をチャネル名に付加することができる¸が、このフォーマットはクライアントに送ってはならない。
+オプションとして、コントロールG(^GまたはASCII 7)をセパレータとして、
+チャネルのユーザーステータス(チャネルモード「O」、「o」、「v」)をチャネル名に付加することができるが、
+このフォーマットはクライアントに送ってはならない。
 
 */
-
-// channel nameをチェックする。							isChannelName();
-// channel nameが既にあるか調べる。						isExistChannel();
-// ある。既に参加しているか調べる。						isJoinedChannel();
-// ない。チャンネルを作成する。							createChannel();
-// チャンネルクラスに、クライアントデータを追加する。	addClient();
 
 #ifndef JOIN_HPP
 # define JOIN_HPP
@@ -48,10 +45,14 @@ JOINコマンドはすべてのサーバーにブロードキャストされな�
 class Join {
 	public:
 		// CONSTRUCTER
-		Join(int& client, Channel &channel, const std::string& name);
+		Join(int& client, std::map<std::string, Channel *> channelList, const std::string& name);
 
 		// METHOD
-		bool	joined_channel();
+		// bool	joinChannel();
+		bool	isExistChannel(std::map<std::string, int> channelList, const std::string& name); // channel nameが既にあるか調べる。
+		bool	isJoinedChannel();	// ある。既に参加しているか調べる。
+		bool	createChannel();	// ない。チャンネルを作成する。
+		bool	addClient();		// チャンネルクラスに、クライアントデータを追加する。
 
 		// DESTRUCTER
 		~Join();
