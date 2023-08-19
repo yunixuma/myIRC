@@ -36,6 +36,16 @@ void	Channel::setChannelMode(ChannelMode mode)
 	this->mode_ = mode;
 }
 
+void	Channel::addListClient(int& client)
+{
+	this->clientList_.push_back(client);
+}
+
+void	Channel::addListOperator(int& ope)
+{
+	this->operatorList_.push_back(ope);
+}
+
 // GETTER
 const std::string&	Channel::getName() const
 {
