@@ -34,7 +34,7 @@ class Channel
 
 	public:
 		// CONSTRUCTER
-		Channel(std::string& name);
+		Channel(const std::string& name);
 		Channel(Channel& src);
 		Channel&	operator=(const Channel& rhs);
 

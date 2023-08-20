@@ -1,13 +1,13 @@
 #include "Channel.hpp"
 
-Channel::Channel(std::string &name)
+Channel::Channel(const std::string &name)
 {
 	this->name_ = name;
 	this->topic_ = "";
 	this->mode_ = NOT_MODE;
 }
 
-Channel::Channel(Channel& src)
+Channel::Channel(const Channel& src)
 {
 	this->name_ = src.getName();
 	this->topic_ = src.getTopic();
