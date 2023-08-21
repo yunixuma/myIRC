@@ -67,11 +67,11 @@ $(OBJDIR):
 	@mkdir -p $@
 	
 $(OBJDIR)/%.o: $(SRCDIR)/%.cpp | $(OBJDIR)
-	$(CPP) $(CPPFLAGS) $(DEF) $(INCLUDES) -o $@ -c $<
+	$(CPP) $(DEF) $(INCLUDES) -o $@ -c $<
 
 $(OBJDIR)/command/%.o: $(SRCDIR)/command/%.cpp | $(OBJDIR)/command
 	@mkdir -p $(OBJDIR)/command
-	$(CPP) $(CPPFLAGS) $(DEF) $(INCLUDES) -o $@ -c $<
+	$(CPP) $(DEF) $(INCLUDES) -o $@ -c $<
 
 
 # Including and ignore .dep files when they are not found

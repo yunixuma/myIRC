@@ -29,7 +29,7 @@ public:
 	void			setRole(int role);
 	void			joinChannel(Channel& channel);
 	void			leaveChannel(Channel& channel);
-	void			distributeMessage(Server server, const std::string& message);
+	// void			distributeMessage(Server server, const std::string& message);
 };
 
 #endif

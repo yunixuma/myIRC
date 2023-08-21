@@ -10,26 +10,26 @@ using std::endl;
 using std::cerr;
 
 Server::Server(int port) : sockfd_(-1), running_(false), port_(port) {
-	userCommands["JOIN"] = &Server::join;
+	// userCommands["JOIN"] = &Server::join;
 	userCommands["PRIVMSG"] = &Server::privmsg;
-	userCommands["QUIT"] =&Server::quit;
+	// userCommands["QUIT"] =&Server::quit;
 }
 
 Server::~Server() {
     if(sockfd_ >= 0)
 	{
-		cerr << "Error opening socket" << endl;
+		cerr << "Error closing socket" << endl;
         close(sockfd_);
     }
 }
 
-void Server::join(const std::vector<std::string>& parameters)
-{
-    std::cout << "join has called" << std::endl;
-    for(std::vector<std::string>::const_iterator it = parameters.begin(); it != parameters.end(); ++it) {
-        std::cout << *it << std::endl;
-    }
-}
+// void Server::join(const std::vector<std::string>& parameters)
+// {
+//     std::cout << "join has called" << std::endl;
+//     for(std::vector<std::string>::const_iterator it = parameters.begin(); it != parameters.end(); ++it) {
+//         std::cout << *it << std::endl;
+//     }
+// }
 
 // start() メソッドが呼び出されると、新しいソケットが作成され、指定されたポートにバインドされ、
 // クライアントからの接続を待ちます。
@@ -143,7 +143,7 @@ void Server::run()
             int newsockfd = accept(sockfd_, (struct sockaddr *) &cli_addr, &clilen);
             if (newsockfd >= 0) {
                 clients_.push_back(newsockfd);
-				if (newsockfd >= 0):
+				if (newsockfd >= 0){
 		
 			// accept()関数は、成功すると新しく確立された接続のファイルディスクリプタを返します。
 			// エラーが発生した場合は、-1を返します。したがって、このif文はaccept()が成功した場合にのみ内部のコードを実行します。
@@ -158,7 +158,7 @@ void Server::run()
         }
     }
 }
-
+}
  void Server::stop() {
         running_ = false;
 }
@@ -202,33 +202,40 @@ void Server::handleClientMessage(int client_fd) {
     }
 }
 
-void Server::handleIncomingMessage(const std::string& rawMessage) {
-    Message message(rawMessage);
-    executeCommand(message);
-}
-
-void Server::executeCommand(const Message& message) {
+void Server::executeCommand(Client &user_, Channel &channel_, const Message &message_) {
 	// "JOIN" や "PING" などのIRCコマンドを取得
-    string command = message.getCommand();
+    string command = message_.getCommand();
     std::map<string, CommandFunction>::iterator it = userCommands.find(command);
     
     if (it != userCommands.end()) {
         // execute the corresponding method with parameters from the message
-        (this->*(it->second))(message.getParameters());
+        (this->*(it->second))(user_, channel_, message_);
     } else {
         // handle unknown command...
     }
 }
 
+void Server::handleIncomingMessage(const std::string& rawMessage) {
+	Client* user = nullptr;
+	Channel* channel = nullptr;
+	Message* message = nullptr;
+
+    executeCommand(*user, *channel, *message);
+}
+
 // 下記コードの説明
 
-// run() メソッドが呼び出されると、サーバーはクライアントからの新しい接続を非同期に受け入れ、
+// run() メソッドが呼び出されると、サーバーはクライアントからの
+// 新しい接続を非同期に受け入れ、
 // それらの接続をクライアントリストに追加します。
 // 同時に、すでに接続されているすべてのクライアントからのメッセージをチェックします。
 // メッセージは非同期に読み込まれ、それぞれのメッセージは個別に処理されます。
+
 // クライアントから "exit" メッセージが送信されると、そのクライアントの接続は閉じられ、
 // クライアントリストから削除されます。
-// クライアントがソケットを閉じて接続が切断されると、そのクライアントもリストから削除されます。
+// クライアントがソケットを閉じて接続が切断されると、
+// そのクライアントもリストから削除されます。
+
 // このプロセスは running_ 変数が false に設定されるまで、
 // つまり stop() メソッドが呼び出されるまで続きます。
 // その時点で、サーバーは新しい接続の受け入れを停止し、

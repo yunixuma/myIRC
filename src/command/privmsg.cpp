@@ -8,7 +8,7 @@
 		using std::cout;
 		using std::endl;
 
-	void Server::privmsg(const std::vector<std::string>& parameters)
+	void Server::privmsg(Client &user_, Channel &channel_, const Message &message_)
 	{
 		if (parameters.size() < 2) {
 		// エラーメッセージを返すなど、パラメータが不足している場合の処理

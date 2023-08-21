@@ -11,10 +11,10 @@ private:
 	int					id_;
 	std::string			name_;
 	std::string			topic_;
-	// std::vector<Message>	messages_;
-	std::vector<User>	usersInvited_;
-	std::vector<User>	usersJoined_;
-	std::vector<User>	usersKicked_;
+	std::vector<Message>	messages_;
+	// std::vector<User>	usersInvited_;
+	// std::vector<User>	usersJoined_;
+	// std::vector<User>	usersKicked_;
 public:
 	Channel(const int id, const std::string& name, const std::string& topic);
 	Channel(const Channel& src);
