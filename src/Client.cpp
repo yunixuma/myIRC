@@ -1,7 +1,7 @@
 #include "Client.hpp"
 
-Client(int fd, const std::string& userName, const std::string& nickname, int role) \
-	: fd_(fd), userName_(userName), nickname_(nickname), role_(role), joinedChannel_(NULL) {
+Client::Client(int fd, const std::string& userName, const std::string& nickname, int role) \
+	: fd_(fd), userName_(userName), nickname_(nickname), role_(role), joinedChannel_() {
 	std::clog << "\033[36;2;3m[" << this \
 		<< "]<Client> Constructor called (" << this->userName_ << ")\033[m" << std::endl;
 }
@@ -20,8 +20,9 @@ Client&	Client::operator=(const Client& rhs) {
 	this->userName_ = rhs.userName_;
 	this->nickname_ = rhs.nickname_;
 	this->role_ = rhs.role_;
-	if (this->joinedChannel_)
+	if (!this->joinedChannel_.empty())
 		this->joinedChannel_.clear();
+	std::vector<Channel>::iterator	itr;
 	for (itr = this->joinedChannel_.begin(); itr != this->joinedChannel_.end(); itr++)
 	{
 		this->joinedChannel_.push_back(*itr);
@@ -32,7 +33,7 @@ Client&	Client::operator=(const Client& rhs) {
 Client::~Client(void) {
 	std::clog << "\033[31;2;3m[" << this \
 		<< "]<Client> Destructor called (" << this->userName_ << ")\033[m" << std::endl;
-	if (this->joinedChannel_)
+	if (!this->joinedChannel_.empty())
 		this->joinedChannel_.clear();
 }
 
@@ -52,12 +53,12 @@ int	Client::getRole(void) const {
 	return (this->role_);
 }
 
-Channel*	Client::findJoinedChannel(std::string channelName) const {
-	std::vector<Channel>::iterator	itr;
+const Channel*	Client::findJoinedChannel(std::string channelName) const {
+	std::vector<Channel>::const_iterator	itr;
 	for (itr = this->joinedChannel_.begin(); itr != this->joinedChannel_.end(); itr++)
 	{
 		if (itr->getName() == channelName)
-			return (itr);
+			return (&(*itr));
 	}
 	return (NULL);
 }
@@ -92,17 +93,18 @@ void	Client::leaveChannel(Channel& channel) {
 	std::vector<Channel>::iterator	itr;
 	for (itr = this->joinedChannel_.begin(); itr != this->joinedChannel_.end(); itr++)
 	{
-		if (itr == &channel)
+		if (&(*itr) == &channel)
 		{
 			this->joinedChannel_.erase(itr);
 			return ;
 		}
 	}
 }
-
+/*
 void	Client::distributeMessage(Server server, const std::string& message) {
 	std::clog << "\033[2;3m[" << this \
 		<< "]<Client> distributeChannel(" << message \
 		<< ") called (" << this->userName_ << ")\033[m" << std::endl;
 	server.send(this->fd_, message);
 }
+*/
