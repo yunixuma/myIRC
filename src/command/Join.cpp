@@ -1,11 +1,8 @@
 #include "Join.hpp"
 
-// Join::Join(int client, std::map<std::string, int> channelList, const std::string& name)
-// {
-// 
-// }
-
 Join::Join() {}
+
+Join::~Join() {}
 
 // std::map<std::string, Channel *>	channelList;
 // bool	Join::joinChannel();
@@ -17,7 +14,7 @@ bool	Join::isChannelName(const std::string& name)
 }
 
 // channelが既にあるか調べる。
-bool	Join::isExistChannel(std::map<std::string, int> channelList, const std::string& name)
+bool	Join::isExistChannel(std::map<std::string, Channel *> channelList, const std::string& name)
 {
 	if (0 < channelList.count(name)) {
 		return (true);
@@ -26,10 +23,10 @@ bool	Join::isExistChannel(std::map<std::string, int> channelList, const std::str
 }
 
 // 既に参加しているか調べる。
-bool	Join::isJoinedChannel(int client, std::map<std::string, int> channelList, const std::string& name)
+bool	Join::isJoinedChannel(int client, std::map<std::string, Channel*> channelList, const std::string& name)
 {
-	std::map<std::string, int>::iterator	it = channelList.find("name");
-	std::vector<int>						clients = it->getClientList();
+	std::map<std::string, Channel*>::iterator	it = channelList.find("name");
+	std::vector<int>							clients = it->second->getClientList();
 
 	for (std::vector<int>::iterator iter = clients.begin(); iter != clients.end(); iter++) {
 		// if (name == iter.getName()) {

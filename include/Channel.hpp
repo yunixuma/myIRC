@@ -35,8 +35,11 @@ class Channel
 	public:
 		// CONSTRUCTER
 		Channel(const std::string& name);
-		Channel(Channel& src);
+		Channel(const Channel& src);
 		Channel&	operator=(const Channel& rhs);
+
+		// DESTRUCTER
+		~Channel();
 
 		// Setters
 		void	setName(std::string& name);
@@ -51,9 +54,6 @@ class Channel
 		const ChannelMode& 		getChannelMode() const;
 		const std::vector<int>&	getClientList() const;
 		const std::vector<int>&	getOperatorList() const;
-
-		// DESTRUCTER
-		~Channel();
 };
 
 #endif

@@ -9,15 +9,25 @@ Channel::Channel(const std::string &name)
 
 Channel::Channel(const Channel& src)
 {
-	this->name_ = src.getName();
-	this->topic_ = src.getTopic();
-	this->mode_ = src.getChannelMode();
-	for (std::vector<int>::iterator it = src.clientList_.begin(); it != src.clientList_.end(); it++) {
+	this->operator=(src);
+}
+
+Channel&	Channel::operator=(const Channel& rhs)
+{
+	this->name_ = rhs.getName();
+	this->topic_ = rhs.getTopic();
+	this->mode_ = rhs.getChannelMode();
+	for (std::vector<int>::const_iterator it = rhs.clientList_.begin(); it != rhs.clientList_.end(); it++) {
 		this->clientList_.push_back(*it);
 	}
-	for (std::vector<int>::iterator it = src.operatorList_.begin(); it != src.operatorList_.end(); it++) {
+	for (std::vector<int>::const_iterator it = rhs.operatorList_.begin(); it != rhs.operatorList_.end(); it++) {
 		this->operatorList_.push_back(*it);
 	}
+	return (*this);
+}
+
+Channel::~Channel()
+{
 }
 
 // SETTER
@@ -70,8 +80,4 @@ const std::vector<int>&	Channel::getClientList() const
 const std::vector<int>&	Channel::getOperatorList() const
 {
 	return (this->operatorList_);
-}
-
-Channel::~Channel()
-{
 }
