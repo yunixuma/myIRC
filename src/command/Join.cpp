@@ -7,10 +7,31 @@ Join::~Join() {}
 // std::map<std::string, Channel *>	channelList;
 // bool	Join::joinChannel();
 
-// channel nameが正しいか調べる。
+/*
+ * Validation rule (Channel name)
+ * ・channel nameが正しいか調べる。
+ * ・50文字以内
+ * ・space, Ctrl+G(ascii code 7), comma, colon, は、含めてはならない。
+ * ・prefixは、&, #, !, または、なし
+ */
+
+/*
+ * Prefixe rule
+ * . &, Standard channel, [local channel], チャンネルを作成したユーザーがチャンネルオペレータになる。
+ * . #, Standard channel, チャンネルを作成したユーザーがチャンネルオペレータになる。
+ * . +, Standard channel,
+ * . !, Safe channel,
+ */
 bool	Join::isChannelName(const std::string& name)
 {
-	if (name.)
+	if (50 < name.size()) {
+		return (false);
+	}
+	if (name.find(" ") != std::string::npos \
+			|| name.find(",") != std::string::npos \
+			|| name.find(":") != std::string::npos) {
+		return (false);
+	}
 	return (true);
 }
 

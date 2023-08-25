@@ -41,6 +41,23 @@ void	Channel::setTopic(std::string& topic)
 	this->topic_ = topic;
 }
 
+// void	Channel::setPrefix(std::string &name)
+// {
+// 	// TODO: プレフィックスがない場合について考える。
+// 	if (name[0] != '&') {
+// 		this->prefix_ = name[0];
+// 	}
+// 	else if (name[0] != '#') {
+// 		this->prefix_ = name[0];
+// 	}
+// 	else if (name[0] != '+') {
+// 		this->prefix_ = name[0];
+// 	}
+// 	else {
+// 		this->prefix_ = "#";
+// 	}
+// }
+
 void	Channel::setChannelMode(ChannelMode mode)
 {
 	this->mode_ = mode;
@@ -66,6 +83,11 @@ const std::string&	Channel::getTopic() const
 {
 	return (this->topic_);
 }
+
+// const std::string&	Channel::getPrefix() const
+// {
+// 	return (this->prefix_);
+// }
 
 const ChannelMode&	Channel::getChannelMode() const
 {
