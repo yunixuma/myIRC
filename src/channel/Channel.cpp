@@ -1,23 +1,33 @@
 #include "Channel.hpp"
 
-Channel::Channel(std::string &name)
+Channel::Channel(const std::string &name)
 {
 	this->name_ = name;
 	this->topic_ = "";
 	this->mode_ = NOT_MODE;
 }
 
-Channel::Channel(Channel& src)
+Channel::Channel(const Channel& src)
 {
-	this->name_ = src.getName();
-	this->topic_ = src.getTopic();
-	this->mode_ = src.getChannelMode();
-	for (std::vector<int>::iterator it = src.clientList_.begin(); it != src.clientList_.end(); it++) {
+	this->operator=(src);
+}
+
+Channel&	Channel::operator=(const Channel& rhs)
+{
+	this->name_ = rhs.getName();
+	this->topic_ = rhs.getTopic();
+	this->mode_ = rhs.getChannelMode();
+	for (std::vector<int>::const_iterator it = rhs.clientList_.begin(); it != rhs.clientList_.end(); it++) {
 		this->clientList_.push_back(*it);
 	}
-	for (std::vector<int>::iterator it = src.operatorList_.begin(); it != src.operatorList_.end(); it++) {
+	for (std::vector<int>::const_iterator it = rhs.operatorList_.begin(); it != rhs.operatorList_.end(); it++) {
 		this->operatorList_.push_back(*it);
 	}
+	return (*this);
+}
+
+Channel::~Channel()
+{
 }
 
 // SETTER
@@ -30,6 +40,23 @@ void	Channel::setTopic(std::string& topic)
 {
 	this->topic_ = topic;
 }
+
+// void	Channel::setPrefix(std::string &name)
+// {
+// 	// TODO: プレフィックスがない場合について考える。
+// 	if (name[0] != '&') {
+// 		this->prefix_ = name[0];
+// 	}
+// 	else if (name[0] != '#') {
+// 		this->prefix_ = name[0];
+// 	}
+// 	else if (name[0] != '+') {
+// 		this->prefix_ = name[0];
+// 	}
+// 	else {
+// 		this->prefix_ = "#";
+// 	}
+// }
 
 void	Channel::setChannelMode(ChannelMode mode)
 {
@@ -57,6 +84,11 @@ const std::string&	Channel::getTopic() const
 	return (this->topic_);
 }
 
+// const std::string&	Channel::getPrefix() const
+// {
+// 	return (this->prefix_);
+// }
+
 const ChannelMode&	Channel::getChannelMode() const
 {
 	return (this->mode_);
@@ -70,8 +102,4 @@ const std::vector<int>&	Channel::getClientList() const
 const std::vector<int>&	Channel::getOperatorList() const
 {
 	return (this->operatorList_);
-}
-
-Channel::~Channel()
-{
 }

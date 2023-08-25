@@ -25,6 +25,7 @@ class Channel
 {
 	private:
 		std::string	name_;
+		// std::string	prefix_;
 		std::string	topic_;
 		ChannelMode	mode_;
 		// std::vector<Client *> clientList_;
@@ -34,13 +35,17 @@ class Channel
 
 	public:
 		// CONSTRUCTER
-		Channel(std::string& name);
-		Channel(Channel& src);
+		Channel(const std::string& name);
+		Channel(const Channel& src);
 		Channel&	operator=(const Channel& rhs);
+
+		// DESTRUCTER
+		~Channel();
 
 		// Setters
 		void	setName(std::string& name);
 		void	setTopic(std::string& topic);
+		// void	setPrefix(std::string &name);
 		void	setChannelMode(ChannelMode mode);
 		void	addListClient(int& client);
 		void	addListOperator(int& ope);
@@ -48,12 +53,10 @@ class Channel
 		// Getter
 		const std::string&		getName() const;
 		const std::string& 		getTopic() const;
+		// const std::string& 		getPrefix() const;
 		const ChannelMode& 		getChannelMode() const;
 		const std::vector<int>&	getClientList() const;
 		const std::vector<int>&	getOperatorList() const;
-
-		// DESTRUCTER
-		~Channel();
 };
 
 #endif
