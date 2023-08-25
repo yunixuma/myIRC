@@ -10,6 +10,7 @@ Join::~Join() {}
 // channel nameが正しいか調べる。
 bool	Join::isChannelName(const std::string& name)
 {
+	if (name.)
 	return (true);
 }
 
