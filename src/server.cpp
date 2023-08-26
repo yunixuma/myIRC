@@ -9,10 +9,19 @@ using std::cout;
 using std::endl;
 using std::cerr;
 
+Server::Server();
+
 Server::Server(int port) : sockfd_(-1), running_(false), port_(port) {
 	userCommands["JOIN"] = &Server::join;
 	userCommands["PRIVMSG"] = &Server::privmsg;
 	userCommands["QUIT"] =&Server::quit;
+}
+
+Server::Server(Client &user, Channel &channel);
+{
+	if(is_user())
+		user.set_user();
+	
 }
 
 Server::~Server() {

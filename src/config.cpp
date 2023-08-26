@@ -30,7 +30,6 @@ Config()
 }
 
 
-
 ~Config()
 {}
 
@@ -49,4 +48,9 @@ std::ostream& operator<<(std::ostream& o, const Config& src) {
         o << "\t\t\t" << i->first << "=" << i->second << std::endl;
     }
     return o;
+}
+
+int main ()
+{
+
 }

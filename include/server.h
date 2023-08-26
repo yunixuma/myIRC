@@ -18,7 +18,10 @@
 class Server {
 public:
 	
+    Server();
     Server(int port);
+    Server(Client &user, Channel &channel);
+
     ~Server();
     
 	bool start();
@@ -43,7 +46,8 @@ private:
     int sockfd_;
     bool running_;
     int port_;
-    std::vector<int> clients_;
+    std::vector<Client> clients_;
+    std::vector<Channel> channel_;
 	
 	typedef void (Server::*CommandFunction)(const std::vector<std::string>&);
 	// 上記関数ポインタに対して、別名を定義している。
