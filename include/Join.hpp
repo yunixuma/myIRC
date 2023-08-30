@@ -8,6 +8,7 @@ https://tex2e.github.io/rfc-translater/html/rfc2813.html
    Command: JOIN
 Parameters: <channel>[ %x7 <modes> ] *( "," <channel>[ %x7 <modes> ] )
 
+
 Numeric Replies:
 ERR_NEEDMOREPARAMS		ERR_BANNEDFROMCHAN
 ERR_INVITEONLYCHAN		ERR_BADCHANNELKEY
@@ -45,11 +46,12 @@ JOINコマンドはすべてのサーバーにブロードキャストされな�
 #include <iostream>
 #include <vector>
 #include <map>
+#include "Server.hpp"
 #include "Channel.hpp"
 
 class Channel;
 
-class Join {
+class Join : public Server {
 	public:
 		// CONSTRUCTER
 		Join();
