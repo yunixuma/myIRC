@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": ".."
+		},
+		{
+			"path": "../../irc_ref"
+		},
+		{
+			"path": "../../irc_ref_2"
+		}
+	],
+	"settings": {}
+}
