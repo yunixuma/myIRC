@@ -6,7 +6,6 @@
 #include "Channel.hpp"
 
 #include <netinet/in.h>
-
 #include <vector>
 #include <map>
 
@@ -17,10 +16,8 @@
 #include <unistd.h>
 
 
-
 class Server {
 public:
-	
     Server(int port);
     ~Server();
     
@@ -46,14 +43,12 @@ public:
 private:
     int sockfd_;
     bool running_;
-    int port_;
-    std::vector<int> clients_;
 	
-	// 上記関数ポインタに対して、別名を定義している。
-	// Server::*は、Serverクラスのメンバ関数へのポインタを示します
-	// const std::vector<std::string>&: 関数の引数の型です。
-	// この関数は、constなstd::vector<std::string>の参照を引数として取ります。
-	// 	std::map<std::string, CommandFunction> userCommands;
+    int port_;
+
+    std::vector<Client> clients_;
+    std::vector<Channel> channel_;
+	
 };
 
 #endif // SERVER_H
