@@ -2,7 +2,6 @@
 #include <vector>
 
 
-
 int main ()
 {
 using std::vector;

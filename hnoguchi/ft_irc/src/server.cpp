@@ -1,6 +1,5 @@
 #include "server.h"
 #include "message.h"
-#include "Client.hpp"
 
 #include <iostream>
 
@@ -10,19 +9,10 @@ using std::cout;
 using std::endl;
 using std::cerr;
 
-Server::Server();
-
 Server::Server(int port) : sockfd_(-1), running_(false), port_(port) {
 	// userCommands["JOIN"] = &Server::join;
 	userCommands["PRIVMSG"] = &Server::privmsg;
 	// userCommands["QUIT"] =&Server::quit;
-}
-
-Server::Server(Client &user, Channel &channel);
-{
-	if(is_user())
-		user.set_user();
-	
 }
 
 Server::~Server() {
@@ -79,8 +69,18 @@ bool Server::start()
 
 	// 下記の行は、新しいクライアント接続をサーバのクライアントリストに追加しています。
 	// newsockfdはaccept()関数から返された新しいソケットファイルディスクリプタを保持しています。
+	// これは新しいクライアント接続を表しています。
 	// clients_はサーバクラス内にあるvectorで、サーバが接続を許可したすべての
 	// クライアントのソケットファイルディスクリプタを保持します。
+
+	// push_back()はC++のvectorに要素を追加するための関数です。
+	// したがって、clients_.push_back(newsockfd);は新しいクライアント接続
+	//（newsockfd）をクライアントリスト（clients_）に追加する操作を実行しています。
+
+    // Handle client messages...
+	// In a real implementation, we would use a non-blocking read and parse
+    // the incoming messages according to the IRC protocol, but we'll skip that
+    // for this simplified example.
 
 void Server::run()
 {
@@ -99,13 +99,13 @@ void Server::run()
 		// set は監視するファイルディスクリプタのセットを指します
         max_fd = sockfd_;
 
-		for(std::vector<Client>::iterator it = clients_.begin(); it != clients_.end(); ++it) {
-    int client_fd = it->getFd(); // getFdはClientクラス内でfdを返すメンバ関数と仮定
-    FD_SET(client_fd, &read_fds);
-    if (client_fd > max_fd) {
-        max_fd = client_fd;}
-	}
-}
+		for(vector<int>::iterator it = clients_.begin(); it != clients_.end(); ++it){
+		int client_fd = *it;
+            FD_SET(client_fd, &read_fds);
+            if (client_fd > max_fd) {
+                max_fd = client_fd;
+            }
+        }
 
         struct timeval timeout;
         timeout.tv_sec = 10; 
@@ -128,7 +128,9 @@ void Server::run()
 
         if (activity < 0) {
             std::cerr << "select error" << std::endl;
+            continue;
         }
+
 		// この行は、select システムコールの後に特定のファイルディスクリプタ
 		//（この場合は sockfd_）が読み取りのためにアクティブすなわち、読み取り可能）かどうかを確認しています。
 		// sockfd: 既にbind()およびlisten()で設定された、
@@ -204,7 +206,7 @@ void Server::executeCommand(Client &user_, Channel &channel_, const Message &mes
 	// "JOIN" や "PING" などのIRCコマンドを取得
     string command = message_.getCommand();
     std::map<string, CommandFunction>::iterator it = userCommands.find(command);
-    // "join" join(channel, user, message);
+    
     if (it != userCommands.end()) {
         // execute the corresponding method with parameters from the message
         (this->*(it->second))(user_, channel_, message_);

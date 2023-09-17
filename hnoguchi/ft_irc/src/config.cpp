@@ -11,7 +11,7 @@ Config()
 
 	string line;
 
-	for(!ifs.eof();)
+	for(;!ifs.eof();)
 	{
 		getline(ifs, line);
 		stringstream	ss(line);
