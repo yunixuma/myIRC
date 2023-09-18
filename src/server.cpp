@@ -10,7 +10,7 @@ using std::cout;
 using std::endl;
 using std::cerr;
 
-Server::Server();
+Server::Server(){};
 
 Server::Server(int port) : sockfd_(-1), running_(false), port_(port) {
 	// userCommands["JOIN"] = &Server::join;
@@ -24,6 +24,20 @@ Server::Server(Client &user, Channel &channel);
 		user.set_user();
 	
 }
+
+void Server::addClient(int client_fd, const sockaddr_in& client_address) {
+    Client new_client(client_fd, client_address);
+    clients_.push_back(new_client);
+}
+
+void removeClient(int client_fd) {
+    clients_.erase(
+        std::remove_if(clients_.begin(), clients_.end(),
+                       [client_fd](const Client& c) { return c.getFD() == client_fd; }),
+        clients_.end()
+    );
+}
+
 
 Server::~Server() {
     if(sockfd_ >= 0)
@@ -85,7 +99,7 @@ bool Server::start()
 void Server::run()
 {
     fd_set read_fds;
-	// ファイルディスクリプタの集合を保持します。
+	// ファイルディスクリプタの集合を保持。
 	// fd_set型の変数read_fdsは、select()関数で監視したい
     int max_fd;
 	// max_fd;: select()関数を呼び出す際、
@@ -95,15 +109,14 @@ void Server::run()
     while (running_) {
         FD_ZERO(&read_fds);
         FD_SET(sockfd_, &read_fds);
-		// FD_SET(int fd, fd_set* set);
-		// set は監視するファイルディスクリプタのセットを指します
+		
         max_fd = sockfd_;
 
 		for(std::vector<Client>::iterator it = clients_.begin(); it != clients_.end(); ++it) {
-    int client_fd = it->getFd(); // getFdはClientクラス内でfdを返すメンバ関数と仮定
-    FD_SET(client_fd, &read_fds);
-    if (client_fd > max_fd) {
-        max_fd = client_fd;}
+			int client_fd = it->getFd(); 
+			FD_SET(client_fd, &read_fds);
+		if (client_fd > max_fd) {
+        	max_fd = client_fd;}
 	}
 }
 
@@ -130,7 +143,9 @@ void Server::run()
             std::cerr << "select error" << std::endl;
         }
 		// この行は、select システムコールの後に特定のファイルディスクリプタ
-		//（この場合は sockfd_）が読み取りのためにアクティブすなわち、読み取り可能）かどうかを確認しています。
+		//（この場合は sockfd_）が読み取りのためにアクティブすなわち、読み取り可能）
+		// かどうかを確認しています。
+		
 		// sockfd: 既にbind()およびlisten()で設定された、
 		// 新しい接続要求を待機しているソケットのファイルディスクリプタ。
 
@@ -140,8 +155,7 @@ void Server::run()
 
             int newsockfd = accept(sockfd_, (struct sockaddr *) &cli_addr, &clilen);
             if (newsockfd >= 0) {
-                clients_.push_back(newsockfd);
-				if (newsockfd >= 0){
+				addClient(newsockfd, cli_add )
 		
 			// accept()関数は、成功すると新しく確立された接続のファイルディスクリプタを返します。
 			// エラーが発生した場合は、-1を返します。したがって、このif文はaccept()が成功した場合にのみ内部のコードを実行します。
@@ -150,13 +164,21 @@ void Server::run()
 
         for (size_t i = 0; i < clients_.size(); i++) {
             int client_fd = clients_[i];
+
             if (FD_ISSET(client_fd, &read_fds)) {
-                handleClientMessage(client_fd);
+            int res = handleClientMessage(client_fd);
             }
-        }
+			// 特定のfdをチェックしたうえで、読み取り可能だったらhandleClientmessage.
+			if (res < 0) { // handleClientMessageはエラー時に負の値を返すと仮定
+                removeClients(client_fd); // クライアントを削除
+                continue; // 次のクライアントへ
+		}
     }
-}
-}
+
+
+
+
+
  void Server::stop() {
         running_ = false;
 }

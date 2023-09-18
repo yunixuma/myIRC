@@ -18,6 +18,7 @@
 
 class Server {
 public:
+    Server();
     Server(int port);
     Server(Client &user, Channel &channel);
 
@@ -35,6 +36,8 @@ public:
 	void handleIncomingMessage(const std::string& rawMessage);
 	void executeCommand(Client &user_, Channel &channel_, const Message &message_);
 	
+	void addClient(int client_fd, const sockaddr_in& client_address);
+    void removeClient(int client_fd);
 
 	// void join(const std::vector<std::string>& parameters);
 	// void cap(const std::vector<std::string>& parameters);
@@ -48,7 +51,7 @@ private:
 	
     int port_;
     std::vector<Client> clients_;
-    std::vector<Channel> channel_;
+    std::vector<Channel> channels_;
 	
 };
 
