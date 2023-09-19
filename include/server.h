@@ -28,9 +28,12 @@ public:
     void run();
     void stop();
 
-	typedef void (Server::*CommandFunction)(Client &user_, Channel &channel_, const Message &message_);
-	std::map<std::string, CommandFunction> userCommands;
+	void new_client(int client_fd, sockaddr_in client_address);
+
+	// typedef void (Server::*CommandFunction)(Client &user_, Channel &channel_, const Message &message_);
+	// std::map<std::string, CommandFunction> userCommands;
 	
+
 	void parseIRCMessage(const std::string& message);
 	void handleClientMessage(int client_fd);
 	void handleIncomingMessage(const std::string& rawMessage);
@@ -51,7 +54,8 @@ private:
 	
     int port_;
     std::vector<Client> clients_;
-    std::vector<Channel> channels_;
+	std::map<std::string, Channel> channels_;
+
 	
 };
 

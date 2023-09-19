@@ -18,12 +18,12 @@ Server::Server(int port) : sockfd_(-1), running_(false), port_(port) {
 	// userCommands["QUIT"] =&Server::quit;
 }
 
-Server::Server(Client &user, Channel &channel);
-{
-	if(is_user())
-		user.set_user();
+// Server::Server(Client &user, Channel &channel);
+// {
+// 	if(is_user())
+// 		user.set_user();
 	
-}
+// }
 
 void Server::addClient(int client_fd, const sockaddr_in& client_address) {
     Client new_client(client_fd, client_address);
@@ -54,9 +54,9 @@ Server::~Server() {
 //         std::cout << *it << std::endl;
 //     }
 // }
-
 // start() メソッドが呼び出されると、新しいソケットが作成され、指定されたポートにバインドされ、
 // クライアントからの接続を待ちます。
+
 bool Server::start() 
 {
         // Create a socket
@@ -155,28 +155,28 @@ void Server::run()
 
             int newsockfd = accept(sockfd_, (struct sockaddr *) &cli_addr, &clilen);
             if (newsockfd >= 0) {
-				addClient(newsockfd, cli_add )
+				addClient(newsockfd, cli_add);
 		
 			// accept()関数は、成功すると新しく確立された接続のファイルディスクリプタを返します。
-			// エラーが発生した場合は、-1を返します。したがって、このif文はaccept()が成功した場合にのみ内部のコードを実行します。
-            }
+			// エラーが発生した場合は、-1を返します。
+			// したがって、このif文はaccept()が成功した場合にのみ内部のコードを実行します。
+			
+		
+		    }
         }
 
-        for (size_t i = 0; i < clients_.size(); i++) {
-            int client_fd = clients_[i];
-
-            if (FD_ISSET(client_fd, &read_fds)) {
-            int res = handleClientMessage(client_fd);
-            }
-			// 特定のfdをチェックしたうえで、読み取り可能だったらhandleClientmessage.
-			if (res < 0) { // handleClientMessageはエラー時に負の値を返すと仮定
-                removeClients(client_fd); // クライアントを削除
-                continue; // 次のクライアントへ
-		}
-    }
-
-
-
+		for (size_t i = 0; i < clients_.size(); i++) {
+			int client_fd = clients_[i];
+			
+			if (FD_ISSET(client_fd, &read_fds)) {
+			int res = handleClientMessage(client_fd);
+			}
+			
+			if (res < 0) { 
+				removeClients(client_fd); // クライアントを削除
+				continue; // 次のクライアントへ
+			}
+	}
 
 
  void Server::stop() {
@@ -222,26 +222,47 @@ void Server::handleClientMessage(int client_fd) {
     }
 }
 
-void Server::executeCommand(Client &user_, Channel &channel_, const Message &message_) {
-	// "JOIN" や "PING" などのIRCコマンドを取得
-    string command = message_.getCommand();
-    std::map<string, CommandFunction>::iterator it = userCommands.find(command);
-    // "join" join(channel, user, message);
-    if (it != userCommands.end()) {
-        // execute the corresponding method with parameters from the message
-        (this->*(it->second))(user_, channel_, message_);
+// void Server::executeCommand(Client &user_, Channel &channel_, const Message &message_) {
+// 	// "JOIN" や "PING" などのIRCコマンドを取得
+//     string command = message_.getCommand();
+//     std::map<string, CommandFunction>::iterator it = userCommands.find(command);
+//     // "join" join(channel, user, message);
+//     if (it != userCommands.end()) {
+//     // 見つかった関数をuser_、channel_、message_とともに実行。
+//         (this->*(it->second))(user_, channel_, message_);
+//     } else {
+//         // handle unknown command...
+//     }
+// }
+
+void Server::handleIncomingMessage(const std::string& rawMessage, int client_fd) {
+    // メッセージをパースしてMessageオブジェクトを作成
+    Message message = parseMessage(rawMessage);
+
+    // client_fd（クライアントのファイルディスクリプタ）からClientオブジェクトを検索・取得
+    Client& user = getClientByFD(client_fd);
+
+    // メッセージからコマンドを取得
+    std::string command = message.getCommand();
+
+    if (command == "JOIN") {
+        std::string channelName = message.getChannelName();
+        Channel& channel = getChannelByName(channelName);
+        join(user, channel, message);
+
+    } else if (command == "PING") {
+        ping(user, message);
+
+    } else if (command == "LEAVE") {
+        std::string channelName = message.getChannelName();
+        Channel& channel = getChannelByName(channelName);
+        leaveChannel(user, channel, message);
+
     } else {
-        // handle unknown command...
+        // その他の未知のコマンドに対する処理
     }
 }
 
-void Server::handleIncomingMessage(const std::string& rawMessage) {
-	Client* user = nullptr;
-	Channel* channel = nullptr;
-	Message* message = nullptr;
-
-    executeCommand(*user, *channel, *message);
-}
 
 // 下記コードの説明
 
