@@ -14,7 +14,7 @@ Server::Server(){};
 
 Server::Server(int port) : sockfd_(-1), running_(false), port_(port) {
 	// userCommands["JOIN"] = &Server::join;
-	userCommands["PRIVMSG"] = &Server::privmsg;
+	// userCommands["PRIVMSG"] = &Server::privmsg;
 	// userCommands["QUIT"] =&Server::quit;
 }
 
@@ -40,12 +40,13 @@ void removeClient(int client_fd) {
 
 
 Server::~Server() {
-    if(sockfd_ >= 0)
-	{
-		cerr << "Error closing socket" << endl;
-        close(sockfd_);
+    if (sockfd_ >= 0) {
+        if (close(sockfd_) < 0) {
+            cerr << "Error closing socket" << endl;
+        }
     }
 }
+
 
 // void Server::join(const std::vector<std::string>& parameters)
 // {
@@ -155,7 +156,7 @@ void Server::run()
 
             int newsockfd = accept(sockfd_, (struct sockaddr *) &cli_addr, &clilen);
             if (newsockfd >= 0) {
-				addClient(newsockfd, cli_add);
+				addClient(newsockfd, cli_addr);
 		
 			// accept()関数は、成功すると新しく確立された接続のファイルディスクリプタを返します。
 			// エラーが発生した場合は、-1を返します。
@@ -168,6 +169,8 @@ void Server::run()
 		for (size_t i = 0; i < clients_.size(); i++) {
 			int client_fd = clients_[i];
 			
+			int res = 0;
+
 			if (FD_ISSET(client_fd, &read_fds)) {
 			int res = handleClientMessage(client_fd);
 			}
@@ -189,8 +192,8 @@ void Server::handleClientMessage(int client_fd) {
 
     int bytes = recv(client_fd, buffer, 255, 0);
             
-    if (bytes < 0) {
-        if (errno == EAGAIN || errno == EWOULDBLOCK) {
+	if (bytes < 0) {
+		if (errno == EAGAIN || errno == EWOULDBLOCK) {
             // Resource temporarily unavailable, just continue with the next iteration
             return;
         } else {

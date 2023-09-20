@@ -1,10 +1,17 @@
 #include "Client.hpp"
 
-Client(int fd, const std::string& userName, const std::string& nickname, int role) \
+Client::new_client(int client_fd, sockaddr_in client_address)
+    : client_fd_(client_fd), client_address_(client_address) {
+}
+
+// 上記lee追加
+
+Client::Client(int fd, const std::string& userName, const std::string& nickname, int role) \
 	: fd_(fd), userName_(userName), nickname_(nickname), role_(role), joinedChannel_(NULL) {
 	std::clog << "\033[36;2;3m[" << this \
 		<< "]<Client> Constructor called (" << this->userName_ << ")\033[m" << std::endl;
 }
+
 
 Client::Client(const Client& src) {
 	std::clog << "\033[36;2;3m[" << this << "<-" << &src \
@@ -113,3 +120,4 @@ void	Client::distributeMessage(Server server, const std::string& message) {
 //     // 見つかった場合はそのユーザーオブジェクトへのポインタを返し、見つからなければ nullptr を返す
 //     // ここでは簡単な例を示していますが、実際の実装はデータの管理方法により異なります
 // }
+

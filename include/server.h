@@ -22,6 +22,9 @@ public:
     Server(int port);
     Server(Client &user, Channel &channel);
 
+    // 初期化処理
+
+
     ~Server();
     
 	bool start();
@@ -43,9 +46,9 @@ public:
 	void addClient(int client_fd, const sockaddr_in& client_address);
     void removeClient(int client_fd);
 
-	// SERVER
+	// channel
 	void addChannel(const std::string& name);
-	void Server::removeChannel(const std::string& name);
+	void removeChannel(const std::string& name);
 	
 	// void join(const std::vector<std::string>& parameters);
 	// void cap(const std::vector<std::string>& parameters);
@@ -60,7 +63,6 @@ private:
     int port_;
     std::vector<Client> clients_;
 	std::map<std::string, Channel> channels_;
-
 	
 };
 

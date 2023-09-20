@@ -4,6 +4,8 @@
 # include <iostream>
 # include <vector>
 # include "Channel.hpp"
+#include <netinet/in.h>
+
 
 class Server;
 
@@ -24,12 +26,13 @@ public:
     // // 例: ユーザー名をキーとして、ユーザーオブジェクトを格納したデータ構造を検索
     // // 見つかった場合はそのユーザーオブジェクトへのポインタを返し、見つからなければ nullptr を返す
     // // ここでは簡単な例を示していますが、実際の実装はデータの管理方法により異なります
-
+	void new_client(int client_fd, sockaddr_in client_address);
 
 	//上記lee 追加。
 
 	Client(int fd, const std::string& userName, const std::string& nickname, int role);
 	Client(const Client& src);
+	Client(int client_fd, sockaddr_in client_address);
 
 	Client&			operator=(const Client& rhs);
 	~Client();
