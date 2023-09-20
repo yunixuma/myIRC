@@ -39,9 +39,14 @@ public:
 	void handleIncomingMessage(const std::string& rawMessage);
 	void executeCommand(Client &user_, Channel &channel_, const Message &message_);
 	
+	// CLIENT
 	void addClient(int client_fd, const sockaddr_in& client_address);
     void removeClient(int client_fd);
 
+	// SERVER
+	void addChannel(const std::string& name);
+	void Server::removeChannel(const std::string& name);
+	
 	// void join(const std::vector<std::string>& parameters);
 	// void cap(const std::vector<std::string>& parameters);
 	

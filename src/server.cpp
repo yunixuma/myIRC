@@ -247,7 +247,11 @@ void Server::handleIncomingMessage(const std::string& rawMessage, int client_fd)
 
     if (command == "JOIN") {
         std::string channelName = message.getChannelName();
-        Channel& channel = getChannelByName(channelName);
+		 if (!channelExists(channelName)) {
+        addChannel(channelName);  // チャンネルがなければ新しく作成
+    }
+    
+    	Channel& channel = getChannelByName(channelName);
         join(user, channel, message);
 
     } else if (command == "PING") {
@@ -263,6 +267,33 @@ void Server::handleIncomingMessage(const std::string& rawMessage, int client_fd)
     }
 }
 
+void Server::addChannel(const std::string& name) {
+    // 名前が既に存在するか確認
+    if (channels_.find(name) != channels_.end()) {
+        // エラーハンドリング
+        return;
+    }
+
+    // 名前が有効か確認（例）
+    if (!isValidChannelName(name)) {
+        // エラーハンドリング
+        return;
+    }
+
+    Channel newChannel(name);
+    channels_[name] = newChannel;
+}
+
+void Server::removeChannel(const std::string& name) {
+    // 名前が存在するか確認
+    auto it = channels_.find(name);
+    if (it != channels_.end()) {
+        // チャンネルを削除
+        channels_.erase(it);
+    } else {
+        // エラーハンドリング（例：ログ出力、例外を投げる、等）
+    }
+}
 
 // 下記コードの説明
 
