@@ -1,6 +1,7 @@
 
 ServerConfig {
 	port = 8080;
-	timeout = 5000;
+	timeout = 50;
+	password = "admin";
 }
 
