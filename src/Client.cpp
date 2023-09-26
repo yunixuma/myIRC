@@ -41,6 +41,10 @@ int	Client::getFd(void) const {
 	return (this->fd_);
 }
 
+sockaddr_in	Client::getAddr(void) const {
+	return (this->addr_);
+}
+
 const std::string&	Client::getUserName(void) const {
 	return (this->userName_);
 }

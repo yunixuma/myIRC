@@ -3,10 +3,10 @@
 
 # include <iostream>
 # include <vector>
+# include <netinet/in.h>
 # include "Channel.hpp"
-# include "server.h"
 
-class Server;
+class Channel;
 
 class Client
 {
@@ -23,6 +23,7 @@ public:
 	Client&			operator=(const Client& rhs);
 	~Client();
 	int				getFd(void) const;
+	sockaddr_in&	getAddr(void) const;
 	const std::string&	getUserName(void) const;
 	const std::string&	getNickname(void) const;
 	int				getRole(void) const;
