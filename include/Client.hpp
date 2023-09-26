@@ -12,6 +12,7 @@ class Client
 {
 private:
 	int						fd_;
+	sockaddr_in				addr_;
 	std::string				userName_;
 	std::string				nickname_;
 	int						role_;

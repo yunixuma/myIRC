@@ -1,7 +1,7 @@
 #include "Client.hpp"
 
-Client::Client(int fd, const std::string& userName, const std::string& nickname, int role) \
-	: fd_(fd), userName_(userName), nickname_(nickname), role_(role), joinedChannel_() {
+Client::Client(int fd, sockaddr_in addr, const std::string& userName, const std::string& nickname, int role) \
+	: fd_(fd), sockaddr_in addr_(addr), userName_(userName), nickname_(nickname), role_(role), joinedChannel_() {
 	std::clog << "\033[36;2;3m[" << this \
 		<< "]<Client> Constructor called (" << this->userName_ << ")\033[m" << std::endl;
 }
