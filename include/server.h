@@ -6,7 +6,6 @@
 #include "Channel.hpp"
 
 #include <netinet/in.h>
-
 #include <vector>
 #include <map>
 
@@ -17,26 +16,40 @@
 #include <unistd.h>
 
 
-
 class Server {
 public:
-	
+    Server();
     Server(int port);
+    Server(Client &user, Channel &channel);
+
+    // 初期化処理
+
+
     ~Server();
     
 	bool start();
     void run();
     void stop();
 
-	typedef void (Server::*CommandFunction)(Client &user_, Channel &channel_, const Message &message_);
-	std::map<std::string, CommandFunction> userCommands;
+	void new_client(int client_fd, sockaddr_in client_address);
+
+	// typedef void (Server::*CommandFunction)(Client &user_, Channel &channel_, const Message &message_);
+	// std::map<std::string, CommandFunction> userCommands;
 	
+
 	void parseIRCMessage(const std::string& message);
 	void handleClientMessage(int client_fd);
 	void handleIncomingMessage(const std::string& rawMessage);
 	void executeCommand(Client &user_, Channel &channel_, const Message &message_);
 	
+	// CLIENT
+	void addClient(int client_fd, const sockaddr_in& client_address);
+    void removeClient(int client_fd);
 
+	// channel
+	void addChannel(const std::string& name);
+	void removeChannel(const std::string& name);
+	
 	// void join(const std::vector<std::string>& parameters);
 	// void cap(const std::vector<std::string>& parameters);
 	
@@ -46,14 +59,11 @@ public:
 private:
     int sockfd_;
     bool running_;
-    int port_;
-    std::vector<int> clients_;
 	
-	// 上記関数ポインタに対して、別名を定義している。
-	// Server::*は、Serverクラスのメンバ関数へのポインタを示します
-	// const std::vector<std::string>&: 関数の引数の型です。
-	// この関数は、constなstd::vector<std::string>の参照を引数として取ります。
-	// 	std::map<std::string, CommandFunction> userCommands;
+    int port_;
+    std::vector<Client> clients_;
+	std::map<std::string, Channel> channels_;
+	
 };
 
 #endif // SERVER_H
