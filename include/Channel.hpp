@@ -5,6 +5,8 @@
 #include <vector>
 #include "Client.hpp"
 
+class Client;
+
 enum ChannelMode
 {
 	NOT_MODE,

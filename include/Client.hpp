@@ -5,11 +5,7 @@
 # include <vector>
 # include <netinet/in.h>
 # include "Channel.hpp"
-<<<<<<< HEAD
-#include <netinet/in.h>
-
-=======
->>>>>>> origin/ykosaka
+# include <netinet/in.h>
 
 class Channel;
 
