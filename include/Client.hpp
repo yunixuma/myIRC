@@ -3,16 +3,21 @@
 
 # include <iostream>
 # include <vector>
+# include <netinet/in.h>
 # include "Channel.hpp"
+<<<<<<< HEAD
 #include <netinet/in.h>
 
+=======
+>>>>>>> origin/ykosaka
 
-class Server;
+class Channel;
 
 class Client
 {
 private:
 	int						fd_;
+	sockaddr_in				addr_;
 	std::string				userName_;
 	std::string				nickname_;
 	int						role_;
@@ -37,6 +42,7 @@ public:
 	Client&			operator=(const Client& rhs);
 	~Client();
 	int				getFd(void) const;
+	sockaddr_in&	getAddr(void) const;
 	const std::string&	getUserName(void) const;
 	const std::string&	getNickname(void) const;
 	int				getRole(void) const;
