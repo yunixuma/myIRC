@@ -1,4 +1,4 @@
-#include "server.h"
+#include "Server.hpp"
 #include "message.h"
 
 #include <iostream>
@@ -197,29 +197,35 @@ void Server::handleClientMessage(int client_fd) {
             clients_.erase(std::remove(clients_.begin(), clients_.end(), client_fd), clients_.end());
 
         } else {
+			// parse ??
             handleIncomingMessage(message);
         }
     }
 }
 
+// void Server::executeCommand(int fd, const Message &message_) {
 void Server::executeCommand(Client &user_, Channel &channel_, const Message &message_) {
 	// "JOIN" や "PING" などのIRCコマンドを取得
     string command = message_.getCommand();
-    std::map<string, CommandFunction>::iterator it = userCommands.find(command);
+    std::map<string, CommandFunction>::iterator it = this->userCommands_.find(command);
     
     if (it != userCommands.end()) {
         // execute the corresponding method with parameters from the message
+        // (this->*(it->second))(fd, message_);
         (this->*(it->second))(user_, channel_, message_);
     } else {
         // handle unknown command...
     }
 }
 
+// void Server::handleIncomingMessage(int fd, const std::string& rawMessage) {
 void Server::handleIncomingMessage(const std::string& rawMessage) {
-	Client* user = nullptr;
-	Channel* channel = nullptr;
-	Message* message = nullptr;
+	// Client* user = nullptr;
+	// Channel* channel = nullptr;
+	// Message*	message = nullptr;
+	Message	message(rawMessage);
 
+    // executeCommand(fd, message);
     executeCommand(*user, *channel, *message);
 }
 

@@ -22,6 +22,7 @@ Join::~Join() {}
  * . +, Standard channel,
  * . !, Safe channel,
  */
+// TODO: Channel class にする。
 bool	Join::isChannelName(const std::string& name)
 {
 	if (50 < name.size()) {
@@ -36,6 +37,7 @@ bool	Join::isChannelName(const std::string& name)
 }
 
 // channelが既にあるか調べる。
+// TODO: channel class にする。
 bool	Join::isExistChannel(std::map<std::string, Channel *> channelList, const std::string& name)
 {
 	if (0 < channelList.count(name)) {
@@ -45,12 +47,12 @@ bool	Join::isExistChannel(std::map<std::string, Channel *> channelList, const st
 }
 
 // 既に参加しているか調べる。
-bool	Join::isJoinedChannel(int client, std::map<std::string, Channel*> channelList, const std::string& name)
+bool	Join::isJoinedChannel(Client* client, std::map<std::string, Channel*> channelList, const std::string& name)
 {
 	std::map<std::string, Channel*>::iterator	it = channelList.find("name");
-	std::vector<int>							clients = it->second->getClientList();
+	std::vector<Client *>							clients = it->second->getClientList();
 
-	for (std::vector<int>::iterator iter = clients.begin(); iter != clients.end(); iter++) {
+	for (std::vector<Client *>::iterator iter = clients.begin(); iter != clients.end(); iter++) {
 		// if (name == iter.getName()) {
 		// 	return (true);
 		// }
@@ -65,7 +67,7 @@ Channel*	Join::createChannel(const std::string& name)
 }
 
 // チャンネルクラスに、クライアントデータを追加する。
-void	Join::addClient(Channel& channel, int& client)
+void	Join::addClient(Channel& channel, Client& client)
 {
 	channel.addListClient(client);
 }
