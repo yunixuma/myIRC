@@ -41,7 +41,7 @@ int	Client::getFd(void) const {
 	return (this->fd_);
 }
 
-sockaddr_in	Client::getAddr(void) const {
+sockaddr_in&	Client::getAddr(void) const {
 	return (this->addr_);
 }
 
