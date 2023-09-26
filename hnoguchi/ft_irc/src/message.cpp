@@ -1,6 +1,4 @@
-
-#include "message.h"
-
+#include "Message.hpp"
 #include <sstream>
 
 using namespace std;

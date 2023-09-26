@@ -5,7 +5,8 @@ NAME			= ircserv
 
 # Enumeration of files
 SRC				= main.cpp Server.cpp
-# message.cpp command/privmsg.cpp
+
+# Message.cpp command/privmsg.cpp Channel.cpp Client_0913.cpp
 
 # Check the platform
 OS				= $(shell uname)

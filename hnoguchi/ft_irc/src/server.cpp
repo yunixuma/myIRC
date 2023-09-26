@@ -1,27 +1,51 @@
 #include "Server.hpp"
-#include "message.h"
+// #include "Message.hpp"
+// #include "Client.hpp"
+// #include <iostream>
 
-#include <iostream>
+// using std::vector;
+// using std::string;
+// using std::cout;
+// using std::endl;
+// using std::cerr;
 
-using std::vector;
-using std::string;
-using std::cout;
-using std::endl;
-using std::cerr;
+Server::Server(){};
 
 Server::Server(int port) : sockfd_(-1), running_(false), port_(port) {
 	// userCommands["JOIN"] = &Server::join;
-	userCommands["PRIVMSG"] = &Server::privmsg;
+	// userCommands["PRIVMSG"] = &Server::privmsg;
 	// userCommands["QUIT"] =&Server::quit;
 }
 
+// Server::Server(Client &user, Channel &channel);
+// {
+// 	if(is_user())
+// 		user.set_user();
+	
+// }
+
+// void Server::addClient(int client_fd, const sockaddr_in& client_address) {
+//     Client new_client(client_fd, client_address);
+//     clients_.push_back(new_client);
+// }
+
+// void removeClient(int client_fd) {
+//     clients_.erase(
+//         std::remove_if(clients_.begin(), clients_.end(),
+//                        [client_fd](const Client& c) { return c.getFD() == client_fd; }),
+//         clients_.end()
+//     );
+// }
+
+
 Server::~Server() {
-    if(sockfd_ >= 0)
-	{
-		cerr << "Error closing socket" << endl;
-        close(sockfd_);
+    if (sockfd_ >= 0) {
+        if (close(sockfd_) < 0) {
+			std::cerr << "Error closing socket" << std::endl;
+        }
     }
 }
+
 
 // void Server::join(const std::vector<std::string>& parameters)
 // {
@@ -30,62 +54,52 @@ Server::~Server() {
 //         std::cout << *it << std::endl;
 //     }
 // }
-
 // start() メソッドが呼び出されると、新しいソケットが作成され、指定されたポートにバインドされ、
 // クライアントからの接続を待ちます。
+
 bool Server::start() 
 {
-        // Create a socket
-        sockfd_ = socket(AF_INET, SOCK_STREAM, 0);
-        if (sockfd_ < 0) 
-		{
-            return false;
-        }
+	// Create a socket
+	sockfd_ = socket(AF_INET, SOCK_STREAM, 0);
+	if (sockfd_ < 0) 
+	{
+	    return false;
+	}
 
-        // Bind the socket to the port
-        sockaddr_in serv_addr;
-        serv_addr.sin_family = AF_INET;
-        serv_addr.sin_addr.s_addr = INADDR_ANY;
-        serv_addr.sin_port = htons(port_);
+	// Bind the socket to the port
+	sockaddr_in serv_addr;
+	serv_addr.sin_family = AF_INET;
+	serv_addr.sin_addr.s_addr = INADDR_ANY;
+	serv_addr.sin_port = htons(port_);
 
-        if (bind(sockfd_, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0) {
-		cerr << "Error binding socket" << endl;
-            return false;
-        }
+	if (bind(sockfd_, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0) {
+		std::cerr << "Error binding socket" << std::endl;
+	    return false;
+	}
 
-        // Listen for connections
-        listen(sockfd_, 5);
-		// 具体的には、listen(sockfd_, 5);というコードでは、システムが一度に保持できる、
-		// まだaccept()
-		// によって受け付けられていない接続要求の最大数が5であることを示しています。
-		// この数を超えた接続要求が来た場合、新たな接続要求は拒否されます。
+	// Listen for connections
+	listen(sockfd_, 5);
+	// 具体的には、listen(sockfd_, 5);というコードでは、システムが一度に保持できる、
+	// まだaccept()
+	// によって受け付けられていない接続要求の最大数が5であることを示しています。
+	// この数を超えた接続要求が来た場合、新たな接続要求は拒否されます。
 
-        // Set the socket to non-blocking
-        fcntl(sockfd_, F_SETFL, O_NONBLOCK);
+	// Set the socket to non-blocking
+	fcntl(sockfd_, F_SETFL, O_NONBLOCK);
 
-        running_ = true;
-        return true;
-    }
+	running_ = true;
+	return true;
+}
 
-	// 下記の行は、新しいクライアント接続をサーバのクライアントリストに追加しています。
-	// newsockfdはaccept()関数から返された新しいソケットファイルディスクリプタを保持しています。
-	// これは新しいクライアント接続を表しています。
-	// clients_はサーバクラス内にあるvectorで、サーバが接続を許可したすべての
-	// クライアントのソケットファイルディスクリプタを保持します。
-
-	// push_back()はC++のvectorに要素を追加するための関数です。
-	// したがって、clients_.push_back(newsockfd);は新しいクライアント接続
-	//（newsockfd）をクライアントリスト（clients_）に追加する操作を実行しています。
-
-    // Handle client messages...
-	// In a real implementation, we would use a non-blocking read and parse
-    // the incoming messages according to the IRC protocol, but we'll skip that
-    // for this simplified example.
+// 下記の行は、新しいクライアント接続をサーバのクライアントリストに追加しています。
+// newsockfdはaccept()関数から返された新しいソケットファイルディスクリプタを保持しています。
+// clients_はサーバクラス内にあるvectorで、サーバが接続を許可したすべての
+// クライアントのソケットファイルディスクリプタを保持します。
 
 void Server::run()
 {
     fd_set read_fds;
-	// ファイルディスクリプタの集合を保持します。
+	// ファイルディスクリプタの集合を保持。
 	// fd_set型の変数read_fdsは、select()関数で監視したい
     int max_fd;
 	// max_fd;: select()関数を呼び出す際、
@@ -95,18 +109,18 @@ void Server::run()
     while (running_) {
         FD_ZERO(&read_fds);
         FD_SET(sockfd_, &read_fds);
-		// FD_SET(int fd, fd_set* set);
-		// set は監視するファイルディスクリプタのセットを指します
+		
         max_fd = sockfd_;
 
-		for(vector<int>::iterator it = clients_.begin(); it != clients_.end(); ++it){
-		int client_fd = *it;
-            FD_SET(client_fd, &read_fds);
-            if (client_fd > max_fd) {
-                max_fd = client_fd;
-            }
-        }
-
+		// for(std::vector<Client>::iterator it = clients_.begin(); it != clients_.end(); ++it) {
+		for(int i = 0; i < clients_.size(); i++) {
+			// int client_fd = it->getFd();
+			int	client_fd = clients_[i];
+			FD_SET(client_fd, &read_fds);
+			if (client_fd > max_fd) {
+				max_fd = client_fd;
+			}
+		}
         struct timeval timeout;
         timeout.tv_sec = 10; 
 
@@ -128,11 +142,11 @@ void Server::run()
 
         if (activity < 0) {
             std::cerr << "select error" << std::endl;
-            continue;
         }
-
 		// この行は、select システムコールの後に特定のファイルディスクリプタ
-		//（この場合は sockfd_）が読み取りのためにアクティブすなわち、読み取り可能）かどうかを確認しています。
+		//（この場合は sockfd_）が読み取りのためにアクティブすなわち、読み取り可能）
+		// かどうかを確認しています。
+		
 		// sockfd: 既にbind()およびlisten()で設定された、
 		// 新しい接続要求を待機しているソケットのファイルディスクリプタ。
 
@@ -142,92 +156,151 @@ void Server::run()
 
             int newsockfd = accept(sockfd_, (struct sockaddr *) &cli_addr, &clilen);
             if (newsockfd >= 0) {
-                clients_.push_back(newsockfd);
-				if (newsockfd >= 0){
-		
-			// accept()関数は、成功すると新しく確立された接続のファイルディスクリプタを返します。
-			// エラーが発生した場合は、-1を返します。したがって、このif文はaccept()が成功した場合にのみ内部のコードを実行します。
-            }
+				;
+				// addClient(newsockfd, cli_addr);
+
+				// accept()関数は、成功すると新しく確立された接続のファイルディスクリプタを返します。
+				// エラーが発生した場合は、-1を返します。
+				// したがって、このif文はaccept()が成功した場合にのみ内部のコードを実行します。
+		    }
         }
 
-        for (size_t i = 0; i < clients_.size(); i++) {
-            int client_fd = clients_[i];
-            if (FD_ISSET(client_fd, &read_fds)) {
-                handleClientMessage(client_fd);
-            }
-        }
-    }
+		for (size_t i = 0; i < clients_.size(); i++) {
+			// int client_fd = clients_[i].getFd();
+			int client_fd = clients_[i];
+			
+			int res = 0;
+
+			if (FD_ISSET(client_fd, &read_fds)) {
+				;
+			// int res = handleClientMessage(client_fd);
+			}
+			
+			if (res < 0) {
+				;
+				// removeClients(client_fd); // クライアントを削除
+				continue; // 次のクライアントへ
+			}
+		}
+	}
 }
-}
- void Server::stop() {
+
+
+void	Server::stop() {
         running_ = false;
 }
 
-void Server::handleClientMessage(int client_fd) {
-    char buffer[256];
-    bzero(buffer, 256);
+// void Server::handleClientMessage(int client_fd) {
+//     char buffer[256];
+//     bzero(buffer, 256);
+// 
+//     int bytes = recv(client_fd, buffer, 255, 0);
+//             
+// 	if (bytes < 0) {
+// 		if (errno == EAGAIN || errno == EWOULDBLOCK) {
+//             // Resource temporarily unavailable, just continue with the next iteration
+//             return;
+//         } else {
+//             std::cerr << "ERROR reading from socket: " << strerror(errno) << std::endl;
+//         }
+// 
+//     } else if (bytes == 0) {
+//         close(client_fd);
+//         clients_.erase(std::remove(clients_.begin(), clients_.end(), client_fd), clients_.end());
+// 
+//     } else {
+//         buffer[bytes] = '\0';
+//         std::string message(buffer);
+//         
+//         if (!message.empty() && message[message.length()-1] == '\n') {
+//             message.erase(message.length()-1);
+//         }
+//         if (!message.empty() && message[message.length()-1] == '\r') {
+//             message.erase(message.length()-1);
+//         }
+// 
+//         if(message == "exit") {
+//             close(client_fd);
+//             clients_.erase(std::remove(clients_.begin(), clients_.end(), client_fd), clients_.end());
+// 
+//         } else {
+//             handleIncomingMessage(message);
+//         }
+//     }
+// }
 
-    int bytes = recv(client_fd, buffer, 255, 0);
-            
-    if (bytes < 0) {
-        if (errno == EAGAIN || errno == EWOULDBLOCK) {
-            // Resource temporarily unavailable, just continue with the next iteration
-            return;
-        } else {
-            std::cerr << "ERROR reading from socket: " << strerror(errno) << std::endl;
-        }
+// void Server::executeCommand(Client &user_, Channel &channel_, const Message &message_) {
+// 	// "JOIN" や "PING" などのIRCコマンドを取得
+//     string command = message_.getCommand();
+//     std::map<string, CommandFunction>::iterator it = userCommands.find(command);
+//     // "join" join(channel, user, message);
+//     if (it != userCommands.end()) {
+//     // 見つかった関数をuser_、channel_、message_とともに実行。
+//         (this->*(it->second))(user_, channel_, message_);
+//     } else {
+//         // handle unknown command...
+//     }
+// }
 
-    } else if (bytes == 0) {
-        close(client_fd);
-        clients_.erase(std::remove(clients_.begin(), clients_.end(), client_fd), clients_.end());
+// void Server::handleIncomingMessage(const std::string& rawMessage, int client_fd) {
+//     // メッセージをパースしてMessageオブジェクトを作成
+//     Message message = parseMessage(rawMessage);
+// 
+//     // client_fd（クライアントのファイルディスクリプタ）からClientオブジェクトを検索・取得
+//     Client& user = getClientByFD(client_fd);
+// 
+//     // メッセージからコマンドを取得
+//     std::string command = message.getCommand();
+// 
+//     if (command == "JOIN") {
+//         std::string channelName = message.getChannelName();
+// 		 if (!channelExists(channelName)) {
+//         addChannel(channelName);  // チャンネルがなければ新しく作成
+//     }
+//     
+//     	Channel& channel = getChannelByName(channelName);
+//         join(user, channel, message);
+// 
+//     } else if (command == "PING") {
+//         ping(user, message);
+// 
+//     } else if (command == "LEAVE") {
+//         std::string channelName = message.getChannelName();
+//         Channel& channel = getChannelByName(channelName);
+//         leaveChannel(user, channel, message);
+// 
+//     } else {
+//         // その他の未知のコマンドに対する処理
+//     }
+// }
 
-    } else {
-        buffer[bytes] = '\0';
-        std::string message(buffer);
-        
-        if (!message.empty() && message[message.length()-1] == '\n') {
-            message.erase(message.length()-1);
-        }
-        if (!message.empty() && message[message.length()-1] == '\r') {
-            message.erase(message.length()-1);
-        }
+// void Server::addChannel(const std::string& name) {
+//     // 名前が既に存在するか確認
+//     if (channels_.find(name) != channels_.end()) {
+//         // エラーハンドリング
+//         return;
+//     }
+// 
+//     // 名前が有効か確認（例）
+//     if (!isValidChannelName(name)) {
+//         // エラーハンドリング
+//         return;
+//     }
+// 
+//     Channel newChannel(name);
+//     channels_[name] = newChannel;
+// }
 
-        if(message == "exit") {
-            close(client_fd);
-            clients_.erase(std::remove(clients_.begin(), clients_.end(), client_fd), clients_.end());
-
-        } else {
-			// parse ??
-            handleIncomingMessage(message);
-        }
-    }
-}
-
-// void Server::executeCommand(int fd, const Message &message_) {
-void Server::executeCommand(Client &user_, Channel &channel_, const Message &message_) {
-	// "JOIN" や "PING" などのIRCコマンドを取得
-    string command = message_.getCommand();
-    std::map<string, CommandFunction>::iterator it = this->userCommands_.find(command);
-    
-    if (it != userCommands.end()) {
-        // execute the corresponding method with parameters from the message
-        // (this->*(it->second))(fd, message_);
-        (this->*(it->second))(user_, channel_, message_);
-    } else {
-        // handle unknown command...
-    }
-}
-
-// void Server::handleIncomingMessage(int fd, const std::string& rawMessage) {
-void Server::handleIncomingMessage(const std::string& rawMessage) {
-	// Client* user = nullptr;
-	// Channel* channel = nullptr;
-	// Message*	message = nullptr;
-	Message	message(rawMessage);
-
-    // executeCommand(fd, message);
-    executeCommand(*user, *channel, *message);
-}
+// void Server::removeChannel(const std::string& name) {
+//     // 名前が存在するか確認
+//     auto it = channels_.find(name);
+//     if (it != channels_.end()) {
+//         // チャンネルを削除
+//         channels_.erase(it);
+//     } else {
+//         // エラーハンドリング（例：ログ出力、例外を投げる、等）
+//     }
+// }
 
 // 下記コードの説明
 
