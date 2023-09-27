@@ -19,12 +19,31 @@ int	getline_prompt(std::string prompt, std::string *line)
 	return (0);
 }
 
+void	construct_test_env(Server& server)
+{
+	server.pushClient(1);
+	server.pushClient(2);
+	server.pushClient(3);
+	server.pushChannel("sample_1");
+	server.pushChannel("sample_2");
+}
+
+void	destruct_test_env(Server& server)
+{
+	server.eraseClient(1);
+	server.eraseClient(2);
+	server.eraseClient(3);
+	server.eraseChannel("sample_1");
+	server.eraseChannel("sample_2");
+}
+
 int	main()
 {
 	Server		server(8080);
 	std::string	message;
 
 	server.run();
+	construct_test_env(server);
 	while (server.getRunning()) {
 		if (getline_prompt("Message: ", &message) < 0) {
 			server.stop();
@@ -36,6 +55,7 @@ int	main()
 			std::cout << message << std::endl;
 		}
 	}
+	destruct_test_env(server);
 }
 
 // using namespace std;

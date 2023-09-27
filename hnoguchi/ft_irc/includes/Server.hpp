@@ -8,10 +8,13 @@
 #include <string>
 #include <fcntl.h>
 #include <unistd.h>
-#include "debugMessage.hpp"
 // #include "Message.hpp"
-// #include "Client.hpp"
-// #include "Channel.hpp"
+#include "Client.hpp"
+#include "Channel.hpp"
+#include "debugMessage.hpp"
+
+class Client;
+class Channel;
 
 class Server {
 public:
@@ -32,26 +35,41 @@ public:
 	// void handleClientMessage(int client_fd);
 	// void handleIncomingMessage(const std::string& rawMessage);
 	// void executeCommand(Client &user_, Channel &channel_, const Message &message_);
-	
+
+	// GETTER
+	// const int&				getSockfd() const;
+	const bool&				getRunning() const;
+	// const int&				getPort() const;
+	// std::vector<Client *>	getClients() const;
+	// std::vector<Channel *>	getChannels() const;
+
+	// SETTER
+	// void		setSockfd(const int& fd);
+	// void		setRunning(const bool& running);
+	// void		setPort(const int& port);
+
 	// CLIENT
-	// void addClient(int client_fd, const sockaddr_in& client_address);
-    // void removeClient(int client_fd);
-	// channel
-	// void addChannel(const std::string& name);
-	// void removeChannel(const std::string& name);
+	// void		pushClient(int client_fd, sockaddr_in& client_address);
+	void		pushClient(int fd);
+	// Client*		searchClient(int fd);
+    void		eraseClient(int fd);
+	// CHANNEL
+	void		pushChannel(const std::string& name);
+	// Channel*	searchChannel(const std::string& name);
+	void		eraseChannel(const std::string& name);
+	// COMMAND
 	// void join(const std::vector<std::string>& parameters);
 	// void cap(const std::vector<std::string>& parameters);
 	// void privmsg(Client &user_, Channel &channel_, const Message &message_);
 	// int quit(Client &user_, Channel &channel_, const Message &message_);
 
-	const bool&	getRunning() const;
+
 private:
-    int									sockfd_;
-    bool								running_;
-    int									port_;
-    // std::vector<Client *>				clients_;
-	// std::map<std::string, Channel *>	channels_;
-	
+    int						sockfd_;
+    bool					running_;
+    int						port_;
+    std::vector<Client *>	clients_;
+	std::vector<Channel *>	channels_;
 };
 
 #endif // SERVER_HPP

@@ -2,9 +2,12 @@
 # define CHANNEL_HPP
 
 #include <iostream>
+#include <algorithm>
 #include <vector>
+#include "Server.hpp"
 #include "Client.hpp"
 
+class Server;
 class Client;
 
 enum ChannelMode
@@ -26,12 +29,12 @@ enum ClientMode
 class Channel
 {
 private:
-	std::string						name_;
-	// std::string					prefix_;
-	std::string						topic_;
-	int								mode_;
-	std::map<std::string, Client *>	clientList_;
-	std::map<std::string, Client *>	operatorList_;
+	std::string				name_;
+	// std::string			prefix_;
+	std::string				topic_;
+	int						mode_;
+	std::vector<Client *>	clientList_;
+	std::vector<Client *>	operatorList_;
 
 public:
 	// CONSTRUCTER
@@ -47,16 +50,18 @@ public:
 	void	setTopic(std::string& topic);
 	// void	setPrefix(std::string &name);
 	void	setMode(ChannelMode mode);
-	void	addListClient(Client& client);
-	void	addListOperator(Client& ope);
+	void	pushClientList(Client& client);
+	void	pushOperatorList(Client& ope);
+	void	eraseClientList(Client& client);
+	void	eraseOperatorList(Client& ope);
 
 	// Getter
-	const std::string&						getName() const;
-	const std::string&						getTopic() const;
-	// const std::string&					getPrefix() const;
-	const int&								getMode() const;
-	const std::map<std::string, Client *>&	getClientList() const;
-	const std::map<std::string, Client *>&	getOperatorList() const;
+	const std::string&				getName() const;
+	const std::string&				getTopic() const;
+	// const std::string&			getPrefix() const;
+	const int&						getMode() const;
+	const std::vector<Client *>&	getClientList() const;
+	const std::vector<Client *>&	getOperatorList() const;
 };
 
 #endif

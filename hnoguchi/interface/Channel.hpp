@@ -47,8 +47,10 @@ public:
 	void	setTopic(std::string& topic);
 	// void	setPrefix(std::string &name);
 	void	setMode(ChannelMode mode);
-	void	addListClient(Client& client);
-	void	addListOperator(Client& ope);
+	void	pushClientList(Client& client);
+	void	pushOperatorList(Client& ope);
+	void	eraseClientList(Client& client);
+	void	eraseOperatorList(Client& ope);
 
 	// Getter
 	const std::string&				getName() const;

@@ -4,9 +4,12 @@
 NAME			= ircserv
 
 # Enumeration of files
-SRC				= main.cpp Server.cpp debugMessage.cpp
+SRC				= main.cpp Server.cpp \
+				  Client.cpp \
+				  Channel.cpp \
+				  debugMessage.cpp
 
-# Message.cpp command/privmsg.cpp Channel.cpp Client_0913.cpp
+# Message.cpp command/privmsg.cpp
 
 # Check the platform
 OS				= $(shell uname)
