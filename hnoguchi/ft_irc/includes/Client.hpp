@@ -14,7 +14,7 @@ class Client
 {
 private:
 	int						fd_;
-	sockaddr_in				addr_;
+	// sockaddr_in				addr_;
 	std::string				userName_;
 	std::string				nickname_;
 	int						role_;
@@ -32,14 +32,15 @@ public:
 
 	//上記lee 追加。
 
-	// Client(int fd, const std::string& userName, const std::string& nickname, int role, const sockaddr_in& client_address);
-	Client(int fd, sockaddr_in socket_addr);
+	// Client(int fd, const std::string& userName, const std::string& nickname, int role);
+	// Client(int fd, sockaddr_in socket_addr);
+	Client(int fd);
 	Client(const Client& src);
 
 	Client&			operator=(const Client& rhs);
 	~Client();
 	int				getFd(void) const;
-	sockaddr_in&	getAddr(void) const;
+	// sockaddr_in&	getAddr(void) const;
 	const std::string&	getUserName(void) const;
 	const std::string&	getNickname(void) const;
 	int				getRole(void) const;

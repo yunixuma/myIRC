@@ -28,8 +28,6 @@ public:
     void run();
     void stop();
 
-	const bool&	getRunning() const;
-
 	// void new_client(int client_fd, sockaddr_in client_address);
 	// typedef void (Server::*CommandFunction)(Client &user_, Channel &channel_, const Message &message_);
 	// std::map<std::string, CommandFunction> userCommands;
@@ -37,13 +35,28 @@ public:
 	// void handleClientMessage(int client_fd);
 	// void handleIncomingMessage(const std::string& rawMessage);
 	// void executeCommand(Client &user_, Channel &channel_, const Message &message_);
-	
+
+	// GETTER
+	// const int&				getSockfd() const;
+	const bool&				getRunning() const;
+	// const int&				getPort() const;
+	// std::vector<Client *>	getClients() const;
+	// std::vector<Channel *>	getChannels() const;
+
+	// SETTER
+	// void		setSockfd(const int& fd);
+	// void		setRunning(const bool& running);
+	// void		setPort(const int& port);
+
 	// CLIENT
-	void pushClient(int client_fd, sockaddr_in& client_address);
-    void eraseClient(int client_fd);
+	// void		pushClient(int client_fd, sockaddr_in& client_address);
+	void		pushClient(int fd);
+	// Client*		searchClient(int fd);
+    void		eraseClient(int fd);
 	// CHANNEL
-	void pushChannel(const std::string& name);
-	void eraseChannel(const std::string& name);
+	void		pushChannel(const std::string& name);
+	// Channel*	searchChannel(const std::string& name);
+	void		eraseChannel(const std::string& name);
 	// COMMAND
 	// void join(const std::vector<std::string>& parameters);
 	// void cap(const std::vector<std::string>& parameters);

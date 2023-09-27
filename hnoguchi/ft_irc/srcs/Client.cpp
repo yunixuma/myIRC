@@ -12,8 +12,14 @@
 // 		<< "]<Client> Constructor called (" << this->userName_ << ")\033[m" << std::endl;
 // }
 
-Client::Client(int fd, sockaddr_in addr)
-	: fd_(fd), addr_(addr), userName_(""), nickname_(""), role_(0) {
+// Client::Client(int fd, sockaddr_in addr)
+// 	: fd_(fd), addr_(addr), userName_(""), nickname_(""), role_(0) {
+// 	std::clog << "\033[36;2;3m[" << this \
+// 		<< "]<Client> Constructor called (" << this->userName_ << ")\033[m" << std::endl;
+// }
+
+Client::Client(int fd)
+	: fd_(fd), userName_(""), nickname_(""), role_(0) {
 	std::clog << "\033[36;2;3m[" << this \
 		<< "]<Client> Constructor called (" << this->userName_ << ")\033[m" << std::endl;
 }

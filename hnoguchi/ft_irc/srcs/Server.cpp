@@ -28,16 +28,17 @@ Server::Server(int port) : sockfd_(-1), running_(false), port_(port) {
 	
 // }
 
-void Server::pushClient(int client_fd, sockaddr_in& client_address) {
-	Client*	client = new Client(client_fd, client_address);
+// void Server::pushClient(int client_fd, sockaddr_in& client_address)
+void Server::pushClient(int fd)
+{
+	// Client*	client = new Client(client_fd, client_address);
+	Client*	client = new Client(fd);
 	this->clients_.push_back(client);
 }
 
-void Server::eraseClient(int client_fd) {
+void Server::eraseClient(int fd) {
 	for (std::vector<Client *>::iterator itr = this->clients_.begin(); itr != this->clients_.end(); itr++) {
-		if ((*itr)->getFd() == client_fd) {
-			// TODO: debug message
-			std::cerr << "removeClient();" << std::endl;
+		if ((*itr)->getFd() == fd) {
 			delete *itr;
 			this->clients_.erase(itr);
 			return ;
@@ -55,8 +56,6 @@ void Server::eraseChannel(const std::string& name)
 {
 	for (std::vector<Channel *>::iterator itr = this->channels_.begin(); itr != this->channels_.end(); itr++) {
 		if ((*itr)->getName() == name) {
-			// TODO: debug message
-			std::cerr << "eraseChannel();" << std::endl;
 			delete *itr;
 			this->channels_.erase(itr);
 			return ;

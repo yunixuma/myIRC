@@ -69,33 +69,32 @@ void	Channel::setMode(ChannelMode mode)
 
 void	Channel::pushClientList(Client& client)
 {
-	// std::vector<Client *>::iterator	itr = std::find(this->clientList_.begin(), this->clientList_.end(), &client);
-	this->clientList_.push_back(client);
+	this->clientList_.push_back(&client);
 }
 
 void	Channel::pushOperatorList(Client& ope)
 {
-	this->operatorList_.push_back(ope);
+	this->operatorList_.push_back(&ope);
 }
 
 void	Channel::eraseClientList(Client& client)
 {
-	std::vector<Client *>::iterator	it = this->clientList_.find(&client);
+	std::vector<Client *>::iterator	itr = std::find(this->clientList_.begin(), this->clientList_.end(), &client);
 
-	if (it == this->clientList_.end()) {
+	if (itr == this->clientList_.end()) {
 		return ;
 	}
-	this->clientList_.erase(it);
+	this->clientList_.erase(itr);
 }
 
 void	Channel::eraseOperatorList(Client& ope)
 {
-	std::vector<Client *>::iterator	it = this->operatorList_.find(&ope);
+	std::vector<Client *>::iterator	itr = std::find(this->clientList_.begin(), this->clientList_.end(), &ope);
 
-	if (it == this->operatorList_.end()) {
+	if (itr == this->operatorList_.end()) {
 		return ;
 	}
-	this->operatorList_.erase(it);
+	this->operatorList_.erase(itr);
 }
 
 // GETTER
