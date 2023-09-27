@@ -18,7 +18,7 @@ private:
 	std::string				userName_;
 	std::string				nickname_;
 	int						role_;
-	std::vector<Channel *>	joinedChannel_;
+	// std::vector<Channel *>	joinedChannel_;
 
 public:
 

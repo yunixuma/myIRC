@@ -2,9 +2,12 @@
 # define CHANNEL_HPP
 
 #include <iostream>
+#include <algorithm>
 #include <vector>
+#include "Server.hpp"
 #include "Client.hpp"
 
+class Server;
 class Client;
 
 enum ChannelMode
