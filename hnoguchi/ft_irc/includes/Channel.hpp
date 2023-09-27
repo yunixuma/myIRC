@@ -3,7 +3,9 @@
 
 #include <iostream>
 #include <vector>
-// #include "Client.hpp"
+#include "Client.hpp"
+
+class Client;
 
 enum ChannelMode
 {
@@ -27,11 +29,11 @@ class Channel
 		std::string	name_;
 		// std::string	prefix_;
 		std::string	topic_;
-		ChannelMode	mode_;
+		int			mode_;
 		// std::vector<Client *> clientList_;
 		// std::vector<Client *> operatorList_;
-		std::vector<int> clientList_;
-		std::vector<int> operatorList_;
+		std::vector<Client *> clientList_;
+		std::vector<Client *> operatorList_;
 
 	public:
 		// CONSTRUCTER
@@ -47,16 +49,16 @@ class Channel
 		void	setTopic(std::string& topic);
 		// void	setPrefix(std::string &name);
 		void	setChannelMode(ChannelMode mode);
-		void	addListClient(int& client);
-		void	addListOperator(int& ope);
+		void	addListClient(Client& client);
+		void	addListOperator(Client& ope);
 
 		// Getter
-		const std::string&		getName() const;
-		const std::string& 		getTopic() const;
-		// const std::string& 		getPrefix() const;
-		const ChannelMode& 		getChannelMode() const;
-		const std::vector<int>&	getClientList() const;
-		const std::vector<int>&	getOperatorList() const;
+		const std::string&				getName() const;
+		const std::string&				getTopic() const;
+		// const std::string&			getPrefix() const;
+		const ChannelMode&				getChannelMode() const;
+		const std::vector<Client *>&	getClientList() const;
+		const std::vector<Client *>&	getOperatorList() const;
 };
 
 #endif

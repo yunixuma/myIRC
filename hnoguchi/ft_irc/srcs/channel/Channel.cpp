@@ -17,10 +17,10 @@ Channel&	Channel::operator=(const Channel& rhs)
 	this->name_ = rhs.getName();
 	this->topic_ = rhs.getTopic();
 	this->mode_ = rhs.getChannelMode();
-	for (std::vector<int>::const_iterator it = rhs.clientList_.begin(); it != rhs.clientList_.end(); it++) {
+	for (std::vector<Client *>::const_iterator it = rhs.clientList_.begin(); it != rhs.clientList_.end(); it++) {
 		this->clientList_.push_back(*it);
 	}
-	for (std::vector<int>::const_iterator it = rhs.operatorList_.begin(); it != rhs.operatorList_.end(); it++) {
+	for (std::vector<Client *>::const_iterator it = rhs.operatorList_.begin(); it != rhs.operatorList_.end(); it++) {
 		this->operatorList_.push_back(*it);
 	}
 	return (*this);
@@ -63,12 +63,12 @@ void	Channel::setChannelMode(ChannelMode mode)
 	this->mode_ = mode;
 }
 
-void	Channel::addListClient(int& client)
+void	Channel::addListClient(Client& client)
 {
 	this->clientList_.push_back(client);
 }
 
-void	Channel::addListOperator(int& ope)
+void	Channel::addListOperator(Client& ope)
 {
 	this->operatorList_.push_back(ope);
 }
@@ -94,12 +94,12 @@ const ChannelMode&	Channel::getChannelMode() const
 	return (this->mode_);
 }
 
-const std::vector<int>&	Channel::getClientList() const
+const std::vector<Channel *>&	Channel::getClientList() const
 {
 	return (this->clientList_);
 }
 
-const std::vector<int>&	Channel::getOperatorList() const
+const std::vector<Channel *>&	Channel::getOperatorList() const
 {
 	return (this->operatorList_);
 }

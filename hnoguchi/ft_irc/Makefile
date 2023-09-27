@@ -4,8 +4,9 @@
 NAME			= ircserv
 
 # Enumeration of files
-SRC				= main.cpp Server.cpp
-# message.cpp command/privmsg.cpp
+SRC				= main.cpp Server.cpp debugMessage.cpp
+
+# Message.cpp command/privmsg.cpp Channel.cpp Client_0913.cpp
 
 # Check the platform
 OS				= $(shell uname)
@@ -13,8 +14,8 @@ OS				= $(shell uname)
 # Defination of macro constants
 
 # Enumeration of directories
-SRCDIR			= ./src
-INCDIR			= ./include
+SRCDIR			= ./srcs
+INCDIR			= ./includes
 OBJDIR			= ./obj
 
 # Aliases of commands
