@@ -29,7 +29,7 @@ class Channel
 		std::string	name_;
 		// std::string	prefix_;
 		std::string	topic_;
-		ChannelMode	mode_;
+		int			mode_;
 		// std::vector<Client *> clientList_;
 		// std::vector<Client *> operatorList_;
 		std::vector<Client *> clientList_;

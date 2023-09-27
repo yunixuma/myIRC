@@ -9,9 +9,13 @@
 // using std::endl;
 // using std::cerr;
 
-Server::Server(){};
+Server::Server() : sockfd_(-1), running_(false), port_(8080)
+{
+	debugMessage("Server", DEFAULT_CONSTRUCT);
+};
 
 Server::Server(int port) : sockfd_(-1), running_(false), port_(port) {
+	debugMessage("Server", HAS_ARGS_CONSTRUCT);
 	// userCommands["JOIN"] = &Server::join;
 	// userCommands["PRIVMSG"] = &Server::privmsg;
 	// userCommands["QUIT"] =&Server::quit;
@@ -39,11 +43,12 @@ Server::Server(int port) : sockfd_(-1), running_(false), port_(port) {
 
 
 Server::~Server() {
-    if (sockfd_ >= 0) {
-        if (close(sockfd_) < 0) {
-			std::cerr << "Error closing socket" << std::endl;
-        }
-    }
+	debugMessage("Server", DESTRUCT);
+    // if (sockfd_ >= 0) {
+    //     if (close(sockfd_) < 0) {
+	// 		std::cerr << "Error closing socket" << std::endl;
+    //     }
+    // }
 }
 
 
@@ -57,137 +62,146 @@ Server::~Server() {
 // start() メソッドが呼び出されると、新しいソケットが作成され、指定されたポートにバインドされ、
 // クライアントからの接続を待ちます。
 
-bool Server::start() 
-{
-	// Create a socket
-	sockfd_ = socket(AF_INET, SOCK_STREAM, 0);
-	if (sockfd_ < 0) 
-	{
-	    return false;
-	}
-
-	// Bind the socket to the port
-	sockaddr_in serv_addr;
-	serv_addr.sin_family = AF_INET;
-	serv_addr.sin_addr.s_addr = INADDR_ANY;
-	serv_addr.sin_port = htons(port_);
-
-	if (bind(sockfd_, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0) {
-		std::cerr << "Error binding socket" << std::endl;
-	    return false;
-	}
-
-	// Listen for connections
-	listen(sockfd_, 5);
-	// 具体的には、listen(sockfd_, 5);というコードでは、システムが一度に保持できる、
-	// まだaccept()
-	// によって受け付けられていない接続要求の最大数が5であることを示しています。
-	// この数を超えた接続要求が来た場合、新たな接続要求は拒否されます。
-
-	// Set the socket to non-blocking
-	fcntl(sockfd_, F_SETFL, O_NONBLOCK);
-
-	running_ = true;
-	return true;
-}
+// bool Server::start() 
+// {
+// 	// Create a socket
+// 	sockfd_ = socket(AF_INET, SOCK_STREAM, 0);
+// 	if (sockfd_ < 0) 
+// 	{
+// 	    return false;
+// 	}
+// 
+// 	// Bind the socket to the port
+// 	sockaddr_in serv_addr;
+// 	serv_addr.sin_family = AF_INET;
+// 	serv_addr.sin_addr.s_addr = INADDR_ANY;
+// 	serv_addr.sin_port = htons(port_);
+// 
+// 	if (bind(sockfd_, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0) {
+// 		std::cerr << "Error binding socket" << std::endl;
+// 	    return false;
+// 	}
+// 
+// 	// Listen for connections
+// 	listen(sockfd_, 5);
+// 	// 具体的には、listen(sockfd_, 5);というコードでは、システムが一度に保持できる、
+// 	// まだaccept()
+// 	// によって受け付けられていない接続要求の最大数が5であることを示しています。
+// 	// この数を超えた接続要求が来た場合、新たな接続要求は拒否されます。
+// 
+// 	// Set the socket to non-blocking
+// 	fcntl(sockfd_, F_SETFL, O_NONBLOCK);
+// 
+// 	running_ = true;
+// 	return true;
+// }
 
 // 下記の行は、新しいクライアント接続をサーバのクライアントリストに追加しています。
 // newsockfdはaccept()関数から返された新しいソケットファイルディスクリプタを保持しています。
 // clients_はサーバクラス内にあるvectorで、サーバが接続を許可したすべての
 // クライアントのソケットファイルディスクリプタを保持します。
 
-void Server::run()
+void	Server::run()
 {
-    fd_set read_fds;
-	// ファイルディスクリプタの集合を保持。
-	// fd_set型の変数read_fdsは、select()関数で監視したい
-    int max_fd;
-	// max_fd;: select()関数を呼び出す際、
-	// ファイルディスクリプタの集合の中で最大のディスクリプタの値を知っておく必要
-	// があります。max_fdはその目的で使用される変数です。
-
-    while (running_) {
-        FD_ZERO(&read_fds);
-        FD_SET(sockfd_, &read_fds);
-		
-        max_fd = sockfd_;
-
-		// for(std::vector<Client>::iterator it = clients_.begin(); it != clients_.end(); ++it) {
-		for(int i = 0; i < clients_.size(); i++) {
-			// int client_fd = it->getFd();
-			int	client_fd = clients_[i];
-			FD_SET(client_fd, &read_fds);
-			if (client_fd > max_fd) {
-				max_fd = client_fd;
-			}
-		}
-        struct timeval timeout;
-        timeout.tv_sec = 10; 
-
-		int activity = select(max_fd + 1, &read_fds, nullptr, nullptr, &timeout);
-
-		// 	select()関数の返り値は以下の通りです：
-
-		// > 0: これは、準備ができているファイル記述子の数を示します。
-		// この場合、関連するファイル記述子
-
-		// （fd_setの中のもの）をチェックして、どのものがアクティブであるかを判断する必要があります。
-		// アクティブなファイル記述子に対して、読み取り、書き込み、またはエラー処理などの操作を実行できます。
-		
-		// 0: 指定されたタイムアウト期間が経過したが、準備ができているファイル記述子はないことを示します。
-		// これは、select()呼び出しにタイムアウトが指定され、その期間中に監視されている
-		// ファイル記述子にアクティビティがなかった場合に発生します。
-		
-		// -1: エラーが発生しました。具体的なエラー原因はerrno変数を確認することで知ることができます。
-
-        if (activity < 0) {
-            std::cerr << "select error" << std::endl;
-        }
-		// この行は、select システムコールの後に特定のファイルディスクリプタ
-		//（この場合は sockfd_）が読み取りのためにアクティブすなわち、読み取り可能）
-		// かどうかを確認しています。
-		
-		// sockfd: 既にbind()およびlisten()で設定された、
-		// 新しい接続要求を待機しているソケットのファイルディスクリプタ。
-
-        if (FD_ISSET(sockfd_, &read_fds)) {
-            sockaddr_in cli_addr;
-            socklen_t clilen = sizeof(cli_addr);
-
-            int newsockfd = accept(sockfd_, (struct sockaddr *) &cli_addr, &clilen);
-            if (newsockfd >= 0) {
-				;
-				// addClient(newsockfd, cli_addr);
-
-				// accept()関数は、成功すると新しく確立された接続のファイルディスクリプタを返します。
-				// エラーが発生した場合は、-1を返します。
-				// したがって、このif文はaccept()が成功した場合にのみ内部のコードを実行します。
-		    }
-        }
-
-		for (size_t i = 0; i < clients_.size(); i++) {
-			// int client_fd = clients_[i].getFd();
-			int client_fd = clients_[i];
-			
-			int res = 0;
-
-			if (FD_ISSET(client_fd, &read_fds)) {
-				;
-			// int res = handleClientMessage(client_fd);
-			}
-			
-			if (res < 0) {
-				;
-				// removeClients(client_fd); // クライアントを削除
-				continue; // 次のクライアントへ
-			}
-		}
-	}
+	this->running_ = true;
 }
 
+// void Server::run()
+// {
+//     fd_set read_fds;
+// 	// ファイルディスクリプタの集合を保持。
+// 	// fd_set型の変数read_fdsは、select()関数で監視したい
+//     int max_fd;
+// 	// max_fd;: select()関数を呼び出す際、
+// 	// ファイルディスクリプタの集合の中で最大のディスクリプタの値を知っておく必要
+// 	// があります。max_fdはその目的で使用される変数です。
+// 
+//     while (running_) {
+//         FD_ZERO(&read_fds);
+//         FD_SET(sockfd_, &read_fds);
+// 		
+//         max_fd = sockfd_;
+// 
+// 		// for(std::vector<Client>::iterator it = clients_.begin(); it != clients_.end(); ++it) {
+// 		for(int i = 0; i < clients_.size(); i++) {
+// 			// int client_fd = it->getFd();
+// 			int	client_fd = clients_[i];
+// 			FD_SET(client_fd, &read_fds);
+// 			if (client_fd > max_fd) {
+// 				max_fd = client_fd;
+// 			}
+// 		}
+//         struct timeval timeout;
+//         timeout.tv_sec = 10; 
+// 
+// 		int activity = select(max_fd + 1, &read_fds, nullptr, nullptr, &timeout);
+// 
+// 		// 	select()関数の返り値は以下の通りです：
+// 
+// 		// > 0: これは、準備ができているファイル記述子の数を示します。
+// 		// この場合、関連するファイル記述子
+// 
+// 		// （fd_setの中のもの）をチェックして、どのものがアクティブであるかを判断する必要があります。
+// 		// アクティブなファイル記述子に対して、読み取り、書き込み、またはエラー処理などの操作を実行できます。
+// 		
+// 		// 0: 指定されたタイムアウト期間が経過したが、準備ができているファイル記述子はないことを示します。
+// 		// これは、select()呼び出しにタイムアウトが指定され、その期間中に監視されている
+// 		// ファイル記述子にアクティビティがなかった場合に発生します。
+// 		
+// 		// -1: エラーが発生しました。具体的なエラー原因はerrno変数を確認することで知ることができます。
+// 
+//         if (activity < 0) {
+//             std::cerr << "select error" << std::endl;
+//         }
+// 		// この行は、select システムコールの後に特定のファイルディスクリプタ
+// 		//（この場合は sockfd_）が読み取りのためにアクティブすなわち、読み取り可能）
+// 		// かどうかを確認しています。
+// 		
+// 		// sockfd: 既にbind()およびlisten()で設定された、
+// 		// 新しい接続要求を待機しているソケットのファイルディスクリプタ。
+// 
+//         if (FD_ISSET(sockfd_, &read_fds)) {
+//             sockaddr_in cli_addr;
+//             socklen_t clilen = sizeof(cli_addr);
+// 
+//             int newsockfd = accept(sockfd_, (struct sockaddr *) &cli_addr, &clilen);
+//             if (newsockfd >= 0) {
+// 				;
+// 				// addClient(newsockfd, cli_addr);
+// 
+// 				// accept()関数は、成功すると新しく確立された接続のファイルディスクリプタを返します。
+// 				// エラーが発生した場合は、-1を返します。
+// 				// したがって、このif文はaccept()が成功した場合にのみ内部のコードを実行します。
+// 		    }
+//         }
+// 
+// 		for (size_t i = 0; i < clients_.size(); i++) {
+// 			// int client_fd = clients_[i].getFd();
+// 			int client_fd = clients_[i];
+// 			
+// 			int res = 0;
+// 
+// 			if (FD_ISSET(client_fd, &read_fds)) {
+// 				;
+// 			// int res = handleClientMessage(client_fd);
+// 			}
+// 			
+// 			if (res < 0) {
+// 				;
+// 				// removeClients(client_fd); // クライアントを削除
+// 				continue; // 次のクライアントへ
+// 			}
+// 		}
+// 	}
+// }
 
 void	Server::stop() {
         running_ = false;
+}
+
+const bool&	Server::getRunning() const
+{
+	return (this->running_);
 }
 
 // void Server::handleClientMessage(int client_fd) {
