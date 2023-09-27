@@ -2,6 +2,7 @@
 
 Channel::Channel(const std::string &name)
 {
+	debugMessage("Channel", DEFAULT_CONSTRUCT);
 	this->name_ = name;
 	this->topic_ = "";
 	this->mode_ = NOT_MODE;
@@ -9,14 +10,16 @@ Channel::Channel(const std::string &name)
 
 Channel::Channel(const Channel& src)
 {
+	debugMessage("Channel", COPY_CONSTRUCT);
 	this->operator=(src);
 }
 
 Channel&	Channel::operator=(const Channel& rhs)
 {
+	debugMessage("Channel", COPY_OPERATOR);
 	this->name_ = rhs.getName();
 	this->topic_ = rhs.getTopic();
-	this->mode_ = rhs.getChannelMode();
+	this->mode_ = rhs.getMode();
 	for (std::vector<Client *>::const_iterator it = rhs.clientList_.begin(); it != rhs.clientList_.end(); it++) {
 		this->clientList_.push_back(*it);
 	}
@@ -28,6 +31,7 @@ Channel&	Channel::operator=(const Channel& rhs)
 
 Channel::~Channel()
 {
+	debugMessage("Channel", DESTRUCT);
 }
 
 // SETTER
@@ -58,19 +62,40 @@ void	Channel::setTopic(std::string& topic)
 // 	}
 // }
 
-void	Channel::setChannelMode(ChannelMode mode)
+void	Channel::setMode(ChannelMode mode)
 {
 	this->mode_ = mode;
 }
 
-void	Channel::addListClient(Client& client)
+void	Channel::pushClientList(Client& client)
 {
+	// std::vector<Client *>::iterator	itr = std::find(this->clientList_.begin(), this->clientList_.end(), &client);
 	this->clientList_.push_back(client);
 }
 
-void	Channel::addListOperator(Client& ope)
+void	Channel::pushOperatorList(Client& ope)
 {
 	this->operatorList_.push_back(ope);
+}
+
+void	Channel::eraseClientList(Client& client)
+{
+	std::vector<Client *>::iterator	it = this->clientList_.find(&client);
+
+	if (it == this->clientList_.end()) {
+		return ;
+	}
+	this->clientList_.erase(it);
+}
+
+void	Channel::eraseOperatorList(Client& ope)
+{
+	std::vector<Client *>::iterator	it = this->operatorList_.find(&ope);
+
+	if (it == this->operatorList_.end()) {
+		return ;
+	}
+	this->operatorList_.erase(it);
 }
 
 // GETTER
@@ -89,17 +114,17 @@ const std::string&	Channel::getTopic() const
 // 	return (this->prefix_);
 // }
 
-const ChannelMode&	Channel::getChannelMode() const
+const int&	Channel::getMode() const
 {
 	return (this->mode_);
 }
 
-const std::vector<Channel *>&	Channel::getClientList() const
+const std::vector<Client *>&	Channel::getClientList() const
 {
 	return (this->clientList_);
 }
 
-const std::vector<Channel *>&	Channel::getOperatorList() const
+const std::vector<Client *>&	Channel::getOperatorList() const
 {
 	return (this->operatorList_);
 }
