@@ -17,6 +17,13 @@ class Client;
 class Channel;
 
 class Server {
+private:
+	int						sockfd_;
+	bool					running_;
+	int						port_;
+	std::vector<Client *>	clients_;
+	std::vector<Channel *>	channels_;
+
 public:
     Server();
     Server(int port);
@@ -40,8 +47,8 @@ public:
 	// const int&				getSockfd() const;
 	const bool&				getRunning() const;
 	// const int&				getPort() const;
-	// std::vector<Client *>	getClients() const;
-	// std::vector<Channel *>	getChannels() const;
+	std::vector<Client *>	getClients() const;
+	std::vector<Channel *>	getChannels() const;
 
 	// SETTER
 	// void		setSockfd(const int& fd);
@@ -51,25 +58,17 @@ public:
 	// CLIENT
 	// void		pushClient(int client_fd, sockaddr_in& client_address);
 	void		pushClient(int fd);
-	// Client*		searchClient(int fd);
+	Client*		searchClient(int fd);
     void		eraseClient(int fd);
 	// CHANNEL
 	void		pushChannel(const std::string& name);
-	// Channel*	searchChannel(const std::string& name);
+	Channel*	searchChannel(const std::string& name);
 	void		eraseChannel(const std::string& name);
 	// COMMAND
 	// void join(const std::vector<std::string>& parameters);
 	// void cap(const std::vector<std::string>& parameters);
 	// void privmsg(Client &user_, Channel &channel_, const Message &message_);
 	// int quit(Client &user_, Channel &channel_, const Message &message_);
-
-
-private:
-    int						sockfd_;
-    bool					running_;
-    int						port_;
-    std::vector<Client *>	clients_;
-	std::vector<Channel *>	channels_;
 };
 
 #endif // SERVER_HPP

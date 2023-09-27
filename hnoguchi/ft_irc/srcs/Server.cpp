@@ -28,6 +28,16 @@ Server::Server(int port) : sockfd_(-1), running_(false), port_(port) {
 	
 // }
 
+std::vector<Client *>	Server::getClients() const
+{
+	return (this->clients_);
+}
+
+std::vector<Channel *>	Server::getChannels() const
+{
+	return (this->channels_);
+}
+
 // void Server::pushClient(int client_fd, sockaddr_in& client_address)
 void Server::pushClient(int fd)
 {
@@ -36,7 +46,18 @@ void Server::pushClient(int fd)
 	this->clients_.push_back(client);
 }
 
-void Server::eraseClient(int fd) {
+Client*		Server::searchClient(int fd)
+{
+	for (std::vector<Client *>::iterator itr = this->clients_.begin(); itr != this->clients_.end(); itr++) {
+		if ((*itr)->getFd() == fd) {
+			return (*itr);
+		}
+	}
+	return (NULL);
+}
+
+void	Server::eraseClient(int fd)
+{
 	for (std::vector<Client *>::iterator itr = this->clients_.begin(); itr != this->clients_.end(); itr++) {
 		if ((*itr)->getFd() == fd) {
 			delete *itr;
@@ -46,13 +67,23 @@ void Server::eraseClient(int fd) {
 	}
 }
 
-void Server::pushChannel(const std::string& name)
+void	Server::pushChannel(const std::string& name)
 {
 	Channel*	channel = new Channel(name);
 	this->channels_.push_back(channel);
 }
 
-void Server::eraseChannel(const std::string& name)
+Channel*	Server::searchChannel(const std::string& name)
+{
+	for (std::vector<Channel *>::iterator itr = this->channels_.begin(); itr != this->channels_.end(); itr++) {
+		if ((*itr)->getName() == name) {
+			return (*itr);
+		}
+	}
+	return (NULL);
+}
+
+void	Server::eraseChannel(const std::string& name)
 {
 	for (std::vector<Channel *>::iterator itr = this->channels_.begin(); itr != this->channels_.end(); itr++) {
 		if ((*itr)->getName() == name) {

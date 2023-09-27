@@ -45,28 +45,27 @@ JOINコマンドはすべてのサーバーにブロードキャストされな�
 
 #include <iostream>
 #include <vector>
-#include <map>
+#include <algorithm>
 #include "Server.hpp"
+#include "Client.hpp"
 #include "Channel.hpp"
 
 class Channel;
 
-class Join : public Server {
+class Join {
 	public:
 		// CONSTRUCTER
 		Join();
 
 		// METHOD
-		// bool	joinChannel();
 		bool	isChannelName(const std::string& name);												// channel nameが正しいか調べる。
-		bool	isExistChannel(std::map<std::string, Channel *> channelList, const std::string& name); // channel nameが既にあるか調べる。
-		bool	isJoinedChannel(int client, std::map<std::string, Channel *> channelList, const std::string& name);	// ある。既に参加しているか調べる。
-		Channel*	createChannel(const std::string& name);	// ない。チャンネルを作成する。
-		void	addClient(Channel& channel, int& client);		// チャンネルクラスに、クライアントデータを追加する。
+		bool	isExistChannel(const Channel* channel); // channel nameが既にあるか調べる。
+		bool	isJoinedChannel(const Client* client);	// ある。既に参加しているか調べる。
+		void	pushClient(Channel& channel, Client& client);		// チャンネルクラスに、クライアントデータを追加する。
+		void	pushOperator(Channel& channel, Client& client);		// チャンネルクラスに、クライアントデータを追加する。
 
 		// DESTRUCTER
 		~Join();
-
 };
 
 #endif
