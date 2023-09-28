@@ -4,7 +4,7 @@
 NAME			= ircserv
 
 # Enumeration of files
-SRC				= main.cpp server.cpp message.cpp command/privmsg.cpp Client_0913.cpp Channel.cpp
+SRC				= main.cpp Server.cpp Message.cpp command/privmsg.cpp Client.cpp Channel.cpp
 
 # Check the platform
 OS				= $(shell uname)
@@ -65,12 +65,14 @@ $(NAME): $(OBJS)
 
 $(OBJDIR):
 	@mkdir -p $@
-	
+
+$(OBJDIR)/command:
+	@mkdir -p $(OBJDIR)/command
+
 $(OBJDIR)/%.o: $(SRCDIR)/%.cpp | $(OBJDIR)
 	$(CPP) $(DEF) $(INCLUDES) -o $@ -c $<
 
 $(OBJDIR)/command/%.o: $(SRCDIR)/command/%.cpp | $(OBJDIR)/command
-	@mkdir -p $(OBJDIR)/command
 	$(CPP) $(DEF) $(INCLUDES) -o $@ -c $<
 
 
