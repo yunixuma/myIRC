@@ -16,6 +16,7 @@ Server::Server() : sockfd_(-1), running_(false), port_(8080)
 
 Server::Server(int port) : sockfd_(-1), running_(false), port_(port) {
 	debugMessage("Server", HAS_ARGS_CONSTRUCT);
+	commandList.insert(std::make_pair("JOIN", new Join()));
 	// userCommands["JOIN"] = &Server::join;
 	// userCommands["PRIVMSG"] = &Server::privmsg;
 	// userCommands["QUIT"] =&Server::quit;

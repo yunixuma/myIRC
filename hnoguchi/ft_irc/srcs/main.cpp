@@ -51,6 +51,9 @@ int	main()
 		if (message == "QUIT") {
 			server.stop();
 		}
+		if (message == "JOIN") {
+			server.commandList["JOIN"]->pushClient(server.searchChannel("sample_1"), server.searchClient(1));
+		}
 		else {
 			std::cout << message << std::endl;
 		}

@@ -1,5 +1,6 @@
 #include "Channel.hpp"
 
+// CONSTRUCTER
 Channel::Channel(const std::string &name)
 {
 	debugMessage("Channel", DEFAULT_CONSTRUCT);
@@ -29,6 +30,7 @@ Channel&	Channel::operator=(const Channel& rhs)
 	return (*this);
 }
 
+// DESTRUCTER
 Channel::~Channel()
 {
 	debugMessage("Channel", DESTRUCT);
@@ -67,36 +69,6 @@ void	Channel::setMode(ChannelMode mode)
 	this->mode_ = mode;
 }
 
-void	Channel::pushClientList(Client& client)
-{
-	this->clientList_.push_back(&client);
-}
-
-void	Channel::pushOperatorList(Client& ope)
-{
-	this->operatorList_.push_back(&ope);
-}
-
-void	Channel::eraseClientList(Client& client)
-{
-	std::vector<Client *>::iterator	itr = std::find(this->clientList_.begin(), this->clientList_.end(), &client);
-
-	if (itr == this->clientList_.end()) {
-		return ;
-	}
-	this->clientList_.erase(itr);
-}
-
-void	Channel::eraseOperatorList(Client& ope)
-{
-	std::vector<Client *>::iterator	itr = std::find(this->clientList_.begin(), this->clientList_.end(), &ope);
-
-	if (itr == this->operatorList_.end()) {
-		return ;
-	}
-	this->operatorList_.erase(itr);
-}
-
 // GETTER
 const std::string&	Channel::getName() const
 {
@@ -126,4 +98,35 @@ const std::vector<Client *>&	Channel::getClientList() const
 const std::vector<Client *>&	Channel::getOperatorList() const
 {
 	return (this->operatorList_);
+}
+
+// METHOD
+void	Channel::pushClientList(Client& client)
+{
+	this->clientList_.push_back(&client);
+}
+
+void	Channel::pushOperatorList(Client& ope)
+{
+	this->operatorList_.push_back(&ope);
+}
+
+void	Channel::eraseClientList(Client& client)
+{
+	std::vector<Client *>::iterator	itr = std::find(this->clientList_.begin(), this->clientList_.end(), &client);
+
+	if (itr == this->clientList_.end()) {
+		return ;
+	}
+	this->clientList_.erase(itr);
+}
+
+void	Channel::eraseOperatorList(Client& ope)
+{
+	std::vector<Client *>::iterator	itr = std::find(this->clientList_.begin(), this->clientList_.end(), &ope);
+
+	if (itr == this->operatorList_.end()) {
+		return ;
+	}
+	this->operatorList_.erase(itr);
 }

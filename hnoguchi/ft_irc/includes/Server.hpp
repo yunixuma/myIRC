@@ -11,6 +11,7 @@
 // #include "Message.hpp"
 #include "Client.hpp"
 #include "Channel.hpp"
+#include "Join.hpp"
 #include "debugMessage.hpp"
 
 class Client;
@@ -22,10 +23,11 @@ private:
 	int						sockfd_;
 	bool					running_;
 	int						port_;
-	std::vector<Client *>	clients_;
-	std::vector<Channel *>	channels_;
+	std::vector<Client*>	clients_;
+	std::vector<Channel*>	channels_;
 
 public:
+	std::map<std::string, void *>	commandList;
     Server();
     Server(int port);
     // Server(Client &user, Channel &channel);
@@ -66,7 +68,6 @@ public:
 	Channel*	searchChannel(const std::string& name);
 	void		eraseChannel(const std::string& name);
 	// COMMAND
-	Join	join();
 	// void join(const std::vector<std::string>& parameters);
 	// void cap(const std::vector<std::string>& parameters);
 	// void privmsg(Client &user_, Channel &channel_, const Message &message_);
