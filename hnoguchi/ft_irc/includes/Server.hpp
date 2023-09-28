@@ -72,6 +72,8 @@ public:
 	// void cap(const std::vector<std::string>& parameters);
 	// void privmsg(Client &user_, Channel &channel_, const Message &message_);
 	// int quit(Client &user_, Channel &channel_, const Message &message_);
+	// DEBUG
+	void		debugList();
 };
 
 #endif // SERVER_HPP

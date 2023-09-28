@@ -159,6 +159,24 @@ void	Server::run()
 	this->running_ = true;
 }
 
+// DEBUG
+void	Server::debugList()
+{
+	std::cout << "\n---------- [CLIENT] ----------" << std::endl;
+	for (std::vector<Client *>::iterator itr = this->clients_.begin(); itr != this->clients_.end(); itr++) {
+		(*itr)->debugData();
+	}
+	std::cout << "------------------------------" << std::endl;
+	
+	std::cout << std::endl;
+
+	std::cout << "\n---------- [CHANNEL] ----------" << std::endl;
+	for (std::vector<Channel *>::iterator itr = this->channels_.begin(); itr != this->channels_.end(); itr++) {
+		(*itr)->debugData();
+	}
+	std::cout << "------------------------------" << std::endl;
+}
+
 // void Server::run()
 // {
 //     fd_set read_fds;

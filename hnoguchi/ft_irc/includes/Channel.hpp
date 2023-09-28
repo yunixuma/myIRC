@@ -62,6 +62,9 @@ public:
 	const int&						getMode() const;
 	const std::vector<Client *>&	getClientList() const;
 	const std::vector<Client *>&	getOperatorList() const;
+
+	// DEBUG
+	void	debugData();
 };
 
 #endif

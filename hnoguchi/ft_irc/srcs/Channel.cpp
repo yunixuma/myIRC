@@ -130,3 +130,27 @@ void	Channel::eraseOperatorList(Client& ope)
 	}
 	this->operatorList_.erase(itr);
 }
+
+// DEBUG
+void	Channel::debugData()
+{
+	std::cout \
+		<< "        name_ : [" << this->name_ << "]\n" \
+		<< "       topic_ : [" << this->topic_ << "]\n" \
+		<< "        mode_ : [" << this->mode_ << "]\n" \
+		<< std::flush;
+	std::cout \
+		<< "  CLIENT LIST : " << std::flush;
+	for (std::vector<Client *>::iterator itr = this->clientList_.begin(); itr != this->clientList_.end(); itr++) {
+		std::cout << "[" << (*itr)->getUserName() << "], " << std::flush;
+	}
+
+	std::cout << std::endl;
+
+	std::cout \
+		<< "OPERATOR LIST : " << std::flush;
+	for (std::vector<Client *>::iterator itr = this->operatorList_.begin(); itr != this->operatorList_.end(); itr++) {
+		std::cout << "[" << (*itr)->getUserName() << "], " << std::flush;
+	}
+	std::cout << "\n\n" << std::endl;
+}
