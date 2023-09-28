@@ -65,7 +65,9 @@ int	main()
 		server.debugList();
 	}
 	destruct_test_env(server);
+#ifdef LEAKS
 	system("leaks -q ircserv");
+#endif
 }
 
 // using namespace std;

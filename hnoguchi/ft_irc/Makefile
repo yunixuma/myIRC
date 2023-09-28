@@ -7,7 +7,7 @@ NAME			= ircserv
 SRC				= main.cpp Server.cpp \
 				  Client.cpp \
 				  Channel.cpp \
-				  Join.cpp \
+				  Command.cpp Join.cpp \
 				  debugMessage.cpp
 
 # Message.cpp command/privmsg.cpp
@@ -68,8 +68,13 @@ fclean: clean
 re: fclean all
 
 # Additional targets
-.PHONY: debug
-debug: fclean all
+.PHONY: leaks
+leaks: CXXFLAGS += -DLEAKS
+leaks: re
+
+.PHONY: sanitizer
+sanitizer: LDFLAGS += -g -fsanitize=address
+sanitizer: re
 
 # Recipes
 $(NAME): $(OBJS)

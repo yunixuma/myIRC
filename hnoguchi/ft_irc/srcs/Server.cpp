@@ -130,12 +130,10 @@ void	Server::eraseChannel(const std::string& name)
 
 Server::~Server() {
 	debugMessage("Server", DESTRUCT);
-	for (std::map<std::string, void* >::iterator itr = this->commandList_.begin(); itr != this->commandList_.end(); itr++) {
+	for (std::map<std::string, Command* >::iterator itr = this->commandList_.begin(); itr != this->commandList_.end(); itr++) {
 		if (itr->second != NULL) {
-			// delete itr->second;
-			;
+			delete itr->second;
 		}
-		this->commandList_.erase(itr);
 	}
 	this->commandList_.clear();
     // if (sockfd_ >= 0) {

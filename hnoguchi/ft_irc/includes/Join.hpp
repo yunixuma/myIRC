@@ -48,11 +48,12 @@ JOINコマンドはすべてのサーバーにブロードキャストされな�
 #include <algorithm>
 #include "Client.hpp"
 #include "Channel.hpp"
+#include "Command.hpp"
 
 class Client;
 class Channel;
 
-class Join {
+class Join : public Command {
 public:
 	// CONSTRUCTER
 	Join();
