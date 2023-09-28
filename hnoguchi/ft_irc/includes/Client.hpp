@@ -44,13 +44,13 @@ public:
 	const std::string&	getUserName(void) const;
 	const std::string&	getNickname(void) const;
 	int				getRole(void) const;
-	Channel*		findJoinedChannel(std::string channelName);
+	// Channel*		findJoinedChannel(std::string channelName);
 	void			setFd(int fd);
 	void			setUserName(const std::string& userName);
 	void			setNickname(const std::string& nickname);
 	void			setRole(int role);
-	void			joinChannel(Channel& channel);
-	void			leaveChannel(Channel& channel);
+	// void			joinChannel(Channel& channel);
+	// void			leaveChannel(Channel& channel);
 	// void			distributeMessage(Server server, const std::string& message);
 };
 
