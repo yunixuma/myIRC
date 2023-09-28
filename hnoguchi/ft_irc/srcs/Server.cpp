@@ -16,7 +16,7 @@ Server::Server() : sockfd_(-1), running_(false), port_(8080)
 
 Server::Server(int port) : sockfd_(-1), running_(false), port_(port) {
 	debugMessage("Server", HAS_ARGS_CONSTRUCT);
-	commandList.insert(std::make_pair("JOIN", new Join()));
+	this->commandList_.insert(std::make_pair("JOIN", new Join()));
 	// userCommands["JOIN"] = &Server::join;
 	// userCommands["PRIVMSG"] = &Server::privmsg;
 	// userCommands["QUIT"] =&Server::quit;
@@ -97,6 +97,14 @@ void	Server::eraseChannel(const std::string& name)
 
 Server::~Server() {
 	debugMessage("Server", DESTRUCT);
+	for (std::map<std::string, void* >::iterator itr = this->commandList_.begin(); itr != this->commandList_.end(); itr++) {
+		if (itr->second != NULL) {
+			// delete itr->second;
+			;
+		}
+		this->commandList_.erase(itr);
+	}
+	this->commandList_.clear();
     // if (sockfd_ >= 0) {
     //     if (close(sockfd_) < 0) {
 	// 		std::cerr << "Error closing socket" << std::endl;
