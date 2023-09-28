@@ -6,20 +6,20 @@
 
 // 上記lee追加
 
-// Client::Client(int fd, const std::string& userName, const std::string& nickname, int role) \
-// 	: fd_(fd), userName_(userName), nickname_(nickname), role_(role) {
+// Client::Client(int fd, const std::string& userName, const std::string& nickName, int role) \
+// 	: fd_(fd), userName_(userName), nickName_(nickName), role_(role) {
 // 	std::clog << "\033[36;2;3m[" << this \
 // 		<< "]<Client> Constructor called (" << this->userName_ << ")\033[m" << std::endl;
 // }
 
 // Client::Client(int fd, sockaddr_in addr)
-// 	: fd_(fd), addr_(addr), userName_(""), nickname_(""), role_(0) {
+// 	: fd_(fd), addr_(addr), userName_(""), nickName_(""), role_(0) {
 // 	std::clog << "\033[36;2;3m[" << this \
 // 		<< "]<Client> Constructor called (" << this->userName_ << ")\033[m" << std::endl;
 // }
 
 Client::Client(int fd)
-	: fd_(fd), userName_(""), nickname_(""), role_(0) {
+	: fd_(fd), userName_(""), nickName_(""), role_(0) {
 	std::clog << "\033[36;2;3m[" << this \
 		<< "]<Client> Constructor called (" << this->userName_ << ")\033[m" << std::endl;
 }
@@ -36,7 +36,7 @@ Client&	Client::operator=(const Client& rhs) {
 		<< rhs.userName_ << " -> " << this->userName_ << ")\033[m" << std::endl;
 	this->fd_ = rhs.fd_;
 	this->userName_ = rhs.userName_;
-	this->nickname_ = rhs.nickname_;
+	this->nickName_ = rhs.nickName_;
 	this->role_ = rhs.role_;
 	// if (!this->joinedChannel_.empty()) {
 	// 	this->joinedChannel_.clear();
@@ -64,8 +64,8 @@ const std::string&	Client::getUserName(void) const {
 	return (this->userName_);
 }
 
-const std::string&	Client::getNickname(void) const {
-	return (this->nickname_);
+const std::string&	Client::getNickName(void) const {
+	return (this->nickName_);
 }
 
 int	Client::getRole(void) const {
@@ -90,12 +90,23 @@ void	Client::setUserName(const std::string& userName) {
 	this->userName_ = userName;
 }
 
-void	Client::setNickname(const std::string& nickname) {
-	this->nickname_ = nickname;
+void	Client::setNickName(const std::string& nickname) {
+	this->nickName_ = nickname;
 }
 
 void	Client::setRole(int role) {
 	this->role_ = role;
+}
+
+// DEBUG
+void	Client::debugData()
+{
+	std::cout \
+		<< "      fd_ : [" << this->fd_ << "]\n" \
+		<< "userName_ : [" << this->userName_ << "]\n" \
+		<< "nickName_ : [" << this->nickName_ << "]\n" \
+		<< "    role_ : [" << this->role_ << "]\n" \
+		<< std::endl;
 }
 
 // void	Client::joinChannel(Channel& channel) {

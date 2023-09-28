@@ -24,6 +24,9 @@ void	construct_test_env(Server& server)
 	server.pushClient(1);
 	server.pushClient(2);
 	server.pushClient(3);
+	server.searchClient(1)->setUserName("user_1");
+	server.searchClient(2)->setUserName("user_2");
+	server.searchClient(3)->setUserName("user_3");
 	server.pushChannel("sample_1");
 	server.pushChannel("sample_2");
 }
@@ -52,13 +55,17 @@ int	main()
 			server.stop();
 		}
 		if (message == "JOIN") {
-			static_cast<Join*>(server.commandList["JOIN"])->pushClient(server.searchChannel("sample_1"), server.searchClient(1));
+			static_cast<Join*>(server.commandList["JOIN"])->pushClient(*(server.searchChannel("sample_1")), *(server.searchClient(1)));
+			static_cast<Join*>(server.commandList["JOIN"])->pushClient(*(server.searchChannel("sample_1")), *(server.searchClient(2)));
+			static_cast<Join*>(server.commandList["JOIN"])->pushClient(*(server.searchChannel("sample_1")), *(server.searchClient(3)));
 		}
 		else {
 			std::cout << message << std::endl;
 		}
+		server.debugList();
 	}
 	destruct_test_env(server);
+	system("leaks -q ircserv");
 }
 
 // using namespace std;

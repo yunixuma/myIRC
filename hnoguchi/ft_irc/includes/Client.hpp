@@ -16,7 +16,7 @@ private:
 	int						fd_;
 	// sockaddr_in				addr_;
 	std::string				userName_;
-	std::string				nickname_;
+	std::string				nickName_;
 	int						role_;
 	// std::vector<Channel *>	joinedChannel_;
 
@@ -42,16 +42,18 @@ public:
 	int				getFd(void) const;
 	// sockaddr_in&	getAddr(void) const;
 	const std::string&	getUserName(void) const;
-	const std::string&	getNickname(void) const;
+	const std::string&	getNickName(void) const;
 	int				getRole(void) const;
 	// Channel*		findJoinedChannel(std::string channelName);
 	void			setFd(int fd);
 	void			setUserName(const std::string& userName);
-	void			setNickname(const std::string& nickname);
+	void			setNickName(const std::string& nickname);
 	void			setRole(int role);
 	// void			joinChannel(Channel& channel);
 	// void			leaveChannel(Channel& channel);
 	// void			distributeMessage(Server server, const std::string& message);
+	// DEBUG
+	void			debugData();
 };
 
 #endif
