@@ -15,6 +15,7 @@
 
 class Client;
 class Channel;
+class Join;
 
 class Server {
 private:
@@ -65,6 +66,7 @@ public:
 	Channel*	searchChannel(const std::string& name);
 	void		eraseChannel(const std::string& name);
 	// COMMAND
+	Join	join();
 	// void join(const std::vector<std::string>& parameters);
 	// void cap(const std::vector<std::string>& parameters);
 	// void privmsg(Client &user_, Channel &channel_, const Message &message_);

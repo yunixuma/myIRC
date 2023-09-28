@@ -38,22 +38,22 @@ Client&	Client::operator=(const Client& rhs) {
 	this->userName_ = rhs.userName_;
 	this->nickname_ = rhs.nickname_;
 	this->role_ = rhs.role_;
-	if (!this->joinedChannel_.empty()) {
-		this->joinedChannel_.clear();
-	}
-	for (std::vector<Channel *>::iterator itr = this->joinedChannel_.begin(); itr != this->joinedChannel_.end(); itr++)
-	{
-		this->joinedChannel_.push_back(*itr);
-	}
+	// if (!this->joinedChannel_.empty()) {
+	// 	this->joinedChannel_.clear();
+	// }
+	// for (std::vector<Channel *>::iterator itr = this->joinedChannel_.begin(); itr != this->joinedChannel_.end(); itr++)
+	// {
+	// 	this->joinedChannel_.push_back(*itr);
+	// }
 	return (*this);
 }
 
 Client::~Client(void) {
 	std::clog << "\033[31;2;3m[" << this \
 		<< "]<Client> Destructor called (" << this->userName_ << ")\033[m" << std::endl;
-	if (!this->joinedChannel_.empty()) {
-		this->joinedChannel_.clear();
-	}
+	// if (!this->joinedChannel_.empty()) {
+	// 	this->joinedChannel_.clear();
+	// }
 }
 
 int	Client::getFd(void) const {
@@ -72,15 +72,15 @@ int	Client::getRole(void) const {
 	return (this->role_);
 }
 
-Channel*	Client::findJoinedChannel(std::string channelName) {
-	// std::vector<Channel *>::iterator	itr;
-	for (std::vector<Channel *>::iterator itr = this->joinedChannel_.begin(); itr != this->joinedChannel_.end(); itr++)
-	{
-		if ((*itr)->getName() == channelName)
-			return (*itr);
-	}
-	return (NULL);
-}
+// Channel*	Client::findJoinedChannel(std::string channelName) {
+// 	// std::vector<Channel *>::iterator	itr;
+// 	for (std::vector<Channel *>::iterator itr = this->joinedChannel_.begin(); itr != this->joinedChannel_.end(); itr++)
+// 	{
+// 		if ((*itr)->getName() == channelName)
+// 			return (*itr);
+// 	}
+// 	return (NULL);
+// }
 
 void	Client::setFd(int fd) {
 	this->fd_ = fd;
@@ -98,27 +98,27 @@ void	Client::setRole(int role) {
 	this->role_ = role;
 }
 
-void	Client::joinChannel(Channel& channel) {
-	std::clog << "\033[2;3m[" << this \
-		<< "]<Client> joinChannel(" << channel.getName() \
-		<< ") called (" << this->userName_ << ")\033[m" << std::endl;
-	this->joinedChannel_.push_back(&channel);
-}
-
-void	Client::leaveChannel(Channel& channel) {
-	std::clog << "\033[2;3m[" << this \
-		<< "]<Client> leaveChannel(" << channel.getName() \
-		<< ") called (" << this->userName_ << ")\033[m" << std::endl;
-	std::vector<Channel *>::iterator	itr;
-	for (itr = this->joinedChannel_.begin(); itr != this->joinedChannel_.end(); itr++)
-	{
-		if (*itr == &channel)
-		{
-			this->joinedChannel_.erase(itr);
-			return ;
-		}
-	}
-}
+// void	Client::joinChannel(Channel& channel) {
+// 	std::clog << "\033[2;3m[" << this \
+// 		<< "]<Client> joinChannel(" << channel.getName() \
+// 		<< ") called (" << this->userName_ << ")\033[m" << std::endl;
+// 	this->joinedChannel_.push_back(&channel);
+// }
+// 
+// void	Client::leaveChannel(Channel& channel) {
+// 	std::clog << "\033[2;3m[" << this \
+// 		<< "]<Client> leaveChannel(" << channel.getName() \
+// 		<< ") called (" << this->userName_ << ")\033[m" << std::endl;
+// 	std::vector<Channel *>::iterator	itr;
+// 	for (itr = this->joinedChannel_.begin(); itr != this->joinedChannel_.end(); itr++)
+// 	{
+// 		if (*itr == &channel)
+// 		{
+// 			this->joinedChannel_.erase(itr);
+// 			return ;
+// 		}
+// 	}
+// }
 
 // void	Client::distributeMessage(Server server, const std::string& message) {
 // 	std::clog << "\033[2;3m[" << this \

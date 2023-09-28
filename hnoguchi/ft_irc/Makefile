@@ -7,6 +7,7 @@ NAME			= ircserv
 SRC				= main.cpp Server.cpp \
 				  Client.cpp \
 				  Channel.cpp \
+				  Join.cpp \
 				  debugMessage.cpp
 
 # Message.cpp command/privmsg.cpp

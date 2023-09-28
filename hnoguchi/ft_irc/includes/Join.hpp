@@ -49,22 +49,23 @@ JOINコマンドはすべてのサーバーにブロードキャストされな�
 #include "Client.hpp"
 #include "Channel.hpp"
 
+class Client;
 class Channel;
 
 class Join {
-	public:
-		// CONSTRUCTER
-		Join();
+public:
+	// CONSTRUCTER
+	Join();
 
-		// DESTRUCTER
-		~Join();
+	// DESTRUCTER
+	~Join();
 
-		// METHOD
-		bool	validateChannelName(const std::string& name);	// channel nameが正しいか調べる。
-		bool	isExistChannel(const Channel* channel);			// channel nameが既にあるか調べる。
-		bool	isJoinedChannel(const Client* client);			// ある。既に参加しているか調べる。
-		void	pushClient(Channel& channel, Client& client);	// チャンネルクラスに、clientを追加する。
-		void	pushOperator(Channel& channel, Client& client);	// チャンネルクラスに、operator clientを追加する。
+	// METHOD
+	bool	validateChannelName(const std::string& name);	// channel nameが正しいか調べる。
+	bool	isExistChannel(const Channel* channel);			// channel nameが既にあるか調べる。
+	bool	isJoinedChannel(const Client* client);			// ある。既に参加しているか調べる。
+	void	pushClient(Channel& channel, Client& client);	// チャンネルクラスに、clientを追加する。
+	void	pushOperator(Channel& channel, Client& client);	// チャンネルクラスに、operator clientを追加する。
 };
 
 #endif
