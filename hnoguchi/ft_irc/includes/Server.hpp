@@ -11,6 +11,7 @@
 // #include "Message.hpp"
 #include "Client.hpp"
 #include "Channel.hpp"
+#include "Command.hpp"
 #include "Join.hpp"
 #include "debugMessage.hpp"
 
@@ -27,7 +28,7 @@ private:
 	std::vector<Channel*>			channels_;
 
 public:
-	std::map<std::string, void *>	commandList_;
+	std::map<std::string, Command *>	commandList_;
     Server();
     Server(int port);
     // Server(Client &user, Channel &channel);
