@@ -12,7 +12,7 @@
 Server::Server() : sockfd_(-1), running_(false), port_(8080)
 {
 	debugMessage("Server", DEFAULT_CONSTRUCT);
-};
+}
 
 Server::Server(int port) : sockfd_(-1), running_(false), port_(port) {
 	debugMessage("Server", HAS_ARGS_CONSTRUCT);
@@ -29,6 +29,23 @@ Server::Server(int port) : sockfd_(-1), running_(false), port_(port) {
 	
 // }
 
+// GETTER
+const int&	Server::getSockfd() const
+{
+	return (this->sockfd_);
+}
+
+const bool&	Server::getRunning() const
+{
+	return (this->running_);
+}
+
+
+const int&	Server::getPort() const
+{
+	return (this->port_);
+}
+
 std::vector<Client *>	Server::getClients() const
 {
 	return (this->clients_);
@@ -37,6 +54,22 @@ std::vector<Client *>	Server::getClients() const
 std::vector<Channel *>	Server::getChannels() const
 {
 	return (this->channels_);
+}
+
+// SETTER
+void		Server::setSockfd(const int& fd)
+{
+	this->sockfd_ = fd;
+}
+
+void		Server::setRunning(const bool& running)
+{
+	this->running_ = running;
+}
+
+void		Server::setPort(const int& port)
+{
+	this->port_ = port;
 }
 
 // void Server::pushClient(int client_fd, sockaddr_in& client_address)
@@ -276,11 +309,6 @@ void	Server::debugList()
 
 void	Server::stop() {
         running_ = false;
-}
-
-const bool&	Server::getRunning() const
-{
-	return (this->running_);
 }
 
 // void Server::handleClientMessage(int client_fd) {

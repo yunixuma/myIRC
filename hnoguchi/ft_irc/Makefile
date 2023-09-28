@@ -23,11 +23,11 @@ INCDIR			= ./includes
 OBJDIR			= ./obj
 
 # Aliases of commands
-CPP				= c++
+CXX				= c++
 RM				= rm
 
 # Command options (flags)
-CPPFLAGS		= -Wall -Wextra -Werror -std=c++98
+CXXFLAGS		= -Wall -Wextra -Werror -std=c++98 -pedantic-errors -MMD -MP
 INCLUDES		= -I$(INCDIR)
 RMFLAGS			= -r
 DEBUGCFLAGS		= -g -ggdb -fno-omit-frame-pointer
@@ -51,33 +51,41 @@ OBJS = $(SRC:%.cpp=$(OBJDIR)/%.o)
 DEPS			= $(addprefix $(OBJDIR)/, $(notdir $(SRCS:.cpp=.d)))
 
 # ********************* Section for targets and commands ********************* #
-# Phonies
-.PHONY: all clean fclean re debug
 
 # Mandatory targets
+.PHONY: all
 all: $(NAME)
+
+.PHONY: clean
 clean:
 	-$(RM) $(RMFLAGS) $(OBJDIR)
+
+.PHONY: fclean
 fclean: clean
 	-$(RM) $(RMFLAGS) $(NAME)
+
+.PHONY: re
 re: fclean all
 
 # Additional targets
+.PHONY: debug
 debug: fclean all
 
 # Recipes
 $(NAME): $(OBJS)
-	$(CPP) $(LDFLAGS) $(OBJS) -o $(NAME)
+	$(CXX) $(LDFLAGS) $(OBJS) -o $(NAME)
 
 $(OBJDIR):
-	@mkdir -p $@
+	mkdir -p $@
 	
 $(OBJDIR)/%.o: $(SRCDIR)/%.cpp | $(OBJDIR)
-	$(CPP) $(DEF) $(INCLUDES) -o $@ -c $<
+	$(CXX) $(CXXFLAGS) $(INCLUDES) -o $@ -c $<
+$(OBJDIR)/%.o: $(SRCDIR)/command/%.cpp | $(OBJDIR)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) -o $@ -c $<
 
-$(OBJDIR)/command/%.o: $(SRCDIR)/command/%.cpp | $(OBJDIR)/command
-	@mkdir -p $(OBJDIR)/command
-	$(CPP) $(DEF) $(INCLUDES) -o $@ -c $<
+# $(OBJDIR)/command/%.o: $(SRCDIR)/command/%.cpp | $(OBJDIR)/command
+# 	mkdir -p $(OBJDIR)/command
+#	$(CPP) $(DEF) $(INCLUDES) -o $@ -c $<
 
 
 # Including and ignore .dep files when they are not found

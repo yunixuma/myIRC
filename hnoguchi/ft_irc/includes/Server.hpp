@@ -47,17 +47,17 @@ public:
 	// void executeCommand(Client &user_, Channel &channel_, const Message &message_);
 
 	// GETTER
-	// const int&				getSockfd() const;
+	const int&				getSockfd() const;
 	const bool&				getRunning() const;
-	// const int&				getPort() const;
+	const int&				getPort() const;
 	std::vector<Client *>	getClients() const;
 	std::vector<Channel *>	getChannels() const;
 	// const void*				getCommand(const std::string& command) const;
 
 	// SETTER
-	// void		setSockfd(const int& fd);
-	// void		setRunning(const bool& running);
-	// void		setPort(const int& port);
+	void		setSockfd(const int& fd);
+	void		setRunning(const bool& running);
+	void		setPort(const int& port);
 
 	// CLIENT
 	// void		pushClient(int client_fd, sockaddr_in& client_address);
