@@ -55,9 +55,9 @@ int	main()
 			server.stop();
 		}
 		if (message == "JOIN") {
-			static_cast<Join*>(server.commandList["JOIN"])->pushClient(*(server.searchChannel("sample_1")), *(server.searchClient(1)));
-			static_cast<Join*>(server.commandList["JOIN"])->pushClient(*(server.searchChannel("sample_1")), *(server.searchClient(2)));
-			static_cast<Join*>(server.commandList["JOIN"])->pushClient(*(server.searchChannel("sample_1")), *(server.searchClient(3)));
+			static_cast<Join*>(server.commandList_["JOIN"])->pushClient(*(server.searchChannel("sample_1")), *(server.searchClient(1)));
+			static_cast<Join*>(server.commandList_["JOIN"])->pushClient(*(server.searchChannel("sample_1")), *(server.searchClient(2)));
+			static_cast<Join*>(server.commandList_["JOIN"])->pushClient(*(server.searchChannel("sample_1")), *(server.searchClient(3)));
 		}
 		else {
 			std::cout << message << std::endl;
