@@ -21,14 +21,14 @@ class Join;
 
 class Server {
 private:
-	int								sockfd_;
-	bool							running_;
-	int								port_;
-	std::vector<Client*>			clients_;
-	std::vector<Channel*>			channels_;
+	int									sockfd_;
+	bool								running_;
+	int									port_;
+	std::vector<Client*>				clients_;
+	std::vector<Channel*>				channels_;
+	std::map<std::string, Command *>	commandList_;
 
 public:
-	std::map<std::string, Command *>	commandList_;
     Server();
     Server(int port);
     // Server(Client &user, Channel &channel);
@@ -53,7 +53,7 @@ public:
 	const int&				getPort() const;
 	std::vector<Client *>	getClients() const;
 	std::vector<Channel *>	getChannels() const;
-	// const void*				getCommand(const std::string& command) const;
+	Command*				getCommand(const std::string& command);
 
 	// SETTER
 	void		setSockfd(const int& fd);

@@ -56,6 +56,11 @@ std::vector<Channel *>	Server::getChannels() const
 	return (this->channels_);
 }
 
+Command*	Server::getCommand(const std::string& command)
+{
+	return (this->commandList_[command]);
+}
+
 // SETTER
 void		Server::setSockfd(const int& fd)
 {
@@ -224,9 +229,9 @@ void	Server::run()
 			this->stop();
 		}
 		if (message == "JOIN") {
-			static_cast<Join*>(this->commandList_["JOIN"])->pushClient(*(this->searchChannel("sample_1")), *(this->searchClient(1)));
-			static_cast<Join*>(this->commandList_["JOIN"])->pushClient(*(this->searchChannel("sample_1")), *(this->searchClient(2)));
-			static_cast<Join*>(this->commandList_["JOIN"])->pushClient(*(this->searchChannel("sample_1")), *(this->searchClient(3)));
+			static_cast<Join *>(this->getCommand("JOIN"))->pushClient(*(this->searchChannel("sample_1")), *(this->searchClient(1)));
+			// static_cast<Join *>(this->commandList_["JOIN"])->pushClient(*(this->searchChannel("sample_1")), *(this->searchClient(2)));
+			// static_cast<Join *>(this->commandList_["JOIN"])->pushClient(*(this->searchChannel("sample_1")), *(this->searchClient(3)));
 		}
 		else {
 			std::cout << message << std::endl;
