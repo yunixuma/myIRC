@@ -39,7 +39,7 @@ public:
 
 	Client&			operator=(const Client& rhs);
 	~Client();
-	int				getFd(void) const;
+	const int&		getFd(void) const;
 	// sockaddr_in&	getAddr(void) const;
 	const std::string&	getUserName(void) const;
 	const std::string&	getNickName(void) const;

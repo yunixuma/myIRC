@@ -56,7 +56,7 @@ Client::~Client(void) {
 	// }
 }
 
-int	Client::getFd(void) const {
+const int&	Client::getFd(void) const {
 	return (this->fd_);
 }
 

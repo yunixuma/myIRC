@@ -106,9 +106,14 @@ void	Channel::pushClientList(Client& client)
 	this->clientList_.push_back(&client);
 }
 
-void	Channel::pushOperatorList(Client& ope)
+Client*	Channel::searchClientList(const int& fd)
 {
-	this->operatorList_.push_back(&ope);
+	for (std::vector<Client *>::iterator itr = this->clientList_.begin(); itr != this->clientList_.end(); itr++) {
+		if ((*itr)->getFd() == fd) {
+			return (*itr);
+		}
+	}
+	return (NULL);
 }
 
 void	Channel::eraseClientList(Client& client)
@@ -119,6 +124,21 @@ void	Channel::eraseClientList(Client& client)
 		return ;
 	}
 	this->clientList_.erase(itr);
+}
+
+void	Channel::pushOperatorList(Client& ope)
+{
+	this->operatorList_.push_back(&ope);
+}
+
+Client*	Channel::searchOperatorList(const int& fd)
+{
+	for (std::vector<Client *>::iterator itr = this->operatorList_.begin(); itr != this->operatorList_.end(); itr++) {
+		if ((*itr)->getFd() == fd) {
+			return (*itr);
+		}
+	}
+	return (NULL);
 }
 
 void	Channel::eraseOperatorList(Client& ope)
