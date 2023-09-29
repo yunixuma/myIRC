@@ -193,9 +193,46 @@ Server::~Server() {
 // clients_はサーバクラス内にあるvectorで、サーバが接続を許可したすべての
 // クライアントのソケットファイルディスクリプタを保持します。
 
+int	getline_prompt(std::string prompt, std::string *line)
+{
+	char	buffer[111];
+
+	std::cout << prompt;
+	std::cin.clear(std::ios::goodbit);
+	std::cin.width(110);
+	std::cin.getline(buffer, 110);
+	if (std::cin.eof() == true) {
+		std::cout << "\nlog out." << std::endl;
+		return (-1);
+	} else if (std::cin.fail() == true) {
+		std::cout << "\nPhoneBook: Fatal error: std::cin" << std::endl;
+		return (-1);
+	}
+	*line = buffer;
+	return (0);
+}
+
 void	Server::run()
 {
 	this->running_ = true;
+	while (this->getRunning()) {
+		std::string	message;
+		if (getline_prompt("Message: ", &message) < 0) {
+			this->stop();
+		}
+		if (message == "QUIT") {
+			this->stop();
+		}
+		if (message == "JOIN") {
+			static_cast<Join*>(this->commandList_["JOIN"])->pushClient(*(this->searchChannel("sample_1")), *(this->searchClient(1)));
+			static_cast<Join*>(this->commandList_["JOIN"])->pushClient(*(this->searchChannel("sample_1")), *(this->searchClient(2)));
+			static_cast<Join*>(this->commandList_["JOIN"])->pushClient(*(this->searchChannel("sample_1")), *(this->searchClient(3)));
+		}
+		else {
+			std::cout << message << std::endl;
+		}
+		this->debugList();
+	}
 }
 
 // DEBUG
