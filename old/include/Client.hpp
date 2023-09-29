@@ -13,7 +13,7 @@ class Client
 {
 private:
 	int						fd_;
-	sockaddr_in				addr_;
+	sockaddr_in				*addr_;
 	std::string				userName_;
 	std::string				nickname_;
 	int						role_;
@@ -28,6 +28,7 @@ public:
     // // 見つかった場合はそのユーザーオブジェクトへのポインタを返し、見つからなければ nullptr を返す
     // // ここでは簡単な例を示していますが、実際の実装はデータの管理方法により異なります
 	void new_client(int client_fd, sockaddr_in client_address);
+	void closeSocket();
 
 	//上記lee 追加。
 
@@ -38,7 +39,7 @@ public:
 	Client&			operator=(const Client& rhs);
 	~Client();
 	int				getFd(void) const;
-	sockaddr_in&	getAddr(void) const;
+	const sockaddr_in*	getAddr(void) const;
 	const std::string&	getUserName(void) const;
 	const std::string&	getNickname(void) const;
 	int				getRole(void) const;
