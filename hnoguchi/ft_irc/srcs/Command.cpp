@@ -13,7 +13,7 @@ Command::~Command()
 }
 
 // METHOD
-void	Command::responseMessage(const std::string message)
+void	Command::responseMessage(const std::string& message)
 {
 	std::cout << message << std::endl;
 }

@@ -62,7 +62,7 @@ public:
 	~Join();
 
 	// METHOD
-	bool	validateChannelName(const std::string& name);	// channel nameが正しいか調べる。
+	// bool	validateChannelName(const std::string& name);	// channel nameが正しいか調べる。
 	bool	isExistChannel(const Channel* channel);			// channel nameが既にあるか調べる。
 	bool	isJoinedChannel(const Client* client);			// ある。既に参加しているか調べる。
 	void	pushClient(Channel& channel, Client& client);	// チャンネルクラスに、clientを追加する。

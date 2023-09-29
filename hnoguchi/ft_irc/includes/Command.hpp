@@ -11,7 +11,7 @@ public:
 	// DESTRUCT
 	virtual ~Command();
 	// METHOD
-	void	responseMessage(const std::string message);
+	void	responseMessage(const std::string& message);
 };
 
 #endif
