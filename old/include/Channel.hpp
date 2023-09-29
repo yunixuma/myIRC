@@ -41,20 +41,13 @@ public:
 	Channel(const std::string& name);
 	Channel(const Channel& src);
 	Channel&	operator=(const Channel& rhs);
-
 	// DESTRUCTER
 	~Channel();
-
 	// Setters
 	void	setName(std::string& name);
 	void	setTopic(std::string& topic);
 	// void	setPrefix(std::string &name);
 	void	setMode(ChannelMode mode);
-	void	pushClientList(Client& client);
-	void	pushOperatorList(Client& ope);
-	void	eraseClientList(Client& client);
-	void	eraseOperatorList(Client& ope);
-
 	// Getter
 	const std::string&				getName() const;
 	const std::string&				getTopic() const;
@@ -62,6 +55,15 @@ public:
 	const int&						getMode() const;
 	const std::vector<Client *>&	getClientList() const;
 	const std::vector<Client *>&	getOperatorList() const;
+	// METHOD
+	void	pushClientList(Client& client);
+	Client*	searchClientList(const int& fd);
+	void	eraseClientList(Client& client);
+	void	pushOperatorList(Client& ope);
+	Client*	searchOperatorList(const int& fd);
+	void	eraseOperatorList(Client& ope);
+	// DEBUG
+	void	debugData();
 };
 
 #endif
