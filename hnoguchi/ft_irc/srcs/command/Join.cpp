@@ -4,11 +4,11 @@ Join::Join() { debugMessage("Join", DEFAULT_CONSTRUCT); }
 
 Join::~Join() { debugMessage("Join", DESTRUCT); }
 
-bool	Join::validateChannelName(const std::string& name)
-{
-	(void)name;
-	return (true);
-}
+// bool	Join::validateChannelName(const std::string& name)
+// {
+// 	(void)name;
+// 	return (true);
+// }
 
 bool	Join::isExistChannel(const Channel* channel)
 {
