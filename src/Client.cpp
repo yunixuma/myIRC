@@ -1,16 +1,30 @@
 #include "Client.hpp"
 
-Client::Client(int fd, sockaddr_in addr, const std::string& userName, const std::string& nickname, int role) \
-	: fd_(fd), sockaddr_in addr_(addr), userName_(userName), nickname_(nickname), role_(role), joinedChannel_() {
+// constructor
+Client::Client(int client_fd, sockaddr_in client_address)
+    : fd_(client_fd), addr_(&client_address) {
+}
+
+void Client::closeSocket() 
+{
+		close(getFd());
+}
+
+// 上記lee追加
+
+Client::Client(int fd, const std::string& userName, const std::string& nickname, int role) \
+	: fd_(fd), userName_(userName), nickname_(nickname), role_(role) {
 	std::clog << "\033[36;2;3m[" << this \
 		<< "]<Client> Constructor called (" << this->userName_ << ")\033[m" << std::endl;
 }
+
 
 Client::Client(const Client& src) {
 	std::clog << "\033[36;2;3m[" << this << "<-" << &src \
 		<< "]<Client> Copy constructor called (" << this->userName_ << ")\033[m" << std::endl;
 	*this = src;
 }
+
 
 Client&	Client::operator=(const Client& rhs) {
 	std::clog << "\033[35;2;3m[" << this << "<-" << &rhs \
@@ -41,7 +55,7 @@ int	Client::getFd(void) const {
 	return (this->fd_);
 }
 
-sockaddr_in&	Client::getAddr(void) const {
+const sockaddr_in*	Client::getAddr(void) const {
 	return (this->addr_);
 }
 
@@ -112,3 +126,10 @@ void	Client::distributeMessage(Server server, const std::string& message) {
 	server.send(this->fd_, message);
 }
 */
+
+// Client* Client::user_find(const std::string& username) {
+//     // ユーザー名から該当するユーザーを検索する処理を実装
+//     // 例: ユーザー名をキーとして、ユーザーオブジェクトを格納したデータ構造を検索
+//     // 見つかった場合はそのユーザーオブジェクトへのポインタを返し、見つからなければ nullptr を返す
+//     // ここでは簡単な例を示していますが、実際の実装はデータの管理方法により異なります
+// }

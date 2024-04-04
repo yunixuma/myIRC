@@ -1,22 +1,10 @@
-# **************************************************************************** #
-#                                                                              #
-#                                                         :::      ::::::::    #
-#    Makefile                                           :+:      :+:    :+:    #
-#                                                     +:+ +:+         +:+      #
-#    By: yoo-lee <yoo-lee@student.42.fr>            +#+  +:+       +#+         #
-#                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2023/05/16 15:04:04 by ykosaka           #+#    #+#              #
-#    Updated: 2023/07/28 13:28:58 by yoo-lee          ###   ########.fr        #
-#                                                                              #
-# **************************************************************************** #
-
 
 # ********************** Section for Macros (Variables) ********************** #
 # Product file
 NAME			= ircserv
 
 # Enumeration of files
-SRC				= main.cpp server.cpp message.cpp
+SRC				= main.cpp Server.cpp Message.cpp command/privmsg.cpp Client.cpp Channel.cpp
 
 # Check the platform
 OS				= $(shell uname)
@@ -53,7 +41,7 @@ endif
 
 # Macros to replace and/or integrate
 SRCS			= $(addprefix $(SRCDIR)/, $(SRC))
-OBJS			= $(addprefix $(OBJDIR)/, $(notdir $(SRCS:.cpp=.o)))
+OBJS = $(SRC:%.cpp=$(OBJDIR)/%.o)
 DEPS			= $(addprefix $(OBJDIR)/, $(notdir $(SRCS:.cpp=.d)))
 
 # ********************* Section for targets and commands ********************* #
@@ -77,8 +65,16 @@ $(NAME): $(OBJS)
 
 $(OBJDIR):
 	@mkdir -p $@
+
+$(OBJDIR)/command:
+	@mkdir -p $(OBJDIR)/command
+
 $(OBJDIR)/%.o: $(SRCDIR)/%.cpp | $(OBJDIR)
-	$(CPP) $(CPPFLAGS) $(DEF) $(INCLUDES) -o $@ -c $<
+	$(CPP) $(DEF) $(INCLUDES) -o $@ -c $<
+
+$(OBJDIR)/command/%.o: $(SRCDIR)/command/%.cpp | $(OBJDIR)/command
+	$(CPP) $(DEF) $(INCLUDES) -o $@ -c $<
+
 
 # Including and ignore .dep files when they are not found
 -include $(DEPS)
