@@ -1,0 +1,5 @@
+client
+
+
+個々のfdはclinet class で保持されている。
+そしてuser 名は個々の名前で保持している。

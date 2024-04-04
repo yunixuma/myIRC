@@ -1,0 +1,340 @@
+#include "server.h"
+#include "message.h"
+#include "Client.hpp"
+#include "Channel.hpp"
+#include "Join.hpp"
+
+#include <iostream>
+#include <algorithm>
+#include <cstring>
+#include <iostream>
+#include <unistd.h>
+
+using std::vector;
+using std::string;
+using std::cout;
+using std::endl;
+using std::cerr;
+
+// constructor
+
+Server::Server(){};
+
+Server::Server(int port) : sockfd_(-1), running_(false), port_(port) {
+}
+
+// channel
+
+Channel& Server::getChannelByName(std::string name)
+{
+
+	// if (channels_.find(name) != channels_.end())
+	return channels_[name];
+}
+
+
+bool Server::isValidChannelName(const std::string& name) 
+{
+    // チャンネル名は空であってはならない
+    if (name.empty()) 
+	{
+        return false;
+    }
+
+    // チャンネル名は通常 "#" で始まる
+    if (name[0] != '#') 
+	{
+        return false;
+    }
+   
+    for (std::string::const_iterator it = name.begin(); it != name.end(); ++it)
+	{
+		if (!std::isalnum(*it) && *it != '#' && *it != '-' && *it != '_') 
+		{
+			return false;
+		}
+	}
+    return true;
+}
+
+bool Server::channelExists(const std::string& channelName) const {
+    return channels_.find(channelName) != channels_.end();
+}
+
+void Server::addChannel(const std::string& channelName, const std::string& topic) 
+{
+	channels_.insert(std::make_pair(channelName, Channel(channelName)));
+    (void)topic;
+}
+
+void Server::addChannel(const std::string& name) {
+    // 名前が既に存在するか確認
+    if (channels_.find(name) != channels_.end()) {
+        // エラーハンドリング
+        return;
+    }
+
+    // 名前が有効か確認（例）
+    if (!isValidChannelName(name)) {
+        // エラーハンドリング
+        return;
+    }
+
+    Channel newChannel(name);
+    channels_[name] = newChannel;
+}
+
+void Server::removeChannel(const std::string& name) {
+    // 名前が存在するか確認
+	std::map<std::string, Channel>::iterator it = channels_.find(name);
+
+    if (it != channels_.end()) {
+        // チャンネルを削除
+        channels_.erase(it);
+    } else {
+        // エラーハンドリング（例：ログ出力、例外を投げる、等）
+    }
+}
+
+// client
+
+void Server::addClient(int client_fd, sockaddr_in client_address) {
+    clients_.push_back(Client(client_fd, client_address));
+}
+
+
+int getFd(const Client& client) {
+    return client.getFd();
+}
+
+void Server::removeClient(int client_fd) 
+{
+	close(client_fd);
+	
+	for (std::vector<Client>::iterator it = clients_.begin(); it != clients_.end();) 
+	{
+		if (it->getFd() == client_fd) 
+		{
+			it = clients_.erase(it); 
+		} else
+			{
+				++it;
+			}
+		}
+}
+
+Server::~Server() 
+{
+    // Close all client sockets
+    for (std::vector<Client>::iterator it = clients_.begin(); it != clients_.end(); ++it) {
+        it->closeSocket();
+    }
+
+    // Close the server socket
+    if (sockfd_ >= 0) {
+        if (close(sockfd_) < 0) {
+            std::cerr << "Error closing server socket" << std::endl;
+        }
+    }
+}
+
+bool Server::start() 
+{
+        // Create a socket
+        sockfd_ = socket(AF_INET, SOCK_STREAM, 0);
+        if (sockfd_ < 0) 
+            return false;
+        // Bind the socket to the port
+        sockaddr_in serv_addr;
+        serv_addr.sin_family = AF_INET;
+        serv_addr.sin_addr.s_addr = INADDR_ANY;
+        serv_addr.sin_port = htons(port_);
+
+        if (bind(sockfd_, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0) {
+		cerr << "Error binding socket" << endl;
+            return false;
+        }
+        listen(sockfd_, 5);
+		
+		// accept()によって受け付けられていない接続要求の最大数が5。
+		// この数を超えた接続要求が来た場合、新たな接続要求は拒否。
+
+        // Set the socket to non-blocking
+        fcntl(sockfd_, F_SETFL, O_NONBLOCK);
+
+        running_ = true;
+        return true;
+}
+
+	// 下記の行は、新しいクライアント接続をサーバのクライアントリストに追加しています。
+	// newsockfdはaccept()関数から返された新しいソケットファイルディスクリプタ
+	// を保持
+	// clients_はサーバクラス内にあるvectorで、サーバが接続を許可したすべての
+	// クライアントのソケットファイルディスクリプタを保持します。
+
+void Server::run()
+{
+    fd_set read_fds;
+	// ファイルディスクリプタの集合を保持。
+	// fd_set型の変数read_fdsは、select()関数で監視したい
+    int max_fd;
+	// max_fd;: select()関数を呼び出す際、
+	// ファイルディスクリプタの集合の中で最大のディスクリプタの値を知っておく必要
+	// があります。max_fdはその目的で使用される変数です。
+
+	while (running_) 
+	{
+        FD_ZERO(&read_fds);
+        FD_SET(sockfd_, &read_fds);
+		
+        max_fd = sockfd_;
+
+		for(std::vector<Client>::iterator it = clients_.begin(); it != clients_.end(); ++it) 
+		{
+			int client_fd = it->getFd(); 
+				FD_SET(client_fd, &read_fds);
+			if (client_fd > max_fd) 
+				max_fd = client_fd;
+		}
+    	struct timeval timeout;
+    	timeout.tv_sec = 10; 
+
+		int activity = select(max_fd + 1, &read_fds, nullptr, nullptr, &timeout);
+		
+        if (activity < 0)
+            std::cerr << "select error" << std::endl;
+		
+
+        if (FD_ISSET(sockfd_, &read_fds)) 
+		{
+            sockaddr_in cli_addr;
+            socklen_t clilen = sizeof(cli_addr);
+
+            int newsockfd = accept(sockfd_, (struct sockaddr *) &cli_addr, &clilen);
+            if (newsockfd >= 0) 
+				{
+				addClient(newsockfd, cli_addr);
+		    	}
+        }
+
+		for (size_t i = 0; i < clients_.size(); i++) 
+		{
+			int client_fd = clients_[i].getFd();
+
+			if (FD_ISSET(client_fd, &read_fds))
+			handleClientMessage(client_fd);
+		}
+}
+}
+
+void Server::stop()
+{
+	running_ = false;
+}
+//message
+struct MatchFd {
+    int client_fd;
+    MatchFd(int fd) : client_fd(fd) {}
+    bool operator()(const Client& client) {
+        return client.getFd() == client_fd;
+    }
+};
+
+void Server::handleClientMessage(int client_fd) 
+{
+    char buffer[256];
+	memset(buffer, 0, 256);
+    int bytes = recv(client_fd, buffer, 255, 0);
+            
+	if (bytes < 0) 
+	{
+		if (errno == EAGAIN || errno == EWOULDBLOCK) 
+		{
+            // Resource temporarily unavailable, just continue with the next iteration
+            return;
+        } else {
+            std::cerr << "ERROR reading from socket: " << std::endl;
+        }
+
+    } else if (bytes == 0)
+	{
+        close(client_fd);
+          for (std::vector<Client>::iterator it = clients_.begin(); it != clients_.end(); ) {
+        if (it->getFd() == client_fd) {
+            it = clients_.erase(it);
+        } else {
+            ++it;
+        }
+    }
+
+    } else {
+        buffer[bytes] = '\0';
+        std::string message(buffer);
+        
+        if (!message.empty() && message[message.length()-1] == '\n') {
+            message.erase(message.length()-1);
+        }
+        if (!message.empty() && message[message.length()-1] == '\r') {
+            message.erase(message.length()-1);
+        }
+
+        if(message == "exit") {
+            close(client_fd);
+            std::vector<Client>::iterator it;
+			it = std::remove_if(clients_.begin(), clients_.end(), MatchFd(client_fd));
+			clients_.erase(it, clients_.end());
+        } else {
+            handleCmdMessage(message, client_fd);
+        }
+    }
+}
+
+Message Server::handleIncomingMessage(const std::string& rawMessage) {
+    return Message(rawMessage);
+}
+
+
+Client&	Server::clientFd(int client_fd)
+{
+	for (std::vector<Client>::iterator it = clients_.begin(); it != clients_.end(); it++)
+		{
+		if (it -> getFd() == client_fd){
+		return *it;
+		}
+	}
+	throw std::runtime_error("Client not found");
+}
+
+
+void Server::handleCmdMessage(const std::string& rawMessage, int client_fd) {
+    // メッセージをパースしてMessageオブジェクトを作成
+    Message message = handleIncomingMessage(rawMessage);
+
+    // client_fd（クライアントのファイルディスクリプタ）からClientオブジェクトを検索・取得
+    Client& user = clientFd(client_fd);
+
+    // メッセージからコマンドを取得
+    std::string command = message.getCommand();
+
+    if (command == "JOIN") {
+        std::string channelName = message.getChannelName();
+		 if (!channelExists(channelName))
+        	addChannel(channelName);  // チャンネルがなければ新しく作成
+    	Channel& channel = getChannelByName(channelName);
+        // join(user, channel, message);
+
+
+    } else if (command == "PRIVMSG") {
+        // privmsg(user, channel, message);
+
+    // } else if (command == "QUIT") {
+    //     std::string channelName = message.getChannelName();
+    //     Channel& channel = getChannelByName(channelName);
+    //     quit(user, channel, message);
+
+    } else {
+        // その他の未知のコマンドに対する処理
+    }
+}
+
+

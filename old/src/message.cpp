@@ -12,8 +12,12 @@ using namespace std;
 // そして:Hello, everyone!が実際のメッセージ内容です。
 using std::vector;
 
-string Message::getCommand() const {
+std::string Message::getCommand() const {
     return command;
+}
+std::string Message::getChannelName()
+{
+	return getChannelName();
 }
 
 vector<string> Message::getParameters() const {

@@ -13,6 +13,7 @@ public:
 	std::string getCommand() const;
 	std::vector<std::string> getParameters() const;
 	std::vector<std::string> tokenize(const std::string& message);
+	std::string getChannelName();
 
 private:
     std::string command;

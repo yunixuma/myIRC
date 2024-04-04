@@ -1,0 +1,6 @@
+#include "Channel.hpp"
+
+int	main() {
+	std::string	name("new");
+	Channel	ins(name);
+}

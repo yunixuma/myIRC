@@ -1,13 +1,19 @@
 #include "Client.hpp"
 
-Client::new_client(int client_fd, sockaddr_in client_address)
-    : client_fd_(client_fd), client_address_(client_address) {
+// constructor
+Client::Client(int client_fd, sockaddr_in client_address)
+    : fd_(client_fd), addr_(&client_address) {
+}
+
+void Client::closeSocket() 
+{
+		close(getFd());
 }
 
 // 上記lee追加
 
 Client::Client(int fd, const std::string& userName, const std::string& nickname, int role) \
-	: fd_(fd), userName_(userName), nickname_(nickname), role_(role), joinedChannel_(NULL) {
+	: fd_(fd), userName_(userName), nickname_(nickname), role_(role), joinedChannel_(NULL)  {
 	std::clog << "\033[36;2;3m[" << this \
 		<< "]<Client> Constructor called (" << this->userName_ << ")\033[m" << std::endl;
 }
@@ -19,6 +25,7 @@ Client::Client(const Client& src) {
 	*this = src;
 }
 
+
 Client&	Client::operator=(const Client& rhs) {
 	std::clog << "\033[35;2;3m[" << this << "<-" << &rhs \
 		<< "]<Client> Copy assignment operator called (" \
@@ -27,8 +34,9 @@ Client&	Client::operator=(const Client& rhs) {
 	this->userName_ = rhs.userName_;
 	this->nickname_ = rhs.nickname_;
 	this->role_ = rhs.role_;
-	if (this->joinedChannel_)
+	if (!this->joinedChannel_.empty())
 		this->joinedChannel_.clear();
+	std::vector<Channel>::iterator	itr;
 	for (itr = this->joinedChannel_.begin(); itr != this->joinedChannel_.end(); itr++)
 	{
 		this->joinedChannel_.push_back(*itr);
@@ -39,12 +47,16 @@ Client&	Client::operator=(const Client& rhs) {
 Client::~Client(void) {
 	std::clog << "\033[31;2;3m[" << this \
 		<< "]<Client> Destructor called (" << this->userName_ << ")\033[m" << std::endl;
-	if (this->joinedChannel_)
+	if (!this->joinedChannel_.empty())
 		this->joinedChannel_.clear();
 }
 
 int	Client::getFd(void) const {
 	return (this->fd_);
+}
+
+const sockaddr_in*	Client::getAddr(void) const {
+	return (this->addr_);
 }
 
 const std::string&	Client::getUserName(void) const {
@@ -59,12 +71,12 @@ int	Client::getRole(void) const {
 	return (this->role_);
 }
 
-Channel*	Client::findJoinedChannel(std::string channelName) const {
-	std::vector<Channel>::iterator	itr;
+const Channel*	Client::findJoinedChannel(std::string channelName) const {
+	std::vector<Channel>::const_iterator	itr;
 	for (itr = this->joinedChannel_.begin(); itr != this->joinedChannel_.end(); itr++)
 	{
 		if (itr->getName() == channelName)
-			return (itr);
+			return (&(*itr));
 	}
 	return (NULL);
 }
@@ -99,20 +111,21 @@ void	Client::leaveChannel(Channel& channel) {
 	std::vector<Channel>::iterator	itr;
 	for (itr = this->joinedChannel_.begin(); itr != this->joinedChannel_.end(); itr++)
 	{
-		if (itr == &channel)
+		if (&(*itr) == &channel)
 		{
 			this->joinedChannel_.erase(itr);
 			return ;
 		}
 	}
 }
-
+/*
 void	Client::distributeMessage(Server server, const std::string& message) {
 	std::clog << "\033[2;3m[" << this \
 		<< "]<Client> distributeChannel(" << message \
 		<< ") called (" << this->userName_ << ")\033[m" << std::endl;
 	server.send(this->fd_, message);
 }
+*/
 
 // Client* Client::user_find(const std::string& username) {
 //     // ユーザー名から該当するユーザーを検索する処理を実装
@@ -120,4 +133,3 @@ void	Client::distributeMessage(Server server, const std::string& message) {
 //     // 見つかった場合はそのユーザーオブジェクトへのポインタを返し、見つからなければ nullptr を返す
 //     // ここでは簡単な例を示していますが、実際の実装はデータの管理方法により異なります
 // }
-
