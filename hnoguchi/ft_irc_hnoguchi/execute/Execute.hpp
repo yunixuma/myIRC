@@ -23,7 +23,7 @@ class Execute {
 	// TODO(hnoguchi): コマンドのバリデーションは、Parser classで行うので必要ない。コマンドで条件分岐を行い、バリデーションを実行する。
 	bool	isCommand(const std::string& command, const std::string* cmdList);
 	// TODO(hnoguchi): 引数にConfig configを追加で渡す。
-	int		exec(User* user, const Command& command, Info* info);
+	int		exec(User* user, const ParsedMessage& parsedMsg, Info* info);
 };
 
 #endif  // EXECUTE_HPP
