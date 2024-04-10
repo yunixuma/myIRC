@@ -20,35 +20,32 @@ bool	Execute::isCommand(const std::string& command, const std::string* cmdList) 
 
 int	Execute::registerUser(User* user, const ParsedMessage& parsedMsg, Info* info) {
 	(void)info;
-	if (!(user->getRegistered() & kPassCommand)) {
-		if (parsedMsg.getCommand() == "PASS") {
-			// PASS処理
-			// int replyNum = pass(user, parser.getParsedMessage(), &this->info_);
-			// if (replyNum > 400) {
-			// 	return (replyNum);
-			// }
-			;
-		}
+	if (!(user->getRegistered() & kNickCommand) && !(user->getRegistered() & kUserCommand) && parsedMsg.getCommand() == "PASS") {
+		// PASS処理
+		// int replyNum = pass(user, parsedMsg, info);
+		// if (replyNum > 400) {
+		// 	return (replyNum);
+		// }
 		user->setRegistered(kPassCommand);
 		return (0);
 	} else if (!(user->getRegistered() & kNickCommand)) {
 		if (parsedMsg.getCommand() == "NICK") {
-			// NICK処理
-			// int replyNum = nick(user, parser.getParsedMessage(), &this->info_);
-			// if (replyNum > 400) {
-			// 	return (replyNum);
-			// }
+			int replyNum = this->cmdNick(user, parsedMsg, info);
+			if (replyNum > 400) {
+				return (replyNum);
+			}
 			user->setRegistered(kNickCommand);
+			user->printData();
 			return (0);
 		}
 	} else if (!(user->getRegistered() & kUserCommand)) {
 		if (parsedMsg.getCommand() == "USER") {
-			// USER処理
-			// int replyNum = user(user, parser.getParsedMessage(), &this->info_);
-			// if (replyNum > 400) {
-			// 	return (replyNum);
-			// }
+			int replyNum = this->cmdUser(user, parsedMsg, info);
+			if (replyNum > 400) {
+				return (replyNum);
+			}
 			user->setRegistered(kUserCommand);
+			user->printData();
 			return (kRPL_WELCOME);
 		}
 	}
@@ -61,38 +58,37 @@ int	Execute::exec(User* user, const ParsedMessage& parsedMsg, Info* info) {
 		return (kERR_UNKNOWNCOMMAND);
 	}
 	if (parsedMsg.getCommand() == "PING") {
-		return (pong(user, parsedMsg, info));
+		return (cmdPong(user, parsedMsg, info));
 	// } else if (parsedMsg.getCommand() == "PASS") {
-	// 	return (pass(user, parsedMsg, info));
-	// } else if (parsedMsg.getCommand() == "NICK") {
-	// 	return (nick(user, parsedMsg, info));
-	// } else if (parsedMsg.getCommand() == "USER") {
-	// 	return (user(user, parsedMsg, info));
+	// 	return (cmdPass(user, parsedMsg, info));
+	} else if (parsedMsg.getCommand() == "NICK") {
+		return (cmdNick(user, parsedMsg, info));
+	} else if (parsedMsg.getCommand() == "USER") {
+		return (cmdUser(user, parsedMsg, info));
 	// } else if (parsedMsg.getCommand() == "OPER") {
-	// 	return (oper(user, parsedMsg, info));
+	// 	return (cmdOper(user, parsedMsg, info));
 	// } else if (parsedMsg.getCommand() == "quit") {
-	// 	return (quit(user, parsedMsg, info));
+	// 	return (cmdQuit(user, parsedMsg, info));
 	// } else if (parsedMsg.getCommand() == "JOIN") {
 	// 	return (join(user, parsedMsg, info));
 	// } else if (parsedMsg.getCommand() == "KICK") {
-	// 	return (kick(user, parsedMsg, info));
+	// 	return (cmdKick(user, parsedMsg, info));
 	// } else if (parsedMsg.getCommand() == "INVITE") {
-	// 	return (invite(user, parsedMsg, info));
+	// 	return (cmdInvite(user, parsedMsg, info));
 	// } else if (parsedMsg.getCommand() == "TOPIC") {
-	// 	return (topic(user, parsedMsg, info));
+	// 	return (cmdTopic(user, parsedMsg, info));
 	// } else if (parsedMsg.getCommand() == "MODE") {
 	// 	return (mode(user, parsedMsg, info));
 	// } else if (parsedMsg.getCommand() == "PRIVMSG") {
-	// 	return (privmsg(user, parsedMsg, info));
+	// 	return (cmdPrivmsg(user, parsedMsg, info));
 	// } else if (parsedMsg.getCommand() == "NOTICE") {
-	// 	return (notice(user, parsedMsg, info));
+	// 	return (cmdNotice(user, parsedMsg, info));
 	// } else if (parsedMsg.getCommand() == "PONG") {
 	// 	return (pong(user, parsedMsg, info));
 	// } else if (parsedMsg.getCommand() == "ERROR") {
 	// 	return (error(user, parsedMsg, info));
 	}
 	return (kERR_UNKNOWNCOMMAND);
-	// return (0);
 }
 
 #ifdef DEBUG
