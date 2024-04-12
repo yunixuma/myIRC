@@ -4,6 +4,7 @@
 #include <iostream>
 #include <locale>
 #include <sstream>
+#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -21,7 +22,9 @@ enum kCommandType {
 enum kParamType {
 	kNone = 0,
 	kPMiddle,
-	kPTrailing
+	kPTrailing,
+	kMsgTarget,
+	kText
 };
 
 class Token {
@@ -88,9 +91,9 @@ class Parser {
 	~Parser();
 
 	// SETTER
-	void						parse(std::string message);
+	int						parse(std::string message);
 	// GETTER
-	const ParsedMessage&		getParsedMessage() const;
+	const ParsedMessage&	getParsedMessage() const;
 };
 
 #endif  // PARSER_HPP
