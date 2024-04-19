@@ -29,30 +29,43 @@
 #include <iostream>
 #include <vector>
 #include "../Execute.hpp"
+#include "../../error/error.hpp"
 #include "../../user/User.hpp"
 #include "../../parser/Parser.hpp"
 #include "../../server/Info.hpp"
+#include "../../server/Server.hpp"
 #include "../../reply/Reply.hpp"
 
 int	Execute::cmdJoin(User* user, const ParsedMessage& parsedMsg, Info* info) {
 	// channelを探す
-	for (std::vector<Channel>::iterator it = const_cast<std::vector<Channel> &>(info->getChannels()).begin(); \
-			it != const_cast<std::vector<Channel> &>(info->getChannels()).end(); it++) {
-		// あれば、追加して、リプライナンバーを返す
-		if (parsedMsg.getParams()[0].getValue() == it->getName()) {
-			it->addMember(user);
-			return (kRPL_TOPIC);
+	try {
+		for (std::vector<Channel>::iterator it = const_cast<std::vector<Channel> &>(info->getChannels()).begin(); it != const_cast<std::vector<Channel> &>(info->getChannels()).end(); it++) {
+			// あれば、追加して、リプライナンバーを返す
+			if (parsedMsg.getParams()[0].getValue() == it->getName()) {
+				it->addMember(user);
+				std::string	msg = ":" + user->getNickName() + " JOIN " + it->getName() + "\r\n";
+				debugPrintSendMessage("SendMsg", msg);
+				sendNonBlocking(user->getFd(), msg.c_str(), msg.size());
+				return (0);
+			}
 		}
-	}
-	// なければchannelを作成して、ユーザを追加して、リプライナンバーを返す
-	info->addChannel(Channel(parsedMsg.getParams()[0].getValue()));
-	for (std::vector<Channel>::iterator it = const_cast<std::vector<Channel> &>(info->getChannels()).begin(); \
-			it != const_cast<std::vector<Channel> &>(info->getChannels()).end(); it++) {
-		// あれば、追加して、リプライナンバーを返す
-		if (parsedMsg.getParams()[0].getValue() == it->getName()) {
-			it->addMember(user);
-			return (kRPL_TOPIC);
+		// なければchannelを作成して、ユーザを追加して、リプライナンバーを返す
+		info->addChannel(Channel(parsedMsg.getParams()[0].getValue()));
+		for (std::vector<Channel>::iterator it = const_cast<std::vector<Channel> &>(info->getChannels()).begin(); it != const_cast<std::vector<Channel> &>(info->getChannels()).end(); it++) {
+			// あれば、追加して、リプライナンバーを返す
+			if (parsedMsg.getParams()[0].getValue() == it->getName()) {
+				it->addMember(user);
+				it->addOperator(user);
+				std::string	msg = ":" + user->getNickName() + " JOIN " + it->getName() + "\r\n";
+				msg += ":" + info->getConfig().getServerName() + " MODE " + it->getName() + " +o " + user->getNickName() + "\r\n";
+				// msg += ":" + user->getNickName() + " MODE " + it->getName() + " :+o\r\n";
+				debugPrintSendMessage("SendMsg", msg);
+				sendNonBlocking(user->getFd(), msg.c_str(), msg.size());
+				return (0);
+			}
 		}
+	} catch (std::exception& e) {
+		std::cerr << RED << e.what() << END << std::endl;
 	}
-	return (-1);
+	return (0);
 }
