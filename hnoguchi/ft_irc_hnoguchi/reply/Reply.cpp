@@ -32,6 +32,8 @@ std::string	Reply::createMessage(int num, const User& user, const Info& info, co
 			msg += this->delimiter_;
 			msg += ":" + info.getConfig().getServerName() + " ";
 			msg += "004 " + user.getNickName() + " :" + info.getConfig().getServerName() + " " + oss.str() + " " + info.getConfig().getUserModes() + " " +  info.getConfig().getChannelModes();
+			msg += this->delimiter_;
+			msg += ":" + user.getNickName() + " NICK :" + user.getNickName();
 		} else if (num < 100  || (num >= 200 && num < 400)) {
 			if (num == kRPL_UMODEIS) {
 				msg += "221 " + user.getNickName();
@@ -50,6 +52,9 @@ std::string	Reply::createMessage(int num, const User& user, const Info& info, co
 				msg += "401 " + user.getNickName() + " :" + parsedMsg.getParams()[0].getValue() + " :No such nick/channel";
 			} else if (num == kERR_NOSUCHSERVER) {
 				msg += "402 " + user.getNickName() + " :" + parsedMsg.getParams()[0].getValue() + " :No such server";
+			} else if (num == kERR_NOSUCHCHANNEL) {
+				// msg += "403 " + user.getNickName() + " :" + parsedMsg.getParams()[0].getValue() + " :No such channel";
+				msg += "403 " + user.getNickName() + " :" + parsedMsg.getParams()[0].getValue();
 			} else if (num == kERR_NORECIPIENT) {
 				msg += "411 " + user.getNickName() + " :No recipient given (" + parsedMsg.getCommand() + ")";
 			} else if (num == kERR_NOTEXTTOSEND) {
@@ -63,6 +68,8 @@ std::string	Reply::createMessage(int num, const User& user, const Info& info, co
 			} else if (num == kERR_NICKNAMEINUSE) {
 				// msg += "433 " + user.getNickName() + " :" + parsedMsg.getParams()[0].getValue() + " :Nickname is already in use";
 				msg += "433 " + user.getNickName() + " :" + parsedMsg.getParams()[0].getValue();
+			} else if (num == kERR_NOTONCHANNEL) {
+				msg += "442 " + user.getNickName() + " :" + parsedMsg.getParams()[0].getValue() + " :You're not on that channel";
 			} else if (num == kERR_NOTREGISTERED) {
 				msg += "451 * :You have not registered";
 			} else if (num == kERR_NEEDMOREPARAMS) {
