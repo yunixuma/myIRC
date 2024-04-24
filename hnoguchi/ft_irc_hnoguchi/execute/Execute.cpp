@@ -20,14 +20,15 @@ bool	Execute::isCommand(const std::string& command, const std::string* cmdList) 
 }
 
 int	Execute::registerUser(User* user, const ParsedMessage& parsedMsg, Info* info) {
-	if (!(user->getRegistered() & kNickCommand) && !(user->getRegistered() & kUserCommand) && parsedMsg.getCommand() == "PASS") {
-		// PASS処理
-		// int replyNum = pass(user, parsedMsg, info);
-		// if (replyNum > 400) {
-		// 	return (replyNum);
-		// }
-		user->setRegistered(kPassCommand);
-		return (0);
+	if (!(user->getRegistered() & kPassCommand)) {
+		if (parsedMsg.getCommand() == "PASS") {
+			int replyNum = this->cmdPass(user, parsedMsg, info);
+			if (replyNum > 400) {
+				return (replyNum);
+			}
+			user->setRegistered(kPassCommand);
+			return (0);
+		}
 	} else if (!(user->getRegistered() & kNickCommand)) {
 		if (parsedMsg.getCommand() == "NICK") {
 			int replyNum = this->cmdNick(user, parsedMsg, info);
@@ -57,8 +58,8 @@ int	Execute::exec(User* user, const ParsedMessage& parsedMsg, Info* info) {
 	}
 	if (parsedMsg.getCommand() == "PING") {
 		return (cmdPong(user, parsedMsg, info));
-	// } else if (parsedMsg.getCommand() == "PASS") {
-	// 	return (cmdPass(user, parsedMsg, info));
+	} else if (parsedMsg.getCommand() == "PASS") {
+		return (cmdPass(user, parsedMsg, info));
 	} else if (parsedMsg.getCommand() == "NICK") {
 		return (cmdNick(user, parsedMsg, info));
 	} else if (parsedMsg.getCommand() == "USER") {
@@ -71,22 +72,22 @@ int	Execute::exec(User* user, const ParsedMessage& parsedMsg, Info* info) {
 		return (cmdJoin(user, parsedMsg, info));
 	} else if (parsedMsg.getCommand() == "PART") {
 		return (cmdPart(user, parsedMsg, info));
-	// } else if (parsedMsg.getCommand() == "KICK") {
-	// 	return (cmdKick(user, parsedMsg, info));
-	// } else if (parsedMsg.getCommand() == "INVITE") {
-	// 	return (cmdInvite(user, parsedMsg, info));
-	// } else if (parsedMsg.getCommand() == "TOPIC") {
-	// 	return (cmdTopic(user, parsedMsg, info));
+	} else if (parsedMsg.getCommand() == "KICK") {
+		return (cmdKick(user, parsedMsg, info));
+	} else if (parsedMsg.getCommand() == "INVITE") {
+		return (cmdInvite(user, parsedMsg, info));
+	} else if (parsedMsg.getCommand() == "TOPIC") {
+		return (cmdTopic(user, parsedMsg, info));
 	// 	TODO(hnoguchi): userMode();かchannelMode();なのか判定する処理が必要
 	// 	TODO(hnoguchi): Paramsのtypeにchannelやuser
 	} else if (parsedMsg.getCommand() == "MODE") {
 		for(std::vector<User>::const_iterator it = info->getUsers().begin(); it != info->getUsers().end(); it++) {
-			if (parsedMsg.getParams()[0] == it->getNickName()) {
+			if (parsedMsg.getParams()[0].getValue() == it->getNickName()) {
 				return (cmdUserMode(user, parsedMsg, info));
 			}
 		}
 		for(std::vector<Channel>::const_iterator it = info->getChannels().begin(); it != info->getChannels().end(); it++) {
-			if (parsedMsg.getParams()[0] == it->getName()) {
+			if (parsedMsg.getParams()[0].getValue() == it->getName()) {
 				return (cmdChannelMode(user, parsedMsg, info));
 			}
 		}
