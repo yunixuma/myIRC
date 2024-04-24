@@ -8,19 +8,16 @@ CXXFLAGS = -Wall -Wextra -Werror -std=c++98 -pedantic-errors -MMD -MP
 DEBUGFLAGS = -g -fsanitize=address -fsanitize=undefined -fsanitize=integer
 LEAKSFLAG = -DSERVER_LEAKS
 RM = rm -r -f
-SRCS = Server.cpp \
-	   ServerSocket.cpp \
-	   Config.cpp \
-	   Info.cpp \
+SRCS = Server.cpp ServerSocket.cpp Config.cpp Info.cpp \
 	   User.cpp \
 	   Channel.cpp \
 	   Parser.cpp \
 	   Execute.cpp \
 	   Reply.cpp \
-	   cmdNick.cpp cmdUser.cpp cmdUserMode.cpp cmdOper.cpp cmdQuit.cpp \
+	   cmdPass.cpp cmdNick.cpp cmdUser.cpp cmdUserMode.cpp cmdOper.cpp cmdQuit.cpp \
 	   cmdPong.cpp \
 	   cmdNotice.cpp cmdPrivmsg.cpp \
-	   cmdJoin.cpp cmdPart.cpp \
+	   cmdJoin.cpp cmdPart.cpp cmdChannelMode.cpp cmdInvite.cpp cmdKick.cpp cmdTopic.cpp \
 	   error.cpp
 OBJS = $(addprefix $(OBJS_DIR)/, $(SRCS:%.cpp=%.o))
 OBJS_DIR = ./objs
