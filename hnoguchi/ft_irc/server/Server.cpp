@@ -292,8 +292,11 @@ int	main(int argc, char* argv[]) {
 	}
 
 	try {
-		(void)argv;
-		Server	Server(8080);
+		int	portNum;
+		std::stringstream	ss;
+		ss << argv[1];
+		ss >> portNum;
+		Server	Server(portNum);
 
 		Server.run();
 	} catch (std::exception& e) {

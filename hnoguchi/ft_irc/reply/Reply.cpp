@@ -125,6 +125,6 @@ std::string	Reply::createMessage(int num, const User& user, const Info& info, co
 
 // debug
 // void	Reply::printReply() const {
-// 	std::cout << "[" << this->numeric_ << "]: [" \
+// 	std::cout << "[" << this->numeric_ << "]: [" 
 // 		<< this->message_ << "]" << std::endl;
 // }

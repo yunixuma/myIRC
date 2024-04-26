@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 #include <cstring>
+#include <sstream>
 #include "./ServerSocket.hpp"
 #include "./Config.hpp"
 #include "./Info.hpp"
