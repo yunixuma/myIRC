@@ -3,6 +3,9 @@
 
 #include <iostream>
 #include <string>
+#include <cerrno>
+#include <cstring>
+#include <cstdio>
 
 void	debugPrintSendMessage(const std::string& prefix, const std::string &message);
 void	printErrorMessage(const std::string &message);

@@ -7,6 +7,7 @@
 #include <sys/socket.h>
 #include <stdexcept>
 #include <iostream>
+#include <cstring>
 
 class ServerSocket {
  private:
