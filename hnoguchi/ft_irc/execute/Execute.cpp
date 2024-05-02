@@ -19,43 +19,39 @@ bool	Execute::isCommand(const std::string& command, const std::string* cmdList) 
 	return (false);
 }
 
-int	Execute::registerUser(User* user, const ParsedMessage& parsedMsg, Info* info) {
-	if (!(user->getRegistered() & kPassCommand)) {
-		if (parsedMsg.getCommand() == "PASS") {
-			int replyNum = this->cmdPass(user, parsedMsg, info);
-			if (replyNum > 400) {
-				return (replyNum);
-			}
+std::string	Execute::registerUser(User* user, const ParsedMessage& parsedMsg, Info* info) {
+	if (!(user->getRegistered() & kPassCommand) && parsedMsg.getCommand() == "PASS") {
+		std::string	reply = this->cmdPass(user, parsedMsg, info);
+		if (reply.empty()) {
 			user->setRegistered(kPassCommand);
-			return (0);
 		}
-	} else if (!(user->getRegistered() & kNickCommand)) {
-		if (parsedMsg.getCommand() == "NICK") {
-			int replyNum = this->cmdNick(user, parsedMsg, info);
-			if (replyNum > 400) {
-				return (replyNum);
-			}
+		return ("");
+	}
+	if (!(user->getRegistered() & kNickCommand) && parsedMsg.getCommand() == "NICK") {
+		if (!(user->getRegistered() & kPassCommand)) {
+			return ("");
+		}
+		std::string	reply = this->cmdNick(user, parsedMsg, info);
+		if (reply.empty()) {
 			user->setRegistered(kNickCommand);
-			return (0);
 		}
-	} else if (!(user->getRegistered() & kUserCommand)) {
-		if (parsedMsg.getCommand() == "USER") {
-			int replyNum = this->cmdUser(user, parsedMsg, info);
-			if (replyNum > 400) {
-				return (replyNum);
-			}
+		return ("");
+	}
+	if (!(user->getRegistered() & kUserCommand) && parsedMsg.getCommand() == "USER") {
+		if (!(user->getRegistered() & kPassCommand) || !(user->getRegistered() & kNickCommand)) {
+			return ("");
+		}
+		std::string	reply = this->cmdUser(user, parsedMsg, info);
+		if (reply.empty()) {
 			user->setRegistered(kUserCommand);
-			return (kRPL_WELCOME);
+			return (Reply::rplWelcome(*info, *user));
 		}
 	}
-	return (kERR_NOTREGISTERED);
+	return (Reply::errNotRegistered(kERR_NOTREGISTERED, user->getNickName()));
 }
 
 // TODO(hnoguchi): exec();関数では、実行結果によるエラーを扱う。（例えば存在しないチャンネル名へのメッセージ送信など）
-int	Execute::exec(User* user, const ParsedMessage& parsedMsg, Info* info) {
-	if (!this->isCommand(parsedMsg.getCommand(), info->getConfig().getCommandList())) {
-		return (kERR_UNKNOWNCOMMAND);
-	}
+std::string	Execute::exec(User* user, const ParsedMessage& parsedMsg, Info* info) {
 	if (parsedMsg.getCommand() == "PING") {
 		return (cmdPong(user, parsedMsg, info));
 	} else if (parsedMsg.getCommand() == "PASS") {
@@ -78,8 +74,7 @@ int	Execute::exec(User* user, const ParsedMessage& parsedMsg, Info* info) {
 		return (cmdInvite(user, parsedMsg, info));
 	} else if (parsedMsg.getCommand() == "TOPIC") {
 		return (cmdTopic(user, parsedMsg, info));
-	// 	TODO(hnoguchi): userMode();かchannelMode();なのか判定する処理が必要
-	// 	TODO(hnoguchi): Paramsのtypeにchannelやuser
+	// TODO(hnoguchi): Paramsのtypeにchannelやuser
 	} else if (parsedMsg.getCommand() == "MODE") {
 		for(std::vector<User>::const_iterator it = info->getUsers().begin(); it != info->getUsers().end(); it++) {
 			if (parsedMsg.getParams()[0].getValue() == it->getNickName()) {
@@ -91,7 +86,7 @@ int	Execute::exec(User* user, const ParsedMessage& parsedMsg, Info* info) {
 				return (cmdChannelMode(user, parsedMsg, info));
 			}
 		}
-		// 	TODO(hnoguchi): Channel Userのどちらにも該当しなかった場合の処理を追加すること
+		return (Reply::errNoSuchNick(kERR_NOSUCHNICK, user->getNickName(), parsedMsg.getParams()[0].getValue()));
 	} else if (parsedMsg.getCommand() == "PRIVMSG") {
 		return (cmdPrivmsg(user, parsedMsg, info));
 	} else if (parsedMsg.getCommand() == "NOTICE") {
@@ -101,17 +96,5 @@ int	Execute::exec(User* user, const ParsedMessage& parsedMsg, Info* info) {
 	// } else if (parsedMsg.getCommand() == "ERROR") {
 	// 	return (error(user, parsedMsg, info));
 	}
-	return (kERR_UNKNOWNCOMMAND);
+	return (Reply::errUnknownCommand(kERR_UNKNOWNCOMMAND, user->getNickName(), parsedMsg.getCommand()));
 }
-
-#ifdef DEBUG
-
-#include "../parser/Parser.hpp"
-
-int	main() {
-#ifdef LEAKS
-	system("leaks -q parser");
-#endif  // LEAKS
-	return(0);
-}
-#endif  // DEBUG
