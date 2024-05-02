@@ -94,15 +94,22 @@ std::string	Reply::rplWelcome(const Info& info, const User& user) {
 
 std::string	Reply::rplUModeIs(int num, const std::string& toName, const User& user) {
 	try {
-		// std::string	message = "221 " + user.getNickName();
 		std::string	message = Reply::rplCmdToName(num, toName);
 
 		// message += user.getNickName();
 		if (user.getModes() & kAway) {
 			message += "+a";
-		} else if (user.getModes() & kOperator) {
+		}
+		if (user.getModes() & kOperator) {
+			if (message.size() > 0) {
+				message += " ";
+			}
 			message += "+o";
-		} else if (user.getModes() & kRestrict) {
+		}
+		if (user.getModes() & kRestrict) {
+			if (message.size() > 0) {
+				message += " ";
+			}
 			message += "+r";
 		}
 		message += Reply::delimiter_;
@@ -217,6 +224,19 @@ std::string	Reply::errNoSuchChannel(int num, const std::string& toName, const st
 		std::string	message = Reply::rplCmdToName(num, toName);
 
 		message += channelName + " :No such channel";
+		message += Reply::delimiter_;
+		return (message);
+	} catch (const std::exception& e) {
+		fatalError(e.what());
+		return ("");
+	}
+}
+
+std::string	Reply::errCanNotSendToChan(int num, const std::string& toName, const std::string& channelName) {
+	try {
+		std::string	message = Reply::rplCmdToName(num, toName);
+
+		message += channelName + " :Cannot send to channel";
 		message += Reply::delimiter_;
 		return (message);
 	} catch (const std::exception& e) {
@@ -419,11 +439,50 @@ std::string	Reply::errKeySet(int num, const std::string& toName, const std::stri
 	}
 }
 
+std::string	Reply::errChannelIsFull(int num, const std::string& toName, const std::string& channel) {
+	try {
+		std::string	message = Reply::rplCmdToName(num, toName);
+
+		message += channel + " :Cannot join channel (+l)";
+		message += Reply::delimiter_;
+		return (message);
+	} catch (const std::exception& e) {
+		fatalError(e.what());
+		return ("");
+	}
+}
+
 std::string	Reply::errUnknownMode(int num, const std::string& toName, const std::string& mode, const std::string& channel) {
 	try {
 		std::string	message = Reply::rplCmdToName(num, toName);
 
 		message += mode + " :is unknown mode char to me for " + channel;
+		message += Reply::delimiter_;
+		return (message);
+	} catch (const std::exception& e) {
+		fatalError(e.what());
+		return ("");
+	}
+}
+
+std::string	Reply::errInviteOnlyChan(int num, const std::string& toName, const std::string& channel) {
+	try {
+		std::string	message = Reply::rplCmdToName(num, toName);
+
+		message += channel + " :Cannot join channel (+i)";
+		message += Reply::delimiter_;
+		return (message);
+	} catch (const std::exception& e) {
+		fatalError(e.what());
+		return ("");
+	}
+}
+
+std::string	Reply::errBadChannelKey(int num, const std::string& toName, const std::string& channel) {
+	try {
+		std::string	message = Reply::rplCmdToName(num, toName);
+
+		message += channel + " :Cannot join channel (+k)";
 		message += Reply::delimiter_;
 		return (message);
 	} catch (const std::exception& e) {
@@ -597,9 +656,20 @@ std::string	Reply::createMessage(int num, const User& user, const Info& info, co
 			} else if (num == kERR_KEYSET) {
 				msg += this->rplFromName(info.getConfig().getServerName());
 				msg += this->errKeySet(kERR_KEYSET, user.getNickName(), user.getNickName(), parsedMsg.getParams()[0].getValue());
+			} else if (num == kERR_CHANNELISFULL) {
+				msg += this->rplFromName(info.getConfig().getServerName());
+				msg += this->errChannelIsFull(kERR_CHANNELISFULL, user.getNickName(), parsedMsg.getParams()[0].getValue());
 			} else if (num == kERR_UNKNOWNMODE) {
 				msg += this->rplFromName(info.getConfig().getServerName());
 				msg += this->errUnknownMode(kERR_UNKNOWNMODE, user.getNickName(), parsedMsg.getParams()[1].getValue(), parsedMsg.getParams()[0].getValue());
+			} else if (num == kERR_INVITEONLYCHAN) {
+				// JOIN
+				msg += this->rplFromName(info.getConfig().getServerName());
+				msg += this->errInviteOnlyChan(kERR_INVITEONLYCHAN, user.getNickName(), parsedMsg.getParams()[0].getValue());
+			} else if (num == kERR_BADCHANNELKEY) {
+				// JOIN
+				msg += this->rplFromName(info.getConfig().getServerName());
+				msg += this->errBadChannelKey(kERR_INVITEONLYCHAN, user.getNickName(), parsedMsg.getParams()[0].getValue());
 			} else if (num == kERR_NOCHANMODES) {
 				// MODE(channel), TOPIC
 				msg += this->rplFromName(info.getConfig().getServerName());

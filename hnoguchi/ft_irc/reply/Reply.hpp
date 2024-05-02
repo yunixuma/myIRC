@@ -87,6 +87,7 @@ class Reply {
 	 static std::string	rplWelcome(const Info& info, const User& user);
 
 	 static std::string	rplUModeIs(int num, const std::string& toName, const User& user);
+	 // TODO(hnoguchi): const Channel& channelに変更し、全てのmode情報を渡す。
 	 static std::string	rplChannelModeIs(int num, const std::string& toName, const std::string& channel, const std::string& mode, const std::string& param);
 	 static std::string	rplNoTopic(int num, const std::string& toName, const std::string& channel);
 	 static std::string	rplTopic(int num, const std::string& toName, const std::string& channel, const std::string& topic);
@@ -95,6 +96,7 @@ class Reply {
 	 static std::string	errNoSuchNick(int num, const std::string& toName, const std::string& nickName);
 	 static std::string	errNoSuchServer(int num, const std::string& toName, const std::string& serverName);
 	 static std::string	errNoSuchChannel(int num, const std::string& toName, const std::string& channelName);
+	 static std::string	errCanNotSendToChan(int num, const std::string& toName, const std::string& channelName);
 	 static std::string	errNoOrigin(int num, const std::string& toName);
 	 static std::string	errNoRecipient(int num, const std::string& toName, const std::string& command);
 	 static std::string	errNoTextToSend(int num, const std::string& toName);
@@ -110,7 +112,10 @@ class Reply {
 	 static std::string	errAlreadyRegistered(int num, const std::string& toName);
 	 static std::string	errPasswordMisMatch(int num, const std::string& toName);
 	 static std::string	errKeySet(int num, const std::string& toName, const std::string& nickName, const std::string& channel);
+	 static std::string	errChannelIsFull(int num, const std::string& toName, const std::string& channel);
 	 static std::string	errUnknownMode(int num, const std::string& toName, const std::string& mode, const std::string& channel);
+	 static std::string	errInviteOnlyChan(int num, const std::string& toName, const std::string& channel);
+	 static std::string	errBadChannelKey(int num, const std::string& toName, const std::string& channel);
 	 static std::string	errNoChanModes(int num, const std::string& toName, const std::string& nickName, const std::string& channel);
 	 static std::string	errChanOprivsNeeded(int num, const std::string& toName, const std::string& nickName, const std::string& channel);
 	 static std::string	errRestricted(int num, const std::string& toName);
