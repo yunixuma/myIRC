@@ -20,6 +20,29 @@
  * nospcrlfcl = %x01-09 / %x0B-0C / %x0E-1F / %x21-39 / %x3B-FF
  * 				; any octet except NUL, CR, LF, " " and ":"
  *
+ * CONNECTION_REGISTRATION
+ * PASS <password>
+ * NICK <nickname>
+ * USER <user> <mode> <unused> <realname>				// RFC 2812
+ * USER <username> <hostname> <servername> <realname>	// RFC 1459
+ * OPER <name> <password>
+ * QUIT [ <Quit Message> ]
+ * MODE <nickname> *( ( "+" / "-" ) *( "i" / "w" / "o" / "O" / "r" ) )
+ *
+ * CHANNEL_OPERATIONS
+ * MODE <channel> *( ( "-" / "+" ) *<modes> *<modeparams> )
+ * INVITE <nickname> <channel>
+ * JOIN ( <channel> *( "," <channel> ) [ <key> *( "," <key> ) ] ) / "0"
+ * KICK <channel> *( "," <channel> ) <user> *( "," <user> ) [<comment>]
+ * PART <channel> *( "," <channel> ) [ <Part Message> ]
+ * TOPIC <channel> [ <topic> ]
+ *
+ * MISCELLANEOUS
+ * PONG <server> [ <server2> ]
+ *
+ * SENDING
+ * NOTICE <msgtarget> <text>
+ * PRIVMSG <msgtarget> <text>
  */
 
 // Token class
