@@ -34,48 +34,36 @@ std::string	Execute::cmdTopic(User* user, const ParsedMessage& parsedMsg, Info* 
 			return (Reply::errNeedMoreParams(kERR_NEEDMOREPARAMS, user->getNickName(), parsedMsg.getCommand()));
 		}
 		// <channel>が存在するか確認
-		std::vector<Channel>::iterator	channelIt = info->findChannel(parsedMsg.getParams()[0].getValue());
+		std::vector<Channel*>::iterator	channelIt = info->findChannel(parsedMsg.getParams()[0].getValue());
 		if (channelIt == info->getChannels().end()) {
 			return (Reply::errNoSuchChannel(kERR_NOSUCHCHANNEL, user->getNickName(), parsedMsg.getParams()[0].getValue()));
 		}
 		// userがchannel operatorか確認
-		std::vector<User*>::const_iterator	operIt = channelIt->getOperators().begin();
-		for (; operIt != channelIt->getOperators().end(); operIt++) {
-			if ((*operIt)->getNickName() == user->getNickName()) {
-				break;
-			}
-		}
-		if (operIt == channelIt->getOperators().end()) {
-			return (Reply::errChanOprivsNeeded(kERR_CHANOPRIVSNEEDED, user->getNickName(), user->getNickName(), parsedMsg.getParams()[1].getValue()));
+		if (!(*channelIt)->isOperator(user->getNickName())) {
+			return (Reply::errChanOprivsNeeded(kERR_CHANOPRIVSNEEDED, user->getNickName(), user->getNickName(), parsedMsg.getParams()[0].getValue()));
 		}
 		// <topic>がない場合、RPL_(NO)TOPICを返す
 		if (parsedMsg.getParams().size() == 1) {
-			if (channelIt->getTopic().empty()) {
-				return (Reply::rplNoTopic(kRPL_NOTOPIC, user->getNickName(), channelIt->getName()));
+			if ((*channelIt)->getTopic().empty()) {
+				return (Reply::rplNoTopic(kRPL_NOTOPIC, user->getNickName(), (*channelIt)->getName()));
 			}
-			return (Reply::rplTopic(kRPL_TOPIC, user->getNickName(), channelIt->getName(), channelIt->getTopic()));
+			return (Reply::rplTopic(kRPL_TOPIC, user->getNickName(), (*channelIt)->getName(), (*channelIt)->getTopic()));
 		}
 		// topicの設定処理
 		// userが<channel>に参加しているか確認
-		std::vector<User*>::const_iterator	userIt = channelIt->getMembers().begin();
-		for (; userIt != channelIt->getMembers().end(); userIt++) {
-			if ((*userIt)->getNickName() == user->getNickName()) {
-				break;
-			}
-		}
-		if (userIt == channelIt->getMembers().end()) {
+		if (!(*channelIt)->isMember(user->getNickName())) {
 			return (Reply::errNotOnChannel(kERR_NOTONCHANNEL, user->getNickName(), parsedMsg.getParams()[0].getValue()));
 		}
 		// <channel>にt modeが設定されているか確認
-		if (channelIt->getModes() & kRestrictTopicSetting) {
+		if ((*channelIt)->getModes() & kRestrictTopicSetting) {
 			return (Reply::errNoChanModes(kERR_NOCHANMODES, user->getNickName(), user->getNickName(), parsedMsg.getParams()[0].getValue()));
 		}
 		// topicの設定を実行
-		channelIt->setTopic(parsedMsg.getParams()[1].getValue());
+		(*channelIt)->setTopic(parsedMsg.getParams()[1].getValue());
 		// <channel>のメンバにtopicの変更を通知
-		std::string	msg = ":" + user->getNickName() + " TOPIC " + channelIt->getName() + " :" + channelIt->getTopic() + "\r\n";
+		std::string	msg = ":" + user->getNickName() + " TOPIC " + (*channelIt)->getName() + " :" + (*channelIt)->getTopic() + "\r\n";
 		debugPrintSendMessage("SendMsg", msg);
-		for (std::vector<User*>::const_iterator	memberIt = channelIt->getMembers().begin(); memberIt != channelIt->getMembers().end(); memberIt++) {
+		for (std::vector<User*>::const_iterator	memberIt = (*channelIt)->getMembers().begin(); memberIt != (*channelIt)->getMembers().end(); memberIt++) {
 			sendNonBlocking((*memberIt)->getFd(), msg.c_str(), msg.size());
 		}
 	} catch (std::exception& e) {

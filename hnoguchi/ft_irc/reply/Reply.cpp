@@ -81,7 +81,7 @@ std::string	Reply::rplWelcome(const Info& info, const User& user) {
 		message += Reply::rplFromName(info.getConfig().getServerName());
 		message += Reply::rplYourHost(user.getReplyName(), info.getConfig().getServerName(), info.getConfig().getVersion());
 		message += Reply::rplFromName(info.getConfig().getServerName());
-		message += Reply::rplCreated(user.getReplyName(), info.getConfig().getCreatedData());
+		message += Reply::rplCreated(user.getReplyName(), info.getConfig().getCreatedDate());
 		message += Reply::rplFromName(info.getConfig().getServerName());
 		message += Reply::rplMyInfo(user.getReplyName(), info.getConfig());
 		message += Reply::rplFromName(user.getReplyName());
@@ -186,16 +186,11 @@ std::string	Reply::rplNamReply(int num, const std::string& toName, const Channel
 		std::string	message = Reply::rplCmdToName(num, toName);
 
 		if (channel.getName()[0] == '#') {
+			// message += "= " + channel.getName() + " :";
 			message += "= " + channel.getName() + " :";
 		}
-		for (std::vector<User *>::const_iterator it = channel.getMembers().begin(); it != channel.getMembers().end(); ++it) {
-			std::vector<User *>::const_iterator	operIt = channel.getOperators().begin();
-			for (; operIt != channel.getOperators().end(); ++operIt) {
-				if ((*it)->getNickName() == (*operIt)->getNickName()) {
-					break;
-				}
-			}
-			if (operIt != channel.getOperators().end()) {
+		for (std::vector<User*>::const_iterator it = channel.getMembers().begin(); it != channel.getMembers().end(); ++it) {
+			if (channel.isOperator((*it)->getNickName())) {
 				message += "@" + (*it)->getNickName() + " ";
 			} else {
 				message += (*it)->getNickName() + " ";

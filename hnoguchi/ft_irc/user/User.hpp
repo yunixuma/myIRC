@@ -34,7 +34,7 @@ class User {
 	 unsigned int	modes_;
 
  public:
-	 User();
+	 explicit User(int* fd = NULL);
 	 ~User();
 
 	 // OPERATOR
@@ -66,7 +66,7 @@ class User {
 	 unsigned int		getModes() const;
 
 	 void				disconnect();
-	 void				resetDate();
+	 void				resetData();
 	 // DEBUG
 	 void	printData() const;
 };
