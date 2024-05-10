@@ -5,13 +5,14 @@
 NAME = ircserv
 CXX = c++
 CXXFLAGS = -Wall -Wextra -Werror -std=c++98 -pedantic-errors -MMD -MP
-DEBUGFLAGS = -g -fsanitize=address -fsanitize=undefined -fsanitize=integer
+DEBUGFLAGS = -g -fsanitize=address
+# DEBUGFLAGS = -g -fsanitize=address -fsanitize=undefined -fsanitize=integer
 LEAKSFLAG = -DSERVER_LEAKS
 RM = rm -r -f
-SRCS = Server.cpp ServerSocket.cpp Config.cpp Info.cpp \
+SRCS = Server.cpp ServerSocket.cpp Config.cpp Info.cpp split.cpp \
 	   User.cpp \
 	   Channel.cpp \
-	   Parser.cpp \
+	   Parser.cpp ParsedMsg.cpp Param.cpp ValidParam.cpp Token.cpp IsChar.cpp \
 	   Execute.cpp \
 	   Reply.cpp \
 	   cmdChannelMode.cpp cmdInvite.cpp cmdJoin.cpp cmdKick.cpp cmdPart.cpp cmdTopic.cpp \

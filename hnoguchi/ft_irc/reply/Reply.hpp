@@ -79,7 +79,7 @@ class Reply {
 	 Reply();
 	 ~Reply();
 	 const std::string&	getDelimiter() const;
-	 std::string		createMessage(int num, const User& user, const Info& info, const ParsedMessage& parsedMsg);
+	 std::string		createMessage(int num, const User& user, const Info& info, const ParsedMsg& parsedMsg);
 	 static std::string	rplFromName(const std::string& from);
 	 static std::string	rplCmdToName(int num, const std::string& toName);
 
@@ -89,7 +89,6 @@ class Reply {
 	 static std::string	rplWelcome(const Info& info, const User& user);
 
 	 static std::string	rplUModeIs(int num, const std::string& toName, const User& user);
-	 // TODO(hnoguchi): const Channel& channelに変更し、全てのmode情報を渡す。
 	 static std::string	rplChannelModeIs(int num, const std::string& toName, const std::string& channel, const char mode, const std::string& param);
 	 static std::string	rplNoTopic(int num, const std::string& toName, const std::string& channel);
 	 static std::string	rplTopic(int num, const std::string& toName, const std::string& channel, const std::string& topic);
