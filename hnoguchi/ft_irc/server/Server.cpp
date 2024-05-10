@@ -13,48 +13,9 @@
  * Helper functions
  */
 static void	recvNonBlocking(int fd, char* buffer, size_t dataSize) {
-	ssize_t recvMsgSize = 0;
-
-	while (1) {
-		recvMsgSize = recv(fd, buffer, dataSize, MSG_DONTWAIT);
-
-		if (recvMsgSize >= 0) {
-			break;
-		}
-		if (errno != EAGAIN && errno != EWOULDBLOCK) {
-			throw std::runtime_error("recv");
-		}
-		std::cout << "No data sent." << std::endl;
-		errno = 0;
-		recvMsgSize = 0;
-	}
-	if (recvMsgSize == 0) {
+	ssize_t	recvMsgSize = recv(fd, buffer, dataSize, MSG_DONTWAIT);
+	if (recvMsgSize < 0) {
 		throw std::runtime_error("recv");
-	}
-	// if (static_cast<ssize_t>(dataSize) != recvMsgSize) {
-	// 	throw std::runtime_error("recv");
-	// }
-}
-
-
-static std::vector<std::string>	split(const std::string& message, const std::string delim) {
-	try {
-		std::vector<std::string>	messages;
-		std::string::size_type		startPos(0);
-
-		while (startPos < message.size()) {
-			std::string::size_type	delimPos = message.find(delim, startPos);
-			if (delimPos == message.npos) {
-				break;
-			}
-			// TODO(hnoguchi): std::string::substr(); throw exception std::out_of_range();
-			std::string	buf = message.substr(startPos, delimPos - startPos);
-			messages.push_back(buf);
-			startPos = delimPos + delim.size();
-		}
-		return (messages);
-	} catch (std::exception& e) {
-		throw;
 	}
 }
 
@@ -62,25 +23,8 @@ static std::vector<std::string>	split(const std::string& message, const std::str
  * Global functions
  */
 void	sendNonBlocking(int fd, const char* buffer, size_t dataSize) {
-	ssize_t sendMsgSize = 0;
-
-	while (1) {
-		sendMsgSize = send(fd, buffer, dataSize, MSG_DONTWAIT);
-
-		if (sendMsgSize >= 0) {
-			break;
-		}
-		if (errno != EAGAIN && errno != EWOULDBLOCK) {
-			throw std::runtime_error("send");
-		}
-		std::cout << "No data sent." << std::endl;
-		errno = 0;
-		sendMsgSize = 0;
-	}
-	if (sendMsgSize == 0) {
-		throw std::runtime_error("send");
-	}
-	if (static_cast<ssize_t>(dataSize) != sendMsgSize) {
+	ssize_t	sendMsgSize = send(fd, buffer, dataSize, MSG_DONTWAIT);
+	if (sendMsgSize < 0) {
 		throw std::runtime_error("send");
 	}
 }
@@ -95,7 +39,6 @@ Server::Server(unsigned short port) : socket_(port), info_() {
 		for (int i = 1; i <= this->info_.getConfig().getMaxClient(); i++) {
 			this->fds_[i].fd = -1;
 		}
-		// this->fds_[this->info_.getConfig().getMaxClient() + 1].fd = STDIN_FILENO;
 		for (int i = 0; i <= this->info_.getConfig().getMaxClient(); i++) {
 			this->fds_[i].events = POLLIN;
 			this->fds_[i].revents = 0;
@@ -130,7 +73,6 @@ void	Server::run() {
 		}
 		try {
 			this->handleServerSocket();
-			// this->handleStandardInput();
 			this->handleClientSocket();
 		} catch (std::exception& e) {
 			throw;
@@ -178,24 +120,6 @@ void	Server::handleServerSocket() {
 	// this->info_.printUsers();
 }
 
-// void	Server::handleStandardInput() {
-// 	if (!(this->fds_[this->info_.getConfig().getMaxClient() + 1].revents & POLLIN)) {
-// 		return;
-// 	}
-// 	try {
-// 		std::string	input;
-// 		std::getline(std::cin, input);
-// 		// TODO(hnoguchi): Check bit.
-// 		if (input != "exit") {
-// 			return;
-// 		}
-// 		std::cout << "See You..." << std::endl;
-// 		throw std::runtime_error("exit");
-// 	} catch (std::exception& e) {
-// 		throw;
-// 	}
-// }
-
 void	Server::handleClientSocket() {
 	try {
 		for (int i = 1; i <= this->info_.getConfig().getMaxClient(); ++i) {
@@ -217,27 +141,34 @@ void	Server::handleReceivedData(User* user) {
 		recvNonBlocking(user->getFd(), buffer, sizeof(buffer) - 1);
 		// debug
 		std::cout << GREEN << buffer << END << std::flush;
-		// Split message
 		Execute						execute;
 		Reply						reply;
-		std::vector<std::string>	messages = split(buffer, reply.getDelimiter());
+		// Split message
+		std::string					bufferStr(buffer);
+		if (user->getLeftMsg().size() != 0) {
+			bufferStr = user->getLeftMsg() + bufferStr;
+			user->setLeftMsg("");
+		}
+		std::vector<std::string>	messages = split(buffer, reply.getDelimiter(), user);
 		for (std::vector<std::string>::iterator it = messages.begin(); it != messages.end(); ++it) {
 			int			replyNum = 0;
 			std::string	replyMsg("");
+			// std::vector<SendMsg *>	sendList;
 			Parser		parser;
 
-			replyNum = parser.parse(*it);
-			// parser.getParsedMessage().printParsedMessage();
+			// parser.parse(*it, this->info_.getConfig().getCommandList(), &sendList);
+			replyNum = parser.parse(*it, this->info_.getConfig().getCommandList());
+			// parser.getParsedMsg().printParsedMsg();
 			// std::cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"<< std::endl;
-			// this->info_.getUser(i - 1).printData();
-			if (replyNum == 0) {
+			// if (sendList.size() == 0) {
+			if (replyNum != -1) {
 				// 登録ユーザか確認
 				if ((user->getRegistered() & kExecAllCmd) != kExecAllCmd) {
 					// ユーザ登録処理
-					replyMsg = execute.registerUser(user, parser.getParsedMessage(), &this->info_);
+					replyMsg = execute.registerUser(user, parser.getParsedMsg(), &this->info_);
 				} else {
 					// コマンド実行処理
-					replyMsg = execute.exec(user, parser.getParsedMessage(), &this->info_);
+					replyMsg = execute.exec(user, parser.getParsedMsg(), &this->info_);
 					// if (this->info_.getChannels().size() != 0) {
 					// 	this->info_.getChannels()[0].printData();
 					// }
@@ -249,7 +180,7 @@ void	Server::handleReceivedData(User* user) {
 				}
 			} else {
 				// リプライメッセージの作成
-				replyMsg = reply.createMessage(replyNum, *user, this->info_, parser.getParsedMessage());
+				replyMsg = reply.createMessage(replyNum, *user, this->info_, parser.getParsedMsg());
 			}
 			if (replyMsg.empty()) {
 				continue;
@@ -260,8 +191,6 @@ void	Server::handleReceivedData(User* user) {
 			// send
 			sendNonBlocking(user->getFd(), replyMsg.c_str(), replyMsg.size());
 		}
-	// } catch (std::out_of_range& e) {
-	// 	throw;
 	} catch (std::exception& e) {
 		// TODO(hnoguchi): メッセージ受信に失敗したことをユーザに通知（メッセージを送信）する？
 		// this->info_.eraseUser(this->info_.findUser(user->getFd()));
