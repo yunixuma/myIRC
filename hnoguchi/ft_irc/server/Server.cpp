@@ -1,23 +1,12 @@
-#include <signal.h>
 #include "./Server.hpp"
 #include "./ServerSocket.hpp"
 #include "./Config.hpp"
 #include "./Info.hpp"
 #include "../color.hpp"
-#include "../error/error.hpp"
+#include "../debug/debug.hpp"
 #include "../user/User.hpp"
 #include "../parser/Parser.hpp"
 #include "../execute/Execute.hpp"
-
-/*
- * Helper functions
- */
-static void	recvNonBlocking(int fd, char* buffer, size_t dataSize) {
-	ssize_t	recvMsgSize = recv(fd, buffer, dataSize, MSG_DONTWAIT);
-	if (recvMsgSize < 0) {
-		throw std::runtime_error("recv");
-	}
-}
 
 /*
  * Global functions
@@ -30,16 +19,23 @@ void	sendNonBlocking(int fd, const char* buffer, size_t dataSize) {
 }
 
 /*
- * Server class
+ * Helper functions
  */
+static void	recvNonBlocking(int fd, char* buffer, size_t dataSize) {
+	ssize_t	recvMsgSize = recv(fd, buffer, dataSize, MSG_DONTWAIT);
+	if (recvMsgSize < 0) {
+		throw std::runtime_error("recv");
+	}
+}
+
 // CONSTRUCTOR
-Server::Server(unsigned short port) : socket_(port), info_() {
+Server::Server(unsigned short port, const std::string& connectPwd) : socket_(port), info_(connectPwd) {
 	try {
 		this->fds_[0].fd = this->socket_.getFd();
-		for (int i = 1; i <= this->info_.getConfig().getMaxClient(); i++) {
+		for (int i = 1; i <= this->info_.getMaxClient(); i++) {
 			this->fds_[i].fd = -1;
 		}
-		for (int i = 0; i <= this->info_.getConfig().getMaxClient(); i++) {
+		for (int i = 0; i <= this->info_.getMaxClient(); i++) {
 			this->fds_[i].events = POLLIN;
 			this->fds_[i].revents = 0;
 		}
@@ -49,7 +45,7 @@ Server::Server(unsigned short port) : socket_(port), info_() {
 }
 
 Server::~Server() {
-	for (int i = 0; i <= this->info_.getConfig().getMaxClient(); i++) {
+	for (int i = 0; i <= this->info_.getMaxClient(); i++) {
 		if (this->fds_[i].fd == -1) {
 			continue;
 		}
@@ -60,8 +56,7 @@ Server::~Server() {
 
 void	Server::run() {
 	while (1) {
-
-		int result = poll(this->fds_, this->info_.getConfig().getMaxClient() + 1, 3 * 10000);
+		int result = poll(this->fds_, this->info_.getMaxClient() + 1, 3 * 10000);
 
 		if (result == -1) {
 			throw std::runtime_error("poll");
@@ -77,14 +72,13 @@ void	Server::run() {
 		} catch (std::exception& e) {
 			throw;
 		}
-		this->info_.printInfo();
 		// TODO(hnoguchi): PINGするならここ。
 	}
 }
 
 int	Server::setFd(int fd) {
 	try {
-		for (int i = 1; i <= this->info_.getConfig().getMaxClient(); ++i) {
+		for (int i = 1; i <= this->info_.getMaxClient(); ++i) {
 			if (this->fds_[i].fd != -1) {
 				continue;
 			}
@@ -122,14 +116,16 @@ void	Server::handleServerSocket() {
 
 void	Server::handleClientSocket() {
 	try {
-		for (int i = 1; i <= this->info_.getConfig().getMaxClient(); ++i) {
+		for (int i = 1; i <= this->info_.getMaxClient(); ++i) {
 			if (this->fds_[i].fd != -1 && (this->fds_[i].revents & POLLIN)) {
 				handleReceivedData(*this->info_.findUser(this->fds_[i].fd));
-				// this->printData();
+#ifdef DEBUG
+				this->info_.debugPrintInfo();
+#endif  // DEBUG
 			}
 		}
 	} catch (std::exception& e) {
-		std::cerr << RED << e.what() << END << std::endl;
+		debugPrintErrorMessage(e.what());
 		// throw;
 	}
 }
@@ -139,8 +135,9 @@ void	Server::handleReceivedData(User* user) {
 		char	buffer[513] = {0};
 
 		recvNonBlocking(user->getFd(), buffer, sizeof(buffer) - 1);
-		// debug
-		std::cout << GREEN << buffer << END << std::flush;
+#ifdef DEBUG
+		debugPrintRecvMessage(user->getNickName(), buffer);
+#endif  // DEBUG
 		Execute						execute;
 		Reply						reply;
 		// Split message
@@ -156,8 +153,8 @@ void	Server::handleReceivedData(User* user) {
 			// std::vector<SendMsg *>	sendList;
 			Parser		parser;
 
-			// parser.parse(*it, this->info_.getConfig().getCommandList(), &sendList);
-			replyNum = parser.parse(*it, this->info_.getConfig().getCommandList());
+			// parser.parse(*it, this->info_.getCommandList(), &sendList);
+			replyNum = parser.parse(*it, this->info_.getCommandList());
 			// parser.getParsedMsg().printParsedMsg();
 			// std::cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"<< std::endl;
 			// if (sendList.size() == 0) {
@@ -175,7 +172,7 @@ void	Server::handleReceivedData(User* user) {
 				}
 				if (!replyMsg.empty()) {
 					std::string	buf = replyMsg;
-					replyMsg = Reply::rplFromName(this->info_.getConfig().getServerName());
+					replyMsg = Reply::rplFromName(this->info_.getServerName());
 					replyMsg += buf;
 				}
 			} else {
@@ -185,20 +182,20 @@ void	Server::handleReceivedData(User* user) {
 			if (replyMsg.empty()) {
 				continue;
 			}
-			// debug
+#ifdef DEBUG
 			// user->printData();
-			debugPrintSendMessage("replyMsg", replyMsg);
-			// send
+			debugPrintSendMessage(user->getNickName(), replyMsg);
+#endif  // DEBUG
 			sendNonBlocking(user->getFd(), replyMsg.c_str(), replyMsg.size());
 		}
 	} catch (std::exception& e) {
 		// TODO(hnoguchi): メッセージ受信に失敗したことをユーザに通知（メッセージを送信）する？
-		// this->info_.eraseUser(this->info_.findUser(user->getFd()));
+		this->info_.eraseUser(this->info_.findUser(user->getFd()));
 		throw;
 	}
 }
 
-void	Server::printData() const {
+void	Server::debugPrintServer() const {
 	std::cout << "[SERVER DATA]__________________" << std::endl;
 	std::cout << "this->fds_[" << MAX_FD << "];" << std::endl;
 	for (int i = 0; i < MAX_FD; i++) {
@@ -208,33 +205,3 @@ void	Server::printData() const {
 	// this->info_.printData();
 	std::cout << "_______________________________" << std::endl;
 }
-
-// TODO(hnoguchi): サーバーの終了処理を実装する。
-// TODO(hnoguchi): Server classにpasswordを追加する。
-// TODO(hnoguchi): <port>, <password>のバリデーションを実装する。
-int	main(int argc, char* argv[]) {
-	if (argc != 3) {
-		std::cerr << "Usage: " << argv[0] << " <port> <password>" << std::endl;
-	}
-
-	try {
-		int	portNum;
-		std::stringstream	ss;
-		ss << argv[1];
-		ss >> portNum;
-		Server	Server(portNum);
-
-		Server.run();
-	} catch (std::exception& e) {
-		fatalError(e.what());
-		// std::cerr << RED << e.what() << END << std::endl;
-		// destruct
-		// return (1);
-	}
-	return (0);
-}
-// #ifdef SERVER_LEAKS
-// __attribute__((destructor)) static void destructor() {
-//     system("leaks -q ircserv");
-// }
-// #endif  // SERVER_LEAKS

@@ -2,18 +2,14 @@
 #include <stdexcept>
 #include "./Info.hpp"
 #include "./Config.hpp"
-#include "../error/error.hpp"
+#include "../debug/debug.hpp"
 #include "../user/User.hpp"
 #include "../channel/Channel.hpp"
 
-Info::Info() : config_() {}
+Info::Info(const std::string& connectPwd) : Config(connectPwd) {}
 Info::~Info() {}
 
 // GETTER
-const Config&	Info::getConfig() const {
-	return (this->config_);
-}
-
 const std::vector<User*>&	Info::getUsers() const {
 	return (this->users_);
 }
@@ -91,9 +87,8 @@ void	Info::pushBackUser(User* user) {
 	try {
 		this->users_.push_back(user);
 	} catch (std::exception& e) {
-		// throw std::invalid_argument("Info::pushBackUser()");
-		fatalError(e.what());
-		throw;
+		debugPrintErrorMessage(e.what());
+		throw std::invalid_argument("Info::pushBackUser()");
 	}
 }
 
@@ -101,9 +96,8 @@ void	Info::pushBackChannel(Channel* channel) {
 	try {
 		this->channels_.push_back(channel);
 	} catch (std::exception& e) {
-		// throw std::invalid_argument("Info::pushBackChannel()");
-		fatalError(e.what());
-		throw;
+		debugPrintErrorMessage(e.what());
+		throw std::invalid_argument("Info::pushBackChannel()");
 	}
 }
 
@@ -113,11 +107,9 @@ void	Info::eraseUser(std::vector<User*>::iterator it) {
 		(*it)->resetData();
 		delete *it;
 		this->users_.erase(it);
-		// *it = NULL;
 	} catch (std::exception& e) {
-		// throw std::invalid_argument("Info::deleteUser()");
-		fatalError(e.what());
-		throw;
+		debugPrintErrorMessage(e.what());
+		throw std::invalid_argument("Info::deleteUser()");
 	}
 }
 
@@ -126,35 +118,30 @@ void	Info::eraseChannel(std::vector<Channel*>::iterator it) {
 		(*it)->resetData();
 		delete *it;
 		this->channels_.erase(it);
-		// *it = NULL;
 	} catch (std::exception& e) {
-		// throw std::invalid_argument("Info::deleteChannel()");
-		fatalError(e.what());
-		throw;
+		debugPrintErrorMessage(e.what());
+		throw std::invalid_argument("Info::deleteChannel()");
 	}
 }
 
-void	Info::printConfig() const {
-	this->config_.printData();
-	std::cout << std::endl;
-}
-
-void	Info::printUsers() const {
+void	Info::debugPrintUsers() const {
+	std::cout << "[users_]    Current size (" << this->users_.size() << ")" << std::endl;
 	for (std::vector<User*>::const_iterator it = this->users_.begin(); it != this->users_.end(); it++) {
-		(*it)->printData();
+		(*it)->debugPrintUser();
 		std::cout << std::endl;
 	}
 }
 
-void	Info::printChannels() const {
+void	Info::debugPrintChannels() const {
+	std::cout << "[channels_] Current size (" << this->users_.size() << ")" << std::endl;
 	for (std::vector<Channel*>::const_iterator it = this->channels_.begin(); it != this->channels_.end(); it++) {
 		(*it)->printData();
 		std::cout << std::endl;
 	}
 }
 
-void	Info::printInfo() const {
-	this->printConfig();
-	this->printUsers();
-	this->printChannels();
+void	Info::debugPrintInfo() const {
+	this->debugPrintConfig();
+	this->debugPrintUsers();
+	this->debugPrintChannels();
 }
