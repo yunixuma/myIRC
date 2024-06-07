@@ -207,10 +207,11 @@ int	Parser::validRegisterNick(const User& user, const std::vector<Token>& tokens
 			Server::sendNonBlocking(user.getFd(), reply.c_str(), reply.size());
 			throw std::invalid_argument("validRegisterNick");
 		}
-		if (tokens[1].getValue().size() > 9) {
-			reply += Reply::errOneUsNickName(kERR_ERRONEUSNICKNAME, "*", tokens[1].getValue());
+		ValidParam	validParam;
+		if (validParam.isNickName(tokens[1].getValue()) == false) {
+			reply += Reply::errErroneusNickName(kERR_ERRONEUSNICKNAME, "*", tokens[1].getValue());
 			Server::sendNonBlocking(user.getFd(), reply.c_str(), reply.size());
-			throw std::invalid_argument("cmdNick");
+			throw std::invalid_argument("validRegisterNick");
 		}
 		this->parsed_.setParam(tokens[1].getType(), kNickName, tokens[1].getValue());
 		return (0);
@@ -233,8 +234,9 @@ int	Parser::validNick(const User& user, const std::vector<Token>& tokens, const 
 			Server::sendNonBlocking(user.getFd(), reply.c_str(), reply.size());
 			return (-1);
 		}
-		if (tokens[1].getValue().size() > 9) {
-			reply += Reply::errOneUsNickName(kERR_ERRONEUSNICKNAME, user.getPrefixName(), tokens[1].getValue());
+		ValidParam	validParam;
+		if (validParam.isNickName(tokens[1].getValue()) == false) {
+			reply += Reply::errErroneusNickName(kERR_ERRONEUSNICKNAME, user.getPrefixName(), tokens[1].getValue());
 			Server::sendNonBlocking(user.getFd(), reply.c_str(), reply.size());
 			return (-1);
 		}
@@ -305,6 +307,12 @@ int	Parser::validJoin(const User& user, const std::vector<Token>& tokens, const 
 			Server::sendNonBlocking(user.getFd(), reply.c_str(), reply.size());
 			return (-1);
 		}
+		ValidParam	validParam;
+		if (validParam.isChannel(tokens[1].getValue()) == false) {
+			reply += Reply::errNoSuchChannel(kERR_NOSUCHCHANNEL, user.getPrefixName(), tokens[1].getValue());
+			Server::sendNonBlocking(user.getFd(), reply.c_str(), reply.size());
+			return (-1);
+		}
 		this->parsed_.setParam(tokens[1].getType(), kChannel, this->toLowerString(tokens[1].getValue()));
 		if (tokens.size() == 3) {
 			this->parsed_.setParam(tokens[2].getType(), kKey, tokens[2].getValue());
@@ -348,6 +356,12 @@ int	Parser::validKick(const User& user, const std::vector<Token>& tokens, const 
 		this->parsed_.setParam(tokens[1].getType(), kChannel, this->toLowerString(tokens[1].getValue()));
 		this->parsed_.setParam(tokens[2].getType(), kNickName, tokens[2].getValue());
 		if (tokens.size() == 4) {
+			ValidParam	validParam;
+			if (validParam.isTopic(tokens[3].getValue()) == false) {
+				reply += Reply::errNoTextToSend(kERR_NOTEXTTOSEND, user.getPrefixName());
+				Server::sendNonBlocking(user.getFd(), reply.c_str(), reply.size());
+				return (-1);
+			}
 			this->parsed_.setParam(tokens[3].getType(), kMessage, tokens[3].getValue());
 		}
 		return (0);

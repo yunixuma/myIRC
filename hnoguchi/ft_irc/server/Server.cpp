@@ -89,8 +89,12 @@ int	Server::setFd(int fd) {
 			return (i);
 		}
 		// TODO(hnoguchi): messageを送る。
-		// sendNonBlocking(fd, "Max clients reached.", sizeof("Max clients reached."));
-		std::cerr << "Max clients reached." << std::endl;
+		std::string	reply = Reply::rplFromName(this->info_.getServerName());
+		reply += Reply::errNoSuchServer(kERR_NOSUCHSERVER, "*", "*");
+		sendNonBlocking(fd, reply.c_str(), reply.size());
+#ifdef DEBUG
+		debugPrintErrorMessage("Max clients reached.");
+#endif  // DEBUG
 		close(fd);
 		return(-1);
 	} catch (std::exception& e) {
@@ -99,6 +103,9 @@ int	Server::setFd(int fd) {
 }
 
 void	Server::handleServerSocket() {
+	if (this->fds_[0].revents & (POLLHUP | POLLERR)) {
+		throw std::runtime_error("poll");
+	}
 	if (!(this->fds_[0].revents & POLLIN)) {
 		return;
 	}
@@ -119,6 +126,10 @@ void	Server::handleServerSocket() {
 void	Server::handleClientSocket() {
 	try {
 		for (int i = 1; i <= this->info_.getMaxClient(); ++i) {
+			if (this->fds_[i].fd != -1 && this->fds_[i].revents & (POLLHUP | POLLERR)) {
+				this->info_.eraseUser(this->info_.findUser(this->fds_[i].fd));
+				continue;
+			}
 			if (this->fds_[i].fd != -1 && (this->fds_[i].revents & POLLIN)) {
 				handleReceivedData(*this->info_.findUser(this->fds_[i].fd));
 #ifdef DEBUG
