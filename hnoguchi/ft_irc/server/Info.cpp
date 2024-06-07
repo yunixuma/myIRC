@@ -108,8 +108,49 @@ void	Info::eraseUser(std::vector<User*>::iterator it) {
 		delete *it;
 		this->users_.erase(it);
 	} catch (std::exception& e) {
+#ifdef DEBUG
 		debugPrintErrorMessage(e.what());
-		throw std::invalid_argument("Info::deleteUser()");
+#endif  // DEBUG
+		throw std::invalid_argument("Info::eraseUser()");
+	}
+}
+
+void	Info::eraseUserInChannel(User* user, Channel* channel) {
+	try {
+		if (channel->isMember(user)) {
+			channel->eraseMember(user);
+		}
+		if (channel->isInvited(user)) {
+			channel->eraseInvited(user);
+		}
+		if (channel->isOperator(user)) {
+			channel->eraseOperator(user);
+		}
+	} catch (std::exception& e) {
+#ifdef DEBUG
+		debugPrintErrorMessage(e.what());
+#endif  // DEBUG
+		throw std::invalid_argument("Info::eraseUserInChannel()");
+	}
+}
+
+void	Info::eraseUserInChannels(User* user) {
+	try {
+		std::vector<Channel*>::iterator it = this->channels_.begin();
+		while (it != this->channels_.end()) {
+			this->eraseUserInChannel(user, *it);
+			if ((*it)->getMembers().size() == 0) {
+				this->eraseChannel(it);
+				it = this->channels_.begin();
+			} else {
+				it++;
+			}
+		}
+	} catch (std::exception& e) {
+#ifdef DEBUG
+		debugPrintErrorMessage(e.what());
+#endif  // DEBUG
+		throw std::invalid_argument("Info::eraseUserInChannels()");
 	}
 }
 
