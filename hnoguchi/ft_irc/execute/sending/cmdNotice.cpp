@@ -13,7 +13,10 @@
  *             [ 301 RPL_AWAY             "<nick> :<away message>"
  */
 
-#include <iostream>
+#include <string>
+#include <vector>
+// #include <iostream>
+#include <stdexcept>
 #include "../Execute.hpp"
 #include "../../user/User.hpp"
 #include "../../server/Info.hpp"

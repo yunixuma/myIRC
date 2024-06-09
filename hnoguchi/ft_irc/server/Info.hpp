@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <stdexcept>
 #include "./Config.hpp"
 #include "../user/User.hpp"
 #include "../channel/Channel.hpp"

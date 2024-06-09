@@ -2,6 +2,8 @@
 # define ISCHAR_HPP
 
 # include <string>
+# include <algorithm>
+# include <stdexcept>
 
 class IsChar {
  public:

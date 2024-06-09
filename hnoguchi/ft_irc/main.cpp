@@ -1,4 +1,10 @@
 #include <signal.h>
+#include <string>
+#include <iostream>
+#include <sstream>
+#include <cstdio>
+#include <algorithm>
+#include <stdexcept>
 #include "./color.hpp"
 #include "./server/Server.hpp"
 

@@ -1,10 +1,11 @@
 #ifndef CHANNEL_HPP
 # define CHANNEL_HPP
 
-#include <iostream>
-#include <string>
-#include <vector>
-#include "../user/User.hpp"
+# include <string>
+# include <vector>
+# include <algorithm>
+# include <stdexcept>
+# include "../user/User.hpp"
 
 enum kChannelMode {
 	kInviteOnly = (1 << 0),

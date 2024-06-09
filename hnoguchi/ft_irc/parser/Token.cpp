@@ -1,4 +1,3 @@
-#include <iostream>
 #include "./Token.hpp"
 
 // CONSTRUCTOR & DESTRUCTOR
@@ -39,6 +38,7 @@ const std::string&	Token::getValue() const {
 }
 
 // debug
+#include <iostream>
 void	Token::printToken() const {
 	std::cout << "Type   : " << this->type_ << " | " << std::flush;
 	std::cout << "Value  : [" << this->value_ << "]" << std::endl;

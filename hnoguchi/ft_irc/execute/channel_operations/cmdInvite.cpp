@@ -16,7 +16,9 @@
  *    INVITE Wiz #Twilight_Zone       ; Command to invite WiZ to #Twilight_zone
  */
 
+#include <string>
 #include <vector>
+#include <stdexcept>
 #include "../Execute.hpp"
 #include "../../debug/debug.hpp"
 #include "../../user/User.hpp"

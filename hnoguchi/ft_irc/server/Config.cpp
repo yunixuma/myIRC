@@ -1,4 +1,3 @@
-# include <iostream>
 # include "./Config.hpp"
 # include "../color.hpp"
 
@@ -102,6 +101,7 @@ const std::string*	Config::getCommandList() const {
 // 	this->connectPwd_ = pwd;
 // }
 
+# include <iostream>
 void	Config::debugPrintConfig() const {
 	std::cout << "[CONFIG INFO] ------------------" << std::endl;
 	std::cout << "[maxClient]    : [" << this->maxClient_ << "]" << std::endl;

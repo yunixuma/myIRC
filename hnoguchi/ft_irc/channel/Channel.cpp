@@ -1,4 +1,3 @@
-#include <algorithm>
 #include "./Channel.hpp"
 #include "../color.hpp"
 #include "../user/User.hpp"
@@ -175,6 +174,7 @@ bool	Channel::isOperator(User* user) const {
 	return (true);
 }
 
+#include <iostream>
 void	Channel::debugPrintChannel() const {
 	std::cout << CYAN << "[CHANNEL INFO] -----------------" << END << std::endl;
 	std::cout << "[name]      | [" << this->getName() << "]" << std::endl;

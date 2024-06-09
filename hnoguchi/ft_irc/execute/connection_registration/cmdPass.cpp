@@ -9,7 +9,9 @@
  * example   :　PASS secretpasswordhere
  */
 
-#include <vector>
+#include <string>
+// #include <vector>
+#include <stdexcept>
 #include "../Execute.hpp"
 #include "../../user/User.hpp"
 #include "../../debug/debug.hpp"

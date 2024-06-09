@@ -12,7 +12,9 @@
  *             ; Attempt to register as an operator using a username of "foo" and "bar" as the password.
  */
 
-#include <vector>
+#include <string>
+// #include <vector>
+#include <stdexcept>
 #include "../Execute.hpp"
 #include "../../debug/debug.hpp"
 #include "../../user/User.hpp"

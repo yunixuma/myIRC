@@ -38,8 +38,10 @@
  *    「ホスト名が[*.edu]と一致するホストから来たすべてのユーザへのメッセージ」
  */
 
-#include <iostream>
+#include <string>
+// #include <iostream>
 #include <vector>
+#include <stdexcept>
 #include "../Execute.hpp"
 #include "../../debug/debug.hpp"
 #include "../../user/User.hpp"

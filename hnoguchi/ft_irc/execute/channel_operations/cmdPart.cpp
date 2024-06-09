@@ -14,7 +14,9 @@
  *                                    ; User WiZ leaving channel "#playzone" with the message "I lost".
  */
 
+#include <string>
 #include <vector>
+#include <stdexcept>
 #include "../Execute.hpp"
 #include "../../debug/debug.hpp"
 #include "../../user/User.hpp"

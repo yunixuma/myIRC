@@ -1,4 +1,3 @@
-#include <iostream>
 #include "./IsChar.hpp"
 #include "../color.hpp"
 
@@ -57,6 +56,7 @@ bool	IsChar::isFuncString(const std::string &str, bool (*func)(const char)) {
 }
 
 #ifdef UTEST_ISCHAR
+# include <iostream>
 void	test(IsChar* obj, bool (IsChar::*func)(const char)) {
 	std::cout.unsetf(std::ios::showbase);
 	std::cout.setf(std::ios::uppercase);
