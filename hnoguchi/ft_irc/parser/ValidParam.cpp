@@ -1,6 +1,3 @@
-#include <iostream>
-#include <iomanip>
-#include <sstream>
 #include "./ValidParam.hpp"
 #include "./IsChar.hpp"
 #include "../color.hpp"

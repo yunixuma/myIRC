@@ -15,7 +15,9 @@
  *             ; User registering themselves with a username of "guest" and real name "Ronnie Reagan", and asking to be set invisible.
  */
 
-#include <vector>
+#include <string>
+// #include <vector>
+#include <stdexcept>
 #include "../Execute.hpp"
 #include "../../user/User.hpp"
 #include "../../parser/Parser.hpp"

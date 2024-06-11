@@ -2,12 +2,12 @@
 # define SERVER_HPP
 
 #include <poll.h>
-#include <iostream>
 #include <map>
-#include <stdexcept>
 #include <string>
 #include <vector>
+#include <iostream>
 #include <cstring>
+#include <stdexcept>
 #include "./ServerSocket.hpp"
 #include "./Config.hpp"
 #include "./Info.hpp"

@@ -2,8 +2,8 @@
 # define USER_HPP
 
 #include <poll.h>
-#include <iostream>
 #include <string>
+#include <iostream>
 #include "../color.hpp"
 
 enum kUserMode {

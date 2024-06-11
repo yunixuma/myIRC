@@ -12,7 +12,8 @@ ServerSocket::ServerSocket(unsigned short port) :
 		if (fcntl(this->fd_, F_SETFL, O_NONBLOCK) < 0) {
 			throw std::runtime_error("fcntl");
 		}
-		memset(&this->address_, 0, sizeof(this->address_));
+		// memset(&this->address_, 0, sizeof(this->address_));
+		// this->address_ = {0};
 		this->address_.sin_family = AF_INET;
 		this->address_.sin_addr.s_addr = INADDR_ANY;
 		// this->address_.sin_addr.s_addr = inet_addr("224.10.10.2");

@@ -19,7 +19,9 @@
  *    TOPIC #test                     ; Command to check the topic for #test.
  */
 
+#include <string>
 #include <vector>
+#include <stdexcept>
 #include "../Execute.hpp"
 #include "../../debug/debug.hpp"
 #include "../../user/User.hpp"

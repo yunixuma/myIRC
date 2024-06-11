@@ -59,7 +59,7 @@ void	Parser::tokenize(std::string *message, std::vector<Token> *tokens) {
 		command.setType(kCmdString);
 		command.setValue(word);
 		tokens->push_back(command);
-		while(startPos < message->size()) {
+		while (startPos < message->size()) {
 			Token	param;
 			delimPos = message->find(' ', startPos);
 			if (delimPos == message->npos && startPos < message->size()) {
@@ -624,6 +624,7 @@ const ParsedMsg&	Parser::getParsedMsg() const {
 }
 
 // DEBUG
+#include <iostream>
 void	Parser::printTokens(const std::vector<Token>& tokens) {
 	// std::cout << YELLOW << "[Tokens]    ____________________" << END << std::endl;
 	// std::cout << "[Type] : [Value]" << std::endl;

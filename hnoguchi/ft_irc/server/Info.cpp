@@ -1,5 +1,3 @@
-#include <vector>
-#include <stdexcept>
 #include "./Info.hpp"
 #include "./Config.hpp"
 #include "../debug/debug.hpp"

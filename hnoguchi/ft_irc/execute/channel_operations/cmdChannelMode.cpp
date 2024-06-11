@@ -46,8 +46,11 @@
  *    t - チャネル運営者のみが設定可能なトピックフラグ設定の切り替え
  */
 
+#include <string>
 #include <vector>
 #include <cstdlib>
+#include <sstream>
+#include <stdexcept>
 #include "../Execute.hpp"
 #include "../../debug/debug.hpp"
 #include "../../user/User.hpp"

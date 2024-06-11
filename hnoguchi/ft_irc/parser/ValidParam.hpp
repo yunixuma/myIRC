@@ -2,6 +2,9 @@
 # define VALIDPARAM_HPP
 
 # include <string>
+# include <iostream>
+# include <iomanip>
+# include <sstream>
 # include "./IsChar.hpp"
 
 class ValidParam : private IsChar {

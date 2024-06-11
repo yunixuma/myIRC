@@ -1,6 +1,6 @@
-#include <iostream>
 #include <vector>
 #include <string>
+#include <stdexcept>
 #include "./Server.hpp"
 #include "../user/User.hpp"
 #include "../reply/Reply.hpp"
@@ -30,6 +30,7 @@ std::vector<std::string>	Server::split(const std::string& message, User* user) {
 }
 
 #ifdef UTEST_SPLIT
+#include <iostream>
 #include "../color.hpp"
 
 void	printMsg(const std::string& color, const std::string& msg) {

@@ -3,6 +3,8 @@
 
 #include <string>
 #include <vector>
+#include <iostream>
+#include <stdexcept>
 #include "./Token.hpp"
 #include "./Param.hpp"
 

@@ -1,12 +1,11 @@
 #ifndef PARSER_HPP
 # define PARSER_HPP
 
-#include <iostream>
+#include <string>
+#include <vector>
 #include <locale>
 #include <sstream>
 #include <stdexcept>
-#include <string>
-#include <vector>
 #include "./Token.hpp"
 #include "./Param.hpp"
 #include "./ParsedMsg.hpp"

@@ -170,6 +170,7 @@ void	User::resetData() {
 }
 
 // DEBUG
+#include <stdexcept>
 void	User::debugPrintUser() const {
 	std::cout << MAGENTA << "[USER INFO] --------------------" << END << std::endl;
 	std::cout << "[index]        : [" << this->index_ << "]" << std::endl;

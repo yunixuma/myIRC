@@ -1,4 +1,3 @@
-#include <iostream>
 #include "./Param.hpp"
 #include "./Token.hpp"
 
@@ -32,6 +31,7 @@ const std::string&	Param::getValue() const {
 }
 
 // debug
+#include <iostream>
 void	Param::printParam() const {
 	std::cout << "tType   : " << this->tType_ << " | " << std::flush;
 	std::cout << "pType   : " << this->pType_ << " | " << std::flush;

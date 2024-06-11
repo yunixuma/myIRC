@@ -13,7 +13,9 @@
  *             ; User syrk has quit IRC to have lunch.
  */
 
+#include <string>
 #include <vector>
+#include <stdexcept>
 #include "../Execute.hpp"
 #include "../../debug/debug.hpp"
 #include "../../user/User.hpp"
