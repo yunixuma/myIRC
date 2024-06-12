@@ -185,6 +185,12 @@ int	Parser::validPass(const User& user, const std::vector<Token>& tokens, const 
 			Server::sendNonBlocking(user.getFd(), reply.c_str(), reply.size());
 			throw std::invalid_argument("validPass");
 		}
+		ValidParam	validParam;
+		if (!validParam.isPassword(tokens[1].getValue())) {
+			reply += Reply::errNeedMoreParams(kERR_NEEDMOREPARAMS, "*", "PASS");
+			Server::sendNonBlocking(user.getFd(), reply.c_str(), reply.size());
+			throw std::invalid_argument("validPass");
+		}
 		this->parsed_.setParam(tokens[1].getType(), kPassword, tokens[1].getValue());
 		return (0);
 	} catch (std::exception& e) {
@@ -253,6 +259,22 @@ int	Parser::validUser(const User& user, const std::vector<Token>& tokens, const 
 		std::string	reply = Reply::rplFromName(info.getServerName());
 
 		if (tokens.size() != 5) {
+			reply += Reply::errNeedMoreParams(kERR_NEEDMOREPARAMS, "*", "USER");
+			Server::sendNonBlocking(user.getFd(), reply.c_str(), reply.size());
+			throw std::invalid_argument("validUser");
+		}
+		ValidParam	validParam;
+		if (!validParam.isUser(tokens[1].getValue())) {
+			reply += Reply::errNeedMoreParams(kERR_NEEDMOREPARAMS, "*", "USER");
+			Server::sendNonBlocking(user.getFd(), reply.c_str(), reply.size());
+			throw std::invalid_argument("validUser");
+		}
+		if (!validParam.isHostName(tokens[2].getValue())) {
+			reply += Reply::errNeedMoreParams(kERR_NEEDMOREPARAMS, "*", "USER");
+			Server::sendNonBlocking(user.getFd(), reply.c_str(), reply.size());
+			throw std::invalid_argument("validUser");
+		}
+		if (!validParam.isHostName(tokens[3].getValue())) {
 			reply += Reply::errNeedMoreParams(kERR_NEEDMOREPARAMS, "*", "USER");
 			Server::sendNonBlocking(user.getFd(), reply.c_str(), reply.size());
 			throw std::invalid_argument("validUser");
@@ -400,6 +422,12 @@ int	Parser::validTopic(const User& user, const std::vector<Token>& tokens, const
 		}
 		this->parsed_.setParam(tokens[1].getType(), kChannel, this->toLowerString(tokens[1].getValue()));
 		if (tokens.size() == 3) {
+			ValidParam	validParam;
+			if (validParam.isTopic(tokens[2].getValue()) == false) {
+				reply += Reply::errNoTextToSend(kERR_NOTEXTTOSEND, user.getPrefixName());
+				Server::sendNonBlocking(user.getFd(), reply.c_str(), reply.size());
+				return (-1);
+			}
 			this->parsed_.setParam(tokens[2].getType(), kTopic, tokens[2].getValue());
 		}
 		return (0);

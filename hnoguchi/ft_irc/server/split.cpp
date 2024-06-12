@@ -17,7 +17,6 @@ std::vector<std::string>	Server::split(const std::string& message, User* user) {
 				break;
 			}
 			if (delimPos > startPos) {
-				// TODO(hnoguchi): std::string::substr(); throw exception std::out_of_range();
 				std::string	buf = message.substr(startPos, delimPos - startPos);
 				messages.push_back(buf);
 			}
